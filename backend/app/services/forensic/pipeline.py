@@ -13,6 +13,7 @@ from app.core.schemas import (
     Layer4SemanticResult,
 )
 from app.services.forensic.ensemble.calibrator import calibrate_ensemble
+from app.services.forensic.ensemble.ml_calibrated_service import ml_calibrated_service
 from app.services.forensic.metadata.domain_rules import (
     check_whatsapp_recompression,
     validate_temporal_and_upi_rules,
@@ -237,6 +238,32 @@ def analyze_screenshot(
     _, orig_webp = cv2.imencode('.webp', img_bgr, [cv2.IMWRITE_WEBP_QUALITY, 101])
     orig_b64 = f"data:image/webp;base64,{base64.b64encode(orig_webp.tobytes()).decode('utf-8')}"
 
+    # 11. Decoupled 4-Dimensional Assessment & Calibrated ML Probability
+    feat_vector = [
+        layer1_result.ela_score,
+        float(layer1_result.anomalous_blocks_count),
+        layer1_result.wavelet_noise_score,
+        float(layer1_result.details.get("wavelet", {}).get("min_variance", 0.5)),
+        float(layer1_result.clone_count),
+        layer2_result.max_baseline_drift_px,
+        layer2_result.max_delta_e,
+        synergy.multiplier_factor - 1.0 if synergy.synergy_multiplier_applied else 0.0,
+        1.0 if layer3_result.clock_paradox_detected else 0.0,
+        1.0 if layer3_result.upi_utr_valid is False else 0.0,
+        1.0 if is_whatsapp else 0.0,
+    ]
+    dimensions, model_meta = ml_calibrated_service.compute_assessment_and_metadata(
+        l1_score=layer1_result.layer_score,
+        l2_score=layer2_result.layer_score,
+        l3_score=layer3_result.layer_score,
+        overall_score=overall_score,
+        width=w,
+        height=h,
+        is_whatsapp=is_whatsapp,
+        filename=filename,
+        feature_vector=feat_vector
+    )
+
     return ForensicAnalysisReport(
         file_sha256=sha256_hash,
         filename=filename,
@@ -257,4 +284,6 @@ def analyze_screenshot(
         original_image_b64=orig_b64,
         syndicate_intelligence=syndicate_intel,
         section91_notice=section91,
+        assessment_dimensions=dimensions,
+        model_metadata=model_meta,
     )

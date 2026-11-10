@@ -96,6 +96,26 @@ class ForensicFinding(BaseModel):
     metric_value: str
     bounding_box: BoundingBox | None = None
 
+class AssessmentDimensions(BaseModel):
+    image_integrity_score: float = Field(default=1.0, description="Physical pixel & frequency integrity (0.0 to 1.0)")
+    image_integrity_status: str = Field(default="INTACT", description="INTACT, COMPRESSION_NOISE, or TAMPER_DETECTED")
+    text_consistency_score: float = Field(default=1.0, description="Sub-pixel baseline & OCR geometry consistency (0.0 to 1.0)")
+    text_consistency_status: str = Field(default="CONSISTENT", description="CONSISTENT, SUBPIXEL_DRIFT, or GEOMETRIC_ANOMALY")
+    payment_verification_status: str = Field(default="INDEPENDENT_SOURCE_QUERY_REQUIRED", description="Financial gateway verification state")
+    payment_verification_details: str = Field(default="A digital screenshot cannot independently prove financial transfer. Independent bank/NPCI verification required.")
+    forensic_uncertainty_status: str = Field(default="HIGH_CONFIDENCE", description="HIGH_CONFIDENCE, MODERATE_UNCERTAINTY, or INCONCLUSIVE")
+    forensic_uncertainty_score: float = Field(default=0.05, description="Uncertainty index (0.0 low to 1.0 high)")
+    uncertainty_explanation: str = Field(default="Resolution and noise characteristics sufficient for algorithmic evaluation.")
+
+class ModelInferenceMetadata(BaseModel):
+    model_id: str = "verisight-fusion-gbdt-v1"
+    model_version: str = "1.2.0"
+    architecture: str = "HistGradientBoosting Decision Trees with Out-of-Fold Calibration"
+    calibration_status: str = "CALIBRATED_ISOTONIC_SIGMOID"
+    calibrated_probability: float | None = None
+    is_operational_triage_alert: bool = False
+    is_synthetic_benchmark: bool = False
+
 class ForensicAnalysisReport(BaseModel):
     file_sha256: str
     filename: str | None = "screenshot.png"
@@ -116,6 +136,24 @@ class ForensicAnalysisReport(BaseModel):
     original_image_b64: str
     syndicate_intelligence: dict[str, Any] | None = None
     section91_notice: str | None = None
+    assessment_dimensions: AssessmentDimensions = Field(default_factory=AssessmentDimensions)
+    model_metadata: ModelInferenceMetadata = Field(default_factory=ModelInferenceMetadata)
+
+class ModelStatusResponse(BaseModel):
+    active_model_id: str
+    active_model_version: str
+    architecture: str
+    calibration_status: str
+    promotion_status: str
+    available_models: list[dict[str, Any]]
+    ml_environment_ready: bool
+
+class BenchmarkRunResponse(BaseModel):
+    status: str
+    benchmark_dataset: str
+    sample_count: int
+    models_evaluated: list[str]
+    report: dict[str, Any]
 
 class DemoSampleMeta(BaseModel):
     id: str

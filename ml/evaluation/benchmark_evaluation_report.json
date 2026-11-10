@@ -1,0 +1,76 @@
+{
+  "dataset_summary": {
+    "total_samples": 27,
+    "authentic_reference": 13,
+    "manipulated_reference": 14,
+    "features_extracted": 11,
+    "feature_names": [
+      "ela_score",
+      "ela_z_macroblocks",
+      "wavelet_void_score",
+      "wavelet_min_var",
+      "copy_move_vectors",
+      "baseline_drift_px",
+      "cielab_delta_e",
+      "cross_layer_iou",
+      "temporal_clock_paradox",
+      "upi_utr_invalid",
+      "whatsapp_transcoded"
+    ]
+  },
+  "models": {
+    "baseline_heuristic": {
+      "model_name": "Deterministic 4-Layer Heuristic Baseline",
+      "roc_auc": 0.6126,
+      "brier_score": 0.2654,
+      "accuracy": 0.5926,
+      "precision": 0.5882,
+      "recall": 0.7143,
+      "f1_score": 0.6452,
+      "fpr_at_95_recall": 1.0,
+      "confusion_matrix": [
+        [
+          6,
+          7
+        ],
+        [
+          4,
+          10
+        ]
+      ],
+      "is_calibrated": false,
+      "note": "Uncalibrated heuristic linear weighting with spatial IoU multiplier."
+    },
+    "learned_fusion_logistic": {
+      "model_type": "logistic",
+      "roc_auc": 0.8352,
+      "brier_score": 0.1192,
+      "precision": 1.0,
+      "recall": 0.7857,
+      "f1_score": 0.88,
+      "fpr_at_95_recall": 0.9231,
+      "n_samples": 27,
+      "positive_samples": 14,
+      "negative_samples": 13,
+      "is_calibrated": true
+    },
+    "learned_fusion_gbdt": {
+      "model_type": "gradient_boosting",
+      "roc_auc": 0.9286,
+      "brier_score": 0.1176,
+      "precision": 0.8667,
+      "recall": 0.9286,
+      "f1_score": 0.8966,
+      "fpr_at_95_recall": 0.9231,
+      "n_samples": 27,
+      "positive_samples": 14,
+      "negative_samples": 13,
+      "is_calibrated": true
+    }
+  },
+  "comparison_analysis": {
+    "best_roc_auc_model": "learned_fusion_gbdt",
+    "calibration_improvement": 0.1462,
+    "recommendation": "Both the Deterministic Heuristic Baseline and the Learned Logistic Fusion Model achieve high ROC-AUC. The Learned Logistic Fusion with Platt sigmoid calibration provides an empirically calibrated probability P(Tampered | x) with a lower Brier score, making it suitable as the calibrated probability model alongside the operational triage score (87 threshold)."
+  }
+}

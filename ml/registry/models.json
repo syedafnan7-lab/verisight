@@ -1,0 +1,53 @@
+{
+  "active_production_model_id": "verisight-fusion-gbdt-v1",
+  "models": [
+    {
+      "model_id": "verisight-heuristic-baseline-v1",
+      "model_version": "1.0.0",
+      "architecture": "Deterministic Multi-Layer Heuristic with Spatial IoU",
+      "source_checkpoint": null,
+      "dataset_version": "v1.0-benchmark-27",
+      "evaluation_report_ref": "docs/BASELINE_RESULTS.md",
+      "calibration_status": "UNCALIBRATED_HEURISTIC",
+      "hardware_requirements": {
+        "min_ram_mb": 128,
+        "gpu_required": false
+      },
+      "license_information": "MIT / Project Owned",
+      "promotion_status": "VALIDATED_FALLBACK",
+      "registered_at": "2026-11-10T18:00:00Z"
+    },
+    {
+      "model_id": "verisight-fusion-logistic-v1",
+      "model_version": "1.1.0",
+      "architecture": "L2-Regularized Logistic Regression with Platt Sigmoid Calibration",
+      "source_checkpoint": "ml/checkpoints/verisight_fusion_logistic_v1.joblib",
+      "dataset_version": "v1.0-benchmark-27",
+      "evaluation_report_ref": "docs/MODEL_EVALUATION.md",
+      "calibration_status": "CALIBRATED_PLATT_SIGMOID",
+      "hardware_requirements": {
+        "min_ram_mb": 256,
+        "gpu_required": false
+      },
+      "license_information": "MIT / Project Owned",
+      "promotion_status": "VALIDATED",
+      "registered_at": "2026-11-11T01:49:00Z"
+    },
+    {
+      "model_id": "verisight-fusion-gbdt-v1",
+      "model_version": "1.2.0",
+      "architecture": "HistGradientBoosting Decision Trees with Out-of-Fold Calibration",
+      "source_checkpoint": "ml/checkpoints/verisight_fusion_gbdt_v1.joblib",
+      "dataset_version": "v1.0-benchmark-27",
+      "evaluation_report_ref": "docs/MODEL_EVALUATION.md",
+      "calibration_status": "CALIBRATED_ISOTONIC_SIGMOID",
+      "hardware_requirements": {
+        "min_ram_mb": 256,
+        "gpu_required": false
+      },
+      "license_information": "MIT / Project Owned",
+      "promotion_status": "PRODUCTION",
+      "registered_at": "2026-11-11T01:49:00Z"
+    }
+  ]
+}
