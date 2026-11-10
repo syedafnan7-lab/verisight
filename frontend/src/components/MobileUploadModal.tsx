@@ -8,6 +8,7 @@ import {
   Check,
   Radio,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import { NetworkInfo, ForensicAnalysisReport } from "../types/forensic";
 import { fetchNetworkInfo, fetchLatestMobileUpload } from "../services/api";
@@ -68,27 +69,26 @@ export const MobileUploadModal: React.FC<MobileUploadModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-[#0b1120] border border-[#1e293b] rounded-2xl w-full max-w-lg flex flex-col shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
+      <div className="watermelon-glass border border-white/[0.1] rounded-3xl w-full max-w-lg flex flex-col shadow-2xl overflow-hidden relative">
         {/* Header */}
-        <div className="h-14 px-6 border-b border-[#1e293b] bg-[#070b14] flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-7 h-7 rounded-lg bg-amber-950 border border-amber-600/50 flex items-center justify-center">
+        <div className="h-16 px-6 border-b border-white/[0.08] bg-slate-950/80 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/40 flex items-center justify-center">
               <QrCode className="w-4 h-4 text-amber-400" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm text-[#f1f5f9] tracking-wide">
-                Stage Judge Live Mobile Upload
+              <h3 className="font-bold text-sm text-white tracking-wide">
+                Stage Judge Wireless Mobile Upload
               </h3>
-              <p className="text-[11px] text-[#64748b]">
-                Real-time zero-cable screenshot analysis direct from smartphone
-                camera
+              <p className="text-[11px] text-slate-400">
+                Zero-cable live intake direct from judge smartphone camera
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#64748b] hover:text-[#f1f5f9] hover:bg-[#1e293b] transition-all"
+            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition-all"
           >
             <X className="w-4 h-4" />
           </button>
@@ -96,7 +96,7 @@ export const MobileUploadModal: React.FC<MobileUploadModalProps> = ({
 
         {/* QR Body */}
         <div className="p-6 flex flex-col items-center space-y-5">
-          <div className="p-4 bg-white rounded-2xl shadow-xl flex items-center justify-center border-4 border-amber-500/30">
+          <div className="p-4 bg-white rounded-2xl shadow-xl flex items-center justify-center border-4 border-amber-400/40">
             <QRCodeSVG
               value={mobileUrl}
               size={220}
@@ -106,48 +106,47 @@ export const MobileUploadModal: React.FC<MobileUploadModalProps> = ({
           </div>
 
           {/* Pulse Status */}
-          <div className="flex items-center space-x-2 text-xs font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-800/60 px-3 py-1.5 rounded-full">
-            <Radio className="w-3.5 h-3.5 animate-pulse" />
-            <span>LISTENING FOR STAGE JUDGE UPLOAD...</span>
+          <div className="flex items-center space-x-2 text-xs font-mono text-watermelon-mint bg-watermelon-emerald/15 border border-watermelon-emerald/40 px-3.5 py-1.5 rounded-full">
+            <Radio className="w-3.5 h-3.5 animate-pulse text-watermelon-emerald" />
+            <span className="font-semibold tracking-wider">LISTENING FOR WIRELESS MOBILE UPLOAD...</span>
           </div>
 
           {/* Direct URL */}
-          <div className="w-full bg-[#070b14] border border-[#1e293b] rounded-xl p-3 flex items-center justify-between">
-            <div className="flex items-center space-x-2 overflow-hidden">
+          <div className="w-full watermelon-glass-card rounded-2xl p-3 flex items-center justify-between">
+            <div className="flex items-center space-x-2.5 overflow-hidden">
               <Smartphone className="w-4 h-4 text-amber-400 shrink-0" />
-              <span className="font-mono text-xs text-[#94a3b8] truncate">
+              <span className="font-mono text-xs text-slate-300 truncate">
                 {mobileUrl}
               </span>
             </div>
             <button
               onClick={copyUrl}
-              className="p-1.5 rounded bg-[#1e293b] hover:bg-[#334155] text-sky-400 transition-all shrink-0 ml-2"
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-400 transition-all shrink-0 ml-2 border border-white/[0.06]"
               title="Copy mobile upload URL"
             >
               {copied ? (
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <Check className="w-4 h-4 text-watermelon-emerald" />
               ) : (
-                <Copy className="w-3.5 h-3.5" />
+                <Copy className="w-4 h-4" />
               )}
             </button>
           </div>
 
           {/* Instructions for HackStellar Judges */}
-          <div className="w-full text-[11px] text-[#64748b] space-y-1 text-center leading-relaxed">
+          <div className="w-full text-[11px] text-slate-400 space-y-1 text-center leading-relaxed font-mono">
             <p>1. Connect smartphone to the same Wi-Fi / Local Area Network.</p>
             <p>2. Scan QR with iOS Camera or Android Google Lens.</p>
-            <p>
-              3. Snap any UPI payment screenshot on your phone to trigger
-              instant 4-layer audit on this screen.
+            <p className="text-slate-300">
+              3. Snap any UPI screenshot to trigger instant 4-layer audit on this screen.
             </p>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="h-12 px-6 border-t border-[#1e293b] bg-[#070b14] flex items-center justify-end">
+        <div className="h-14 px-6 border-t border-white/[0.08] bg-slate-950/80 flex items-center justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-1.5 rounded-lg bg-[#1e293b] hover:bg-[#334155] text-xs font-medium text-[#f1f5f9] transition-all"
+            className="px-4 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-xs font-semibold text-slate-300 transition-all"
           >
             Close
           </button>

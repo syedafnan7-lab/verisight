@@ -3,37 +3,74 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    color-scheme: dark;
+  }
+
   body {
-    background-color: #070b14;
-    color: #f1f5f9;
+    background-color: #080c16;
+    color: #f8fafc;
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
   }
 }
 
-/* Custom workbench scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #0b1120;
-}
-::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+/* Watermelon Glassmorphism & Surface Utilities */
+.watermelon-glass {
+  background: rgba(13, 21, 39, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.07);
 }
 
-/* Glowing laser animations */
+.watermelon-glass-card {
+  background: linear-gradient(135deg, rgba(16, 26, 48, 0.7) 0%, rgba(10, 16, 30, 0.8) 100%);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.07), 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.watermelon-glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12), 0 8px 30px -4px rgba(0, 0, 0, 0.6);
+  transform: translateY(-1px);
+}
+
+/* Subtle Watermelon Ambient Glows */
+.ambient-glow-emerald {
+  background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.07) 0%, transparent 60%);
+}
+
+.ambient-glow-coral {
+  background: radial-gradient(circle at 50% 0%, rgba(244, 63, 94, 0.08) 0%, transparent 60%);
+}
+
+/* Custom Watermelon Workbench Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(8, 12, 22, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+/* Glowing Laser Animations for Typographic Baseline Alignment */
 @keyframes laserPulse {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 2px #f43f5e) drop-shadow(0 0 6px #f43f5e);
+  0%, 100% {
+    filter: drop-shadow(0 0 2px #f43f5e) drop-shadow(0 0 8px #f43f5e);
     stroke-opacity: 0.9;
   }
   50% {
-    filter: drop-shadow(0 0 5px #f43f5e) drop-shadow(0 0 12px #f43f5e);
+    filter: drop-shadow(0 0 6px #f43f5e) drop-shadow(0 0 16px #f43f5e);
     stroke-opacity: 1;
   }
 }
@@ -43,13 +80,12 @@
 }
 
 @keyframes cyanGlow {
-  0%,
-  100% {
+  0%, 100% {
     filter: drop-shadow(0 0 2px #38bdf8);
     stroke-opacity: 0.7;
   }
   50% {
-    filter: drop-shadow(0 0 5px #38bdf8);
+    filter: drop-shadow(0 0 6px #38bdf8);
     stroke-opacity: 0.95;
   }
 }

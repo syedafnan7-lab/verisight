@@ -49,27 +49,34 @@ export const ForensicReportModal: React.FC<ForensicReportModalProps> = ({
   const caseId = `VS-CASE-${file_sha256.slice(0, 8).toUpperCase()}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-[#0b1120] border border-[#1e293b] rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden print:m-0 print:p-0 print:border-none print:shadow-none print:max-h-full print:w-full print:bg-white print:text-black">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-in fade-in duration-200">
+      <div className="watermelon-glass border border-white/[0.1] rounded-3xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden print:m-0 print:p-0 print:border-none print:shadow-none print:max-h-full print:w-full print:bg-white print:text-black">
         {/* Top Modal Controls (Hidden in Print) */}
-        <div className="h-14 px-6 border-b border-[#1e293b] bg-[#070b14] flex items-center justify-between no-print">
-          <div className="flex items-center space-x-2">
-            <FileCheck className="w-5 h-5 text-sky-400" />
-            <span className="font-semibold text-sm text-[#f1f5f9]">
-              Printable Forensic Audit Dossier
-            </span>
+        <div className="h-16 px-6 border-b border-white/[0.08] bg-slate-950/80 flex items-center justify-between no-print">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-8 h-8 rounded-xl bg-sky-500/15 border border-sky-500/40 flex items-center justify-center">
+              <FileCheck className="w-4 h-4 text-sky-400" />
+            </div>
+            <div>
+              <span className="font-bold text-sm text-white block">
+                ISO/IEC 27037 Forensic Audit Dossier
+              </span>
+              <span className="text-[11px] font-mono text-slate-400">
+                Official Evidentiary Certificate // VeriSight Core
+              </span>
+            </div>
           </div>
           <div className="flex items-center space-x-2">
             <button
               onClick={handlePrint}
-              className="px-3.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-xs font-semibold text-white transition-all flex items-center space-x-1.5 shadow-md shadow-sky-600/20"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-watermelon-coral to-watermelon-crimson hover:from-watermelon-rose hover:to-watermelon-coral text-xs font-semibold text-white transition-all flex items-center space-x-2 shadow-lg shadow-watermelon-coral/25"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>Print / Save as PDF</span>
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-[#64748b] hover:text-[#f1f5f9] hover:bg-[#1e293b] transition-all"
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition-all"
             >
               <X className="w-4 h-4" />
             </button>
@@ -79,36 +86,35 @@ export const ForensicReportModal: React.FC<ForensicReportModalProps> = ({
         {/* Printable Report Document */}
         <div className="flex-1 overflow-y-auto p-8 font-sans space-y-6 print:p-0 print:text-black print:overflow-visible">
           {/* Document Header */}
-          <div className="border-b-2 border-[#1e293b] print:border-black pb-4 flex items-start justify-between">
+          <div className="border-b-2 border-white/[0.1] print:border-black pb-4 flex items-start justify-between">
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-bold text-xl tracking-wider text-[#f1f5f9] print:text-black">
+                <span className="font-bold text-xl tracking-wider text-white print:text-black">
                   VERISIGHT FORENSIC AUDIT DOSSIER
                 </span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800 print:border-black print:bg-gray-100 print:text-black">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-sky-950 text-sky-300 border border-sky-800 print:border-black print:bg-gray-100 print:text-black">
                   OFFICIAL AUDIT REPORT
                 </span>
               </div>
-              <p className="text-xs text-[#94a3b8] print:text-gray-600 mt-1">
-                Multi-Layer Digital Screenshot Verification & Splicing
-                Investigation Platform
+              <p className="text-xs text-slate-400 print:text-gray-600 mt-1">
+                Multi-Layer Digital Screenshot Verification & Splicing Investigation Platform
               </p>
             </div>
-            <div className="text-right font-mono text-[11px] text-[#94a3b8] print:text-gray-700 space-y-0.5">
+            <div className="text-right font-mono text-[11px] text-slate-400 print:text-gray-700 space-y-0.5">
               <div>
-                <strong className="text-[#f1f5f9] print:text-black">
+                <strong className="text-white print:text-black">
                   Case Reference:
                 </strong>{" "}
                 {caseId}
               </div>
               <div>
-                <strong className="text-[#f1f5f9] print:text-black">
+                <strong className="text-white print:text-black">
                   Timestamp:
                 </strong>{" "}
                 {timestamp}
               </div>
               <div>
-                <strong className="text-[#f1f5f9] print:text-black">
+                <strong className="text-white print:text-black">
                   Standard:
                 </strong>{" "}
                 ISO/IEC 27037 Digital Evidence
@@ -118,186 +124,248 @@ export const ForensicReportModal: React.FC<ForensicReportModalProps> = ({
 
           {/* Section 1: Executive Verdict & SHA-256 Integrity */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl border border-[#1e293b] print:border-gray-300 bg-[#070b14] print:bg-gray-50 space-y-2">
-              <span className="text-[10px] font-mono text-[#64748b] print:text-gray-500 uppercase tracking-wider">
+            <div className="p-4 rounded-2xl border border-white/[0.08] print:border-gray-300 bg-slate-950/60 print:bg-gray-50 space-y-2">
+              <span className="text-[10px] font-mono text-slate-500 print:text-gray-500 uppercase tracking-wider">
                 Investigative Determination
               </span>
               <div className="text-xl font-bold font-mono tracking-wide">
                 <span
                   className={
                     verdict === "AUTHENTIC_VERIFIED"
-                      ? "text-emerald-400 print:text-emerald-700"
+                      ? "text-watermelon-mint print:text-emerald-700"
                       : verdict === "SUSPICIOUS_ANOMALIES"
                         ? "text-amber-400 print:text-amber-700"
-                        : "text-rose-400 print:text-rose-700"
+                        : "text-watermelon-rose print:text-rose-700"
                   }
                 >
                   {verdict.replace(/_/g, " ")}
                 </span>
               </div>
-              <div className="text-xs text-[#94a3b8] print:text-gray-700">
+              <div className="text-xs text-slate-400 print:text-gray-700">
                 Overall Tamper Score:{" "}
                 <strong>{overall_tamper_score.toFixed(1)}%</strong> | Calibrated
                 Confidence: <strong>{confidence_score.toFixed(1)}%</strong>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl border border-[#1e293b] print:border-gray-300 bg-[#070b14] print:bg-gray-50 space-y-1.5 font-mono text-xs">
-              <span className="text-[10px] text-[#64748b] print:text-gray-500 uppercase tracking-wider block">
+            <div className="p-4 rounded-2xl border border-white/[0.08] print:border-gray-300 bg-slate-950/60 print:bg-gray-50 space-y-1.5 font-mono text-xs">
+              <span className="text-[10px] text-slate-500 print:text-gray-500 uppercase tracking-wider block">
                 Evidence Custody Hashes
               </span>
               <div
-                className="truncate text-[#94a3b8] print:text-gray-700"
+                className="truncate text-slate-300 print:text-gray-700"
                 title={file_sha256}
               >
-                SHA-256: <strong>{file_sha256}</strong>
+                SHA-256: {file_sha256}
               </div>
-              <div className="text-[#94a3b8] print:text-gray-700">
-                Filename: <strong>{filename || "screenshot.png"}</strong>
+              <div className="text-slate-400 print:text-gray-600">
+                Resolution: {image_width} × {image_height} | Target Viewport:{" "}
+                {layer3.viewport_aspect_ratio}
               </div>
-              <div className="text-[#94a3b8] print:text-gray-700">
-                Dimensions:{" "}
-                <strong>
-                  {image_width} x {image_height}
-                </strong>{" "}
-                ({layer3.viewport_aspect_ratio})
-              </div>
-              <div className="text-[#94a3b8] print:text-gray-700">
-                Inferred Carrier: <strong>{channel_detected}</strong>
+              <div className="text-slate-400 print:text-gray-600">
+                Channel Claim: {channel_detected}
               </div>
             </div>
           </div>
 
-          {/* Section 2: 4-Layer Evidentiary Matrix */}
-          <div className="space-y-2">
-            <h4 className="font-bold text-xs uppercase font-mono tracking-wider text-[#94a3b8] print:text-gray-700">
-              4-Layer Forensic Measurement Breakdown
+          {/* Section 2: 4-Layer Mathematical Forensic Breakdown */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-mono font-bold tracking-wider uppercase text-slate-400 print:text-black border-b border-white/[0.08] print:border-gray-300 pb-1">
+              4-Layer Forensic Engine Evaluation
             </h4>
-            <div className="border border-[#1e293b] print:border-gray-300 rounded-xl overflow-hidden">
-              <table className="w-full text-left text-xs font-mono">
-                <thead className="bg-[#070b14] print:bg-gray-200 border-b border-[#1e293b] print:border-gray-300 text-[#64748b] print:text-black">
-                  <tr>
-                    <th className="p-2.5">Layer</th>
-                    <th className="p-2.5">Forensic Domain</th>
-                    <th className="p-2.5">Key Deterministic Metrics</th>
-                    <th className="p-2.5 text-right">Risk Score</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#1e293b] print:divide-gray-300 text-[#94a3b8] print:text-gray-800">
-                  <tr>
-                    <td className="p-2.5 font-bold text-sky-400 print:text-black">
-                      L1
-                    </td>
-                    <td className="p-2.5 text-[#f1f5f9] print:text-black font-semibold">
-                      Physical Signal & Wavelet Noise
-                    </td>
-                    <td className="p-2.5">
-                      ELA Score: {layer1.ela_score.toFixed(1)}% | Wavelet db4
-                      Noise: {layer1.wavelet_noise_score.toFixed(1)}% | Clones:{" "}
-                      {layer1.clone_count}
-                    </td>
-                    <td className="p-2.5 text-right font-bold text-sky-400 print:text-black">
-                      {layer1.layer_score.toFixed(1)}%
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="p-2.5 font-bold text-rose-400 print:text-black">
-                      L2
-                    </td>
-                    <td className="p-2.5 text-[#f1f5f9] print:text-black font-semibold">
-                      Typography & Geometry
-                    </td>
-                    <td className="p-2.5">
-                      Max Laser Drift: +
-                      {layer2.max_baseline_drift_px.toFixed(1)}px | CIELAB ΔE:{" "}
-                      {layer2.max_delta_e.toFixed(1)} | Rows Audited:{" "}
-                      {layer2.lasers.length}
-                    </td>
-                    <td className="p-2.5 text-right font-bold text-rose-400 print:text-black">
-                      {layer2.layer_score.toFixed(1)}%
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="p-2.5 font-bold text-purple-400 print:text-black">
-                      L3
-                    </td>
-                    <td className="p-2.5 text-[#f1f5f9] print:text-black font-semibold">
-                      Metadata & Protocol Rules
-                    </td>
-                    <td className="p-2.5">
-                      Viewport Match:{" "}
-                      {layer3.is_non_native_viewport ? "Non-Native" : "Native"}{" "}
-                      | Temporal Paradox:{" "}
-                      {layer3.clock_paradox_detected ? "DRIFT DETECTED" : "OK"}{" "}
-                      | UPI UTR:{" "}
-                      {layer3.upi_utr_valid === false ? "INVALID" : "VALID"}
-                    </td>
-                    <td className="p-2.5 text-right font-bold text-purple-400 print:text-black">
-                      {layer3.layer_score.toFixed(1)}%
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="p-2.5 font-bold text-amber-400 print:text-black">
-                      L4
-                    </td>
-                    <td className="p-2.5 text-[#f1f5f9] print:text-black font-semibold">
-                      Spatial Ensemble Synergy
-                    </td>
-                    <td className="p-2.5">
-                      Multiplier:{" "}
-                      {synergy.synergy_multiplier_applied
-                        ? `Active (x${synergy.multiplier_factor})`
-                        : "1.0x (No Spatial Overlap)"}
-                    </td>
-                    <td className="p-2.5 text-right font-bold text-amber-400 print:text-black">
-                      {layer4.layer_score.toFixed(1)}%
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+            <div className="grid grid-cols-4 gap-3 text-xs">
+              <div className="p-3 rounded-xl border border-white/[0.08] print:border-gray-300 bg-slate-950/40 print:bg-white space-y-1">
+                <span className="text-[10px] font-mono text-slate-500 block">
+                  LAYER 1: SIGNAL & NOISE
+                </span>
+                <div className="text-base font-bold font-mono text-sky-400 print:text-black">
+                  {layer1.layer_score.toFixed(1)}%
+                </div>
+                <div className="text-[10px] font-mono text-slate-400 space-y-0.5">
+                  <div>ELA: {layer1.ela_score.toFixed(1)}%</div>
+                  <div>Wavelet: {layer1.wavelet_noise_score.toFixed(1)}%</div>
+                  <div>Clones: {layer1.clone_count}</div>
+                </div>
+              </div>
 
-          {/* Section 3: Itemized Findings Log */}
-          <div className="space-y-2">
-            <h4 className="font-bold text-xs uppercase font-mono tracking-wider text-[#94a3b8] print:text-gray-700">
-              Itemized Evidence Log ({findings.length} findings)
-            </h4>
-            <div className="space-y-2">
-              {findings.map((f, idx) => (
-                <div
-                  key={`finding-${idx}`}
-                  className="p-3 rounded-lg border border-[#1e293b] print:border-gray-300 bg-[#070b14] print:bg-white text-xs space-y-1"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-[#f1f5f9] print:text-black">
-                      {idx + 1}. {f.title}
-                    </span>
-                    <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#1e293b] print:bg-gray-200 text-sky-400 print:text-black">
-                      {f.severity} // L{f.layer}
-                    </span>
+              <div className="p-3 rounded-xl border border-white/[0.08] print:border-gray-300 bg-slate-950/40 print:bg-white space-y-1">
+                <span className="text-[10px] font-mono text-slate-500 block">
+                  LAYER 2: TYPOGRAPHY & OCR
+                </span>
+                <div className="text-base font-bold font-mono text-watermelon-coral print:text-black">
+                  {layer2.layer_score.toFixed(1)}%
+                </div>
+                <div className="text-[10px] font-mono text-slate-400 space-y-0.5">
+                  <div>Drift: +{layer2.max_baseline_drift_px.toFixed(1)}px</div>
+                  <div>CIELAB ΔE: {layer2.max_delta_e.toFixed(1)}</div>
+                  <div>Lasers: {layer2.lasers.length} tracks</div>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl border border-white/[0.08] print:border-gray-300 bg-slate-950/40 print:bg-white space-y-1">
+                <span className="text-[10px] font-mono text-slate-500 block">
+                  LAYER 3: METADATA & PROTOCOL
+                </span>
+                <div className="text-base font-bold font-mono text-watermelon-purple print:text-black">
+                  {layer3.layer_score.toFixed(1)}%
+                </div>
+                <div className="text-[10px] font-mono text-slate-400 space-y-0.5">
+                  <div>UTR Check: {layer3.upi_utr_valid ? "VALID" : "INVALID"}</div>
+                  <div>
+                    Clock: {layer3.clock_paradox_detected ? "PARADOX" : "OK"}
                   </div>
-                  <p className="text-[#94a3b8] print:text-gray-700">
-                    {f.description}
-                  </p>
-                  <div className="font-mono text-[10px] text-[#64748b] print:text-gray-500">
-                    Metric: {f.metric_name} = {f.metric_value}
+                  <div>Laundered: {layer3.is_whatsapp_laundered ? "YES" : "NO"}</div>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl border border-white/[0.08] print:border-gray-300 bg-slate-950/40 print:bg-white space-y-1">
+                <span className="text-[10px] font-mono text-slate-500 block">
+                  LAYER 4: ENSEMBLE FUSION
+                </span>
+                <div className="text-base font-bold font-mono text-amber-400 print:text-black">
+                  {layer4.layer_score.toFixed(1)}%
+                </div>
+                <div className="text-[10px] font-mono text-slate-400 space-y-0.5">
+                  <div>
+                    Synergy:{" "}
+                    {synergy.synergy_multiplier_applied
+                      ? `x${synergy.multiplier_factor}`
+                      : "NONE"}
+                  </div>
+                  <div>
+                    VLM: {layer4.vlm_used ? layer4.vlm_provider : "OFFLINE"}
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
 
-          {/* Section 4: Legal & Scientific Disclaimer */}
-          <div className="p-3.5 rounded-xl border border-[#1e293b] print:border-gray-300 bg-[#070b14] print:bg-gray-100 text-[11px] text-[#64748b] print:text-gray-600 leading-relaxed">
-            <strong>Scientific & Evidentiary Disclaimer:</strong> VeriSight
-            produces deterministic, mathematically reproducible forensic
-            indicators across pixel signal distributions, sub-pixel typography
-            alignment, and metadata consistency. However, digital image analysis
-            alone cannot definitively confirm or deny whether a financial
-            transaction occurred on the banking settlement network. This dossier
-            constitutes technical investigative assistance and should be
-            cross-referenced with bank core ledger records.
+          {/* Section 3: Cross-Layer Spatial IoU Synergy */}
+          {synergy.synergy_multiplier_applied && (
+            <div className="p-3 rounded-xl border border-amber-500/40 bg-amber-950/20 print:bg-amber-50 text-xs">
+              <strong className="text-amber-400 print:text-amber-800 font-mono block mb-1">
+                Cross-Layer Spatial IoU Synergy Alert (x
+                {synergy.multiplier_factor} Multiplier Applied):
+              </strong>
+              <p className="text-amber-200/90 print:text-gray-800 leading-relaxed">
+                {synergy.synergy_explanation}
+              </p>
+            </div>
+          )}
+
+          {/* Section 4: Primary Evidence Exhibits */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-mono font-bold tracking-wider uppercase text-slate-400 print:text-black border-b border-white/[0.08] print:border-gray-300 pb-1">
+              Primary Visual Forensic Exhibits
+            </h4>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="border border-white/[0.08] print:border-gray-300 rounded-xl p-2 bg-slate-950/40 print:bg-white text-center">
+                <span className="text-[10px] font-mono text-slate-400 print:text-gray-600 block mb-1.5">
+                  Exhibit A: Original Capture
+                </span>
+                <img
+                  src={report.original_image_b64}
+                  alt="Exhibit A"
+                  className="max-h-48 mx-auto object-contain rounded-lg"
+                />
+              </div>
+
+              <div className="border border-white/[0.08] print:border-gray-300 rounded-xl p-2 bg-slate-950/40 print:bg-white text-center">
+                <span className="text-[10px] font-mono text-slate-400 print:text-gray-600 block mb-1.5">
+                  Exhibit B: ELA Heatmap
+                </span>
+                <img
+                  src={layer1.ela_b64}
+                  alt="Exhibit B"
+                  className="max-h-48 mx-auto object-contain rounded-lg"
+                />
+              </div>
+
+              <div className="border border-white/[0.08] print:border-gray-300 rounded-xl p-2 bg-slate-950/40 print:bg-white text-center">
+                <span className="text-[10px] font-mono text-slate-400 print:text-gray-600 block mb-1.5">
+                  Exhibit C: Wavelet db4 Noise
+                </span>
+                <img
+                  src={layer1.wavelet_noise_b64}
+                  alt="Exhibit C"
+                  className="max-h-48 mx-auto object-contain rounded-lg"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 5: Specific Findings Table */}
+          <div className="space-y-2">
+            <h4 className="text-xs font-mono font-bold tracking-wider uppercase text-slate-400 print:text-black border-b border-white/[0.08] print:border-gray-300 pb-1">
+              Evidentiary Findings Log ({findings.length} Items)
+            </h4>
+            <table className="w-full text-left text-xs font-mono border border-white/[0.08] print:border-gray-300 rounded-xl overflow-hidden">
+              <thead className="bg-slate-950 print:bg-gray-100 text-slate-400 print:text-gray-700">
+                <tr>
+                  <th className="p-2 border-b border-white/[0.08] print:border-gray-300">
+                    Severity
+                  </th>
+                  <th className="p-2 border-b border-white/[0.08] print:border-gray-300">
+                    Layer
+                  </th>
+                  <th className="p-2 border-b border-white/[0.08] print:border-gray-300">
+                    Observation
+                  </th>
+                  <th className="p-2 border-b border-white/[0.08] print:border-gray-300">
+                    Metric Value
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/[0.04] print:divide-gray-200">
+                {findings.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={4}
+                      className="p-3 text-center text-slate-500 print:text-gray-500"
+                    >
+                      No suspicious anomalies or tampering signatures detected.
+                    </td>
+                  </tr>
+                ) : (
+                  findings.map((f) => (
+                    <tr key={f.id} className="text-[11px]">
+                      <td className="p-2 font-bold">
+                        <span
+                          className={
+                            f.severity === "CRITICAL"
+                              ? "text-watermelon-rose print:text-rose-700"
+                              : f.severity === "HIGH"
+                                ? "text-orange-400 print:text-orange-700"
+                                : "text-amber-400 print:text-amber-700"
+                          }
+                        >
+                          {f.severity}
+                        </span>
+                      </td>
+                      <td className="p-2 text-slate-400 print:text-gray-600">
+                        L{f.layer}
+                      </td>
+                      <td className="p-2 text-slate-200 print:text-black">
+                        <strong>{f.title}:</strong> {f.description}
+                      </td>
+                      <td className="p-2 text-sky-400 print:text-black">
+                        {f.metric_name}: {f.metric_value}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Section 6: Legal & Forensic Certification */}
+          <div className="pt-4 border-t-2 border-white/[0.1] print:border-black text-[10px] text-slate-500 print:text-gray-600 space-y-1">
+            <p>
+              <strong>Forensic Methodological Disclosure:</strong> This document was generated automatically by the VeriSight Multi-Layer Forensic Verification Pipeline utilizing deterministic signal processing (Multi-scale ELA, Daubechies db4 Wavelet Residuals, ORB keypoint tracking), geometric baseline linear regression, and container metadata verification.
+            </p>
+            <p>
+              <strong>Evidentiary Limitations:</strong> This report identifies visual, signal, and geometric alterations. In accordance with ISO/IEC 27037:2012, digital image analysis does not confirm bank ledger movement or financial settlement.
+            </p>
           </div>
         </div>
       </div>

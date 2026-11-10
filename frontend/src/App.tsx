@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { TopCommandBar } from "./components/TopCommandBar";
 import { ForensicViewer } from "./components/ForensicViewer";
 import { RiskDossierSidebar } from "./components/RiskDossierSidebar";
+import { BentoCaseDashboard } from "./components/BentoCaseDashboard";
 import { WhatsAppSimulatorModal } from "./components/WhatsAppSimulatorModal";
 import { MobileUploadModal } from "./components/MobileUploadModal";
 import { MobileUploadView } from "./components/MobileUploadView";
 import { ForensicReportModal } from "./components/ForensicReportModal";
+import { UploadCloud } from "lucide-react";
 import {
   ForensicAnalysisReport,
   DemoSampleMeta,
@@ -28,6 +30,11 @@ export const App: React.FC = () => {
     return <MobileUploadView />;
   }
 
+  // Active view: Bento Dashboard or Deep Inspector
+  const [activeView, setActiveView] = useState<"DASHBOARD" | "INSPECTOR">(
+    "DASHBOARD",
+  );
+
   // Desktop Workbench State
   const [demoSamples, setDemoSamples] = useState<DemoSampleMeta[]>([]);
   const [selectedSampleId, setSelectedSampleId] = useState<string | null>(
@@ -36,6 +43,7 @@ export const App: React.FC = () => {
   const [report, setReport] = useState<ForensicAnalysisReport | null>(null);
   const [selectedLocus, setSelectedLocus] = useState<BoundingBox | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   // Modals state
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] =
@@ -91,6 +99,37 @@ export const App: React.FC = () => {
     }
   };
 
+  // Drag and drop handlers
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileUpload(e.dataTransfer.files[0]);
+    }
+  };
+
+  // Switch to Deep Inspector and focus locus
+  const handleSwitchToInspector = (locus?: BoundingBox) => {
+    if (locus) {
+      setSelectedLocus(locus);
+    }
+    setActiveView("INSPECTOR");
+  };
+
   // Handle WhatsApp simulation on current screenshot
   const handleTriggerWhatsAppSimulation = async () => {
     if (!report) return;
@@ -98,7 +137,6 @@ export const App: React.FC = () => {
     setIsWhatsAppLoading(true);
 
     try {
-      // Convert base64 original to blob
       const base64Data =
         report.original_image_b64.split(",")[1] || report.original_image_b64;
       const byteCharacters = atob(base64Data);
@@ -126,10 +164,31 @@ export const App: React.FC = () => {
     setSelectedSampleId(null);
     setSelectedLocus(null);
     setReport(newReport);
+    setActiveView("DASHBOARD");
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-[#070b14] overflow-hidden">
+    <div
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className="h-screen w-screen flex flex-col bg-[#080c16] overflow-hidden relative"
+    >
+      {/* Global Drag-and-Drop Overlay */}
+      {isDragging && (
+        <div className="absolute inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-8 border-4 border-dashed border-watermelon-coral animate-in fade-in duration-150">
+          <div className="w-20 h-20 rounded-3xl bg-watermelon-coral/15 border border-watermelon-coral/40 flex items-center justify-center mb-4">
+            <UploadCloud className="w-10 h-10 text-watermelon-coral animate-bounce" />
+          </div>
+          <h2 className="text-xl font-bold text-white tracking-wide">
+            Drop Forensic Screenshot to Inspect
+          </h2>
+          <p className="text-xs font-mono text-slate-400 mt-2">
+            Auto-executes 4-Layer Signal, OCR Baseline Lasers & Viewport Audit
+          </p>
+        </div>
+      )}
+
       {/* Top Command Bar */}
       <TopCommandBar
         demoSamples={demoSamples}
@@ -140,16 +199,32 @@ export const App: React.FC = () => {
         onOpenMobileModal={() => setIsMobileModalOpen(true)}
         onOpenReportModal={() => setIsReportModalOpen(true)}
         isLoading={isLoading}
+        activeView={activeView}
+        onViewChange={(v) => setActiveView(v)}
       />
 
-      {/* Main Workspace: Central Multi-Spectral Viewer + Right Risk Dossier */}
-      <div className="flex-1 flex overflow-hidden">
-        <ForensicViewer report={report} selectedLocus={selectedLocus} />
-        <RiskDossierSidebar
-          report={report}
-          selectedLocus={selectedLocus}
-          onSelectLocus={(box) => setSelectedLocus(box)}
-        />
+      {/* Main Content Area */}
+      <div className="flex-1 flex overflow-hidden relative">
+        {activeView === "DASHBOARD" ? (
+          /* Bento Intelligence Dashboard View */
+          <BentoCaseDashboard
+            report={report}
+            onSwitchToInspector={handleSwitchToInspector}
+            onOpenWhatsAppModal={handleTriggerWhatsAppSimulation}
+            onOpenReportModal={() => setIsReportModalOpen(true)}
+            onOpenMobileModal={() => setIsMobileModalOpen(true)}
+          />
+        ) : (
+          /* Deep Inspector Workbench: Central Multi-Spectral Viewer + Right Risk Dossier */
+          <div className="flex-1 flex overflow-hidden w-full">
+            <ForensicViewer report={report} selectedLocus={selectedLocus} />
+            <RiskDossierSidebar
+              report={report}
+              selectedLocus={selectedLocus}
+              onSelectLocus={(box) => setSelectedLocus(box)}
+            />
+          </div>
+        )}
       </div>
 
       {/* Modals */}
@@ -158,7 +233,10 @@ export const App: React.FC = () => {
         onClose={() => setIsWhatsAppModalOpen(false)}
         simulationData={whatsAppData}
         isLoading={isWhatsAppLoading}
-        onApplyLaunderedImage={(newReport) => setReport(newReport)}
+        onApplyLaunderedImage={(newReport) => {
+          setReport(newReport);
+          setActiveView("DASHBOARD");
+        }}
       />
 
       <MobileUploadModal

@@ -10,6 +10,11 @@ import {
   Sliders,
   Crosshair,
   Maximize2,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  Sparkles,
+  Info,
 } from "lucide-react";
 import {
   ForensicAnalysisReport,
@@ -24,7 +29,12 @@ interface ForensicViewerProps {
 }
 
 export type ViewMode =
-  "ORIGINAL" | "ELA" | "WAVELET" | "COPY_MOVE" | "LOUPE" | "QUAD";
+  | "ORIGINAL"
+  | "ELA"
+  | "WAVELET"
+  | "COPY_MOVE"
+  | "LOUPE"
+  | "QUAD";
 
 export const ForensicViewer: React.FC<ForensicViewerProps> = ({
   report,
@@ -34,24 +44,32 @@ export const ForensicViewer: React.FC<ForensicViewerProps> = ({
   const [showLasers, setShowLasers] = useState<boolean>(true);
   const [showBoxes, setShowBoxes] = useState<boolean>(true);
   const [showGrid, setShowGrid] = useState<boolean>(false);
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [splitPos, setSplitPos] = useState<number>(50);
 
   // Loupe tracking state
   const [loupePos, setLoupePos] = useState<{ x: number; y: number }>({
     x: 50,
     y: 50,
   });
+  const [pixelCoords, setPixelCoords] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   if (!report) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-[#070b14] text-[#64748b]">
-        <Layers className="w-12 h-12 mb-3 stroke-[1.5] text-sky-500/40 animate-pulse" />
-        <p className="text-sm font-mono tracking-wider">
-          AWAITING SCREENSHOT EVIDENCE INPUT
-        </p>
-        <p className="text-xs text-[#475569] mt-1">
-          Select a golden sample above or upload custom screenshot
+      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-500 bg-[#080c16]">
+        <div className="w-16 h-16 rounded-2xl bg-slate-900/80 border border-white/10 flex items-center justify-center mb-4">
+          <Layers className="w-8 h-8 text-sky-400/60 animate-pulse" />
+        </div>
+        <h3 className="text-sm font-semibold font-mono text-slate-300">
+          AWAITING EVIDENCE INPUT
+        </h3>
+        <p className="text-xs text-slate-500 mt-1 max-w-sm">
+          Select a sample above or drop an image anywhere to begin forensic signal & geometry analysis.
         </p>
       </div>
     );
@@ -66,22 +84,22 @@ export const ForensicViewer: React.FC<ForensicViewerProps> = ({
     all_bounding_boxes,
   } = report;
 
-  // Active channel image selection
+  // Active layer image selection
   let currentLayerImg = original_image_b64;
-  let layerLabel = "Original Image";
+  let layerLabel = "Original Evidence Capture";
 
   if (viewMode === "ELA") {
     currentLayerImg = layer1.ela_b64;
-    layerLabel = "Error Level Analysis (Inferno)";
+    layerLabel = "Multi-Scale Error Level Analysis (Inferno)";
   } else if (viewMode === "WAVELET") {
     currentLayerImg = layer1.wavelet_noise_b64;
-    layerLabel = "Daubechies db4 Wavelet Noise Residual";
+    layerLabel = "Daubechies db4 Wavelet High-Pass Noise Residual";
   } else if (viewMode === "COPY_MOVE") {
     currentLayerImg = layer1.clone_b64;
-    layerLabel = "ORB Keypoint Copy-Move Vectors";
+    layerLabel = "ORB Keypoint Duplicate Copy-Move Vectors";
   }
 
-  // Mouse move handler for synchronized loupe
+  // Mouse move handler for synchronized loupe and coordinates
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
@@ -94,135 +112,173 @@ export const ForensicViewer: React.FC<ForensicViewerProps> = ({
       Math.min(100, ((e.clientY - rect.top) / rect.height) * 100),
     );
     setLoupePos({ x: xPct, y: yPct });
+
+    const pxX = Math.round((xPct / 100) * image_width);
+    const pxY = Math.round((yPct / 100) * image_height);
+    setPixelCoords({ x: pxX, y: pxY });
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#070b14] overflow-hidden relative">
-      {/* Top Toolbar: View Mode Tabs + Overlay Toggles */}
-      <div className="h-12 border-b border-[#1e293b] bg-[#0b1120] px-4 flex items-center justify-between text-xs">
-        {/* Spectral Tabs */}
-        <div className="flex items-center space-x-1">
+    <div className="flex-1 flex flex-col h-full bg-[#080c16] overflow-hidden relative">
+      {/* Top Floating Controls Bar */}
+      <div className="h-13 border-b border-white/[0.08] watermelon-glass px-4 py-2 flex items-center justify-between text-xs z-10">
+        {/* Spectral Mode Tabs */}
+        <div className="flex items-center space-x-1 bg-slate-950/80 p-1 rounded-xl border border-white/[0.08]">
           <button
             onClick={() => setViewMode("ORIGINAL")}
-            className={`px-3 py-1.5 rounded font-medium flex items-center space-x-1.5 transition-all ${
+            className={`px-3 py-1.5 rounded-lg font-medium flex items-center space-x-1.5 transition-all ${
               viewMode === "ORIGINAL"
-                ? "bg-sky-600 text-white shadow-sm"
-                : "text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#1e293b]"
+                ? "bg-slate-800 text-white shadow-sm font-semibold border border-white/10"
+                : "text-slate-400 hover:text-white"
             }`}
           >
-            <Eye className="w-3.5 h-3.5" />
+            <Eye className="w-3.5 h-3.5 text-slate-300" />
             <span>ORIGINAL</span>
           </button>
 
           <button
             onClick={() => setViewMode("ELA")}
-            className={`px-3 py-1.5 rounded font-medium flex items-center space-x-1.5 transition-all ${
+            className={`px-3 py-1.5 rounded-lg font-medium flex items-center space-x-1.5 transition-all ${
               viewMode === "ELA"
-                ? "bg-amber-600 text-white shadow-sm"
-                : "text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#1e293b]"
+                ? "bg-amber-950/80 text-amber-300 border border-amber-600/50 shadow-sm font-semibold"
+                : "text-slate-400 hover:text-white"
             }`}
           >
-            <Activity className="w-3.5 h-3.5" />
-            <span>ELA (HEATMAP)</span>
+            <Activity className="w-3.5 h-3.5 text-amber-400" />
+            <span>ELA HEATMAP</span>
           </button>
 
           <button
             onClick={() => setViewMode("WAVELET")}
-            className={`px-3 py-1.5 rounded font-medium flex items-center space-x-1.5 transition-all ${
+            className={`px-3 py-1.5 rounded-lg font-medium flex items-center space-x-1.5 transition-all ${
               viewMode === "WAVELET"
-                ? "bg-cyan-600 text-white shadow-sm"
-                : "text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#1e293b]"
+                ? "bg-sky-950/80 text-sky-300 border border-sky-600/50 shadow-sm font-semibold"
+                : "text-slate-400 hover:text-white"
             }`}
           >
-            <Waves className="w-3.5 h-3.5" />
-            <span>WAVELET NOISE (db4)</span>
+            <Waves className="w-3.5 h-3.5 text-sky-400" />
+            <span>WAVELET (db4)</span>
           </button>
 
           <button
             onClick={() => setViewMode("COPY_MOVE")}
-            className={`px-3 py-1.5 rounded font-medium flex items-center space-x-1.5 transition-all ${
+            className={`px-3 py-1.5 rounded-lg font-medium flex items-center space-x-1.5 transition-all ${
               viewMode === "COPY_MOVE"
-                ? "bg-pink-600 text-white shadow-sm"
-                : "text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#1e293b]"
+                ? "bg-watermelon-darkrose/80 text-watermelon-rose border border-watermelon-coral/50 shadow-sm font-semibold"
+                : "text-slate-400 hover:text-white"
             }`}
           >
-            <Copy className="w-3.5 h-3.5" />
-            <span>ORB COPY-MOVE</span>
+            <Copy className="w-3.5 h-3.5 text-watermelon-coral" />
+            <span>ORB CLONES</span>
           </button>
 
           <button
             onClick={() => setViewMode("LOUPE")}
-            className={`px-3 py-1.5 rounded font-medium flex items-center space-x-1.5 transition-all ${
+            className={`px-3 py-1.5 rounded-lg font-medium flex items-center space-x-1.5 transition-all ${
               viewMode === "LOUPE"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#1e293b]"
+                ? "bg-indigo-950/80 text-indigo-300 border border-indigo-600/50 shadow-sm font-semibold"
+                : "text-slate-400 hover:text-white"
             }`}
           >
-            <Split className="w-3.5 h-3.5" />
-            <span>SPLIT LOUPE</span>
+            <Split className="w-3.5 h-3.5 text-indigo-400" />
+            <span>3x LOUPE</span>
           </button>
 
           <button
             onClick={() => setViewMode("QUAD")}
-            className={`px-3 py-1.5 rounded font-medium flex items-center space-x-1.5 transition-all ${
+            className={`px-3 py-1.5 rounded-lg font-medium flex items-center space-x-1.5 transition-all ${
               viewMode === "QUAD"
-                ? "bg-purple-600 text-white shadow-sm"
-                : "text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#1e293b]"
+                ? "bg-purple-950/80 text-purple-300 border border-purple-600/50 shadow-sm font-semibold"
+                : "text-slate-400 hover:text-white"
             }`}
           >
-            <Grid className="w-3.5 h-3.5" />
+            <Grid className="w-3.5 h-3.5 text-purple-400" />
             <span>QUAD-SPECTRAL</span>
           </button>
         </div>
 
-        {/* Overlay Switches */}
-        <div className="flex items-center space-x-3 text-[11px] font-mono">
-          <label className="flex items-center space-x-1.5 cursor-pointer text-[#94a3b8] hover:text-[#f1f5f9]">
-            <input
-              type="checkbox"
-              checked={showLasers}
-              onChange={(e) => setShowLasers(e.target.checked)}
-              className="rounded bg-[#1e293b] border-[#334155] text-sky-500 focus:ring-0"
-            />
-            <span className={showLasers ? "text-sky-400 font-semibold" : ""}>
-              Baseline Lasers
-            </span>
-          </label>
+        {/* Right Controls: Overlay Toggles & Zoom */}
+        <div className="flex items-center space-x-4">
+          {/* Overlay Switches */}
+          <div className="flex items-center space-x-3 text-[11px] font-mono">
+            <label className="flex items-center space-x-1.5 cursor-pointer text-slate-400 hover:text-white transition-colors">
+              <input
+                type="checkbox"
+                checked={showLasers}
+                onChange={(e) => setShowLasers(e.target.checked)}
+                className="rounded bg-slate-900 border-slate-700 text-sky-500 focus:ring-0"
+              />
+              <span className={showLasers ? "text-sky-400 font-semibold" : ""}>
+                Baseline Lasers
+              </span>
+            </label>
 
-          <label className="flex items-center space-x-1.5 cursor-pointer text-[#94a3b8] hover:text-[#f1f5f9]">
-            <input
-              type="checkbox"
-              checked={showBoxes}
-              onChange={(e) => setShowBoxes(e.target.checked)}
-              className="rounded bg-[#1e293b] border-[#334155] text-rose-500 focus:ring-0"
-            />
-            <span className={showBoxes ? "text-rose-400 font-semibold" : ""}>
-              Anomaly Boxes
-            </span>
-          </label>
+            <label className="flex items-center space-x-1.5 cursor-pointer text-slate-400 hover:text-white transition-colors">
+              <input
+                type="checkbox"
+                checked={showBoxes}
+                onChange={(e) => setShowBoxes(e.target.checked)}
+                className="rounded bg-slate-900 border-slate-700 text-watermelon-coral focus:ring-0"
+              />
+              <span
+                className={showBoxes ? "text-watermelon-rose font-semibold" : ""}
+              >
+                Anomaly Boxes
+              </span>
+            </label>
 
-          <label className="flex items-center space-x-1.5 cursor-pointer text-[#94a3b8] hover:text-[#f1f5f9]">
-            <input
-              type="checkbox"
-              checked={showGrid}
-              onChange={(e) => setShowGrid(e.target.checked)}
-              className="rounded bg-[#1e293b] border-[#334155] text-purple-500 focus:ring-0"
-            />
-            <span>Grid Overlay</span>
-          </label>
+            <label className="flex items-center space-x-1.5 cursor-pointer text-slate-400 hover:text-white transition-colors">
+              <input
+                type="checkbox"
+                checked={showGrid}
+                onChange={(e) => setShowGrid(e.target.checked)}
+                className="rounded bg-slate-900 border-slate-700 text-slate-400 focus:ring-0"
+              />
+              <span>Grid</span>
+            </label>
+          </div>
+
+          {/* Zoom Group */}
+          <div className="flex items-center space-x-1 bg-slate-950/80 p-0.5 rounded-lg border border-white/[0.08] text-[11px] font-mono">
+            <button
+              onClick={() => setZoomLevel((z) => Math.max(0.75, z - 0.25))}
+              className="p-1 rounded text-slate-400 hover:text-white"
+              title="Zoom Out"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
+            <span className="px-1 text-slate-300 font-semibold">
+              {(zoomLevel * 100).toFixed(0)}%
+            </span>
+            <button
+              onClick={() => setZoomLevel((z) => Math.min(3, z + 0.25))}
+              className="p-1 rounded text-slate-400 hover:text-white"
+              title="Zoom In"
+            >
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => setZoomLevel(1)}
+              className="p-1 rounded text-slate-400 hover:text-white ml-0.5"
+              title="Reset Zoom"
+            >
+              <RotateCcw className="w-3 h-3" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Main Forensic Canvas */}
-      <div className="flex-1 overflow-auto p-4 flex items-center justify-center relative">
+      {/* Main Canvas Area */}
+      <div className="flex-1 overflow-auto p-4 flex items-center justify-center relative bg-gradient-to-b from-[#080c16] via-[#090e1c] to-[#080c16]">
         {viewMode === "QUAD" ? (
           /* 2x2 Synchronized Quad-Spectral Grid */
-          <div className="grid grid-cols-2 gap-3 max-h-full max-w-[860px] aspect-[9/10] w-full">
-            <div className="flex flex-col bg-[#0b1120] border border-[#1e293b] rounded-lg overflow-hidden">
-              <div className="px-2 py-1 bg-[#070b14] border-b border-[#1e293b] text-[10px] font-mono text-sky-400">
-                1. ORIGINAL EVIDENCE CAPTURE
+          <div className="grid grid-cols-2 gap-3.5 max-h-full max-w-[900px] aspect-[9/10] w-full">
+            <div className="flex flex-col watermelon-glass-card rounded-xl overflow-hidden">
+              <div className="px-3 py-1.5 bg-slate-950/90 border-b border-white/[0.06] text-[10px] font-mono font-bold text-sky-400 flex items-center justify-between">
+                <span>1. ORIGINAL EVIDENCE</span>
+                <span className="text-slate-500">{image_width}x{image_height}</span>
               </div>
-              <div className="flex-1 flex items-center justify-center p-2">
+              <div className="flex-1 flex items-center justify-center p-2.5 bg-black/60">
                 <img
                   src={original_image_b64}
                   alt="Original"
@@ -231,11 +287,12 @@ export const ForensicViewer: React.FC<ForensicViewerProps> = ({
               </div>
             </div>
 
-            <div className="flex flex-col bg-[#0b1120] border border-[#1e293b] rounded-lg overflow-hidden">
-              <div className="px-2 py-1 bg-[#070b14] border-b border-[#1e293b] text-[10px] font-mono text-amber-400">
-                2. ERROR LEVEL ANALYSIS (INFERNO)
+            <div className="flex flex-col watermelon-glass-card rounded-xl overflow-hidden">
+              <div className="px-3 py-1.5 bg-slate-950/90 border-b border-white/[0.06] text-[10px] font-mono font-bold text-amber-400 flex items-center justify-between">
+                <span>2. ERROR LEVEL ANALYSIS (ELA)</span>
+                <span className="text-amber-500 font-semibold">{layer1.ela_score.toFixed(1)}%</span>
               </div>
-              <div className="flex-1 flex items-center justify-center p-2">
+              <div className="flex-1 flex items-center justify-center p-2.5 bg-black/60">
                 <img
                   src={layer1.ela_b64}
                   alt="ELA"
@@ -244,11 +301,12 @@ export const ForensicViewer: React.FC<ForensicViewerProps> = ({
               </div>
             </div>
 
-            <div className="flex flex-col bg-[#0b1120] border border-[#1e293b] rounded-lg overflow-hidden">
-              <div className="px-2 py-1 bg-[#070b14] border-b border-[#1e293b] text-[10px] font-mono text-cyan-400">
-                3. DAUBECHIES db4 WAVELET NOISE
+            <div className="flex flex-col watermelon-glass-card rounded-xl overflow-hidden">
+              <div className="px-3 py-1.5 bg-slate-950/90 border-b border-white/[0.06] text-[10px] font-mono font-bold text-cyan-400 flex items-center justify-between">
+                <span>3. DAUBECHIES db4 WAVELET NOISE</span>
+                <span className="text-cyan-500 font-semibold">{layer1.wavelet_noise_score.toFixed(1)}%</span>
               </div>
-              <div className="flex-1 flex items-center justify-center p-2">
+              <div className="flex-1 flex items-center justify-center p-2.5 bg-black/60">
                 <img
                   src={layer1.wavelet_noise_b64}
                   alt="Wavelet"
@@ -257,11 +315,12 @@ export const ForensicViewer: React.FC<ForensicViewerProps> = ({
               </div>
             </div>
 
-            <div className="flex flex-col bg-[#0b1120] border border-[#1e293b] rounded-lg overflow-hidden">
-              <div className="px-2 py-1 bg-[#070b14] border-b border-[#1e293b] text-[10px] font-mono text-pink-400">
-                4. ORB COPY-MOVE CLONED VECTORS
+            <div className="flex flex-col watermelon-glass-card rounded-xl overflow-hidden">
+              <div className="px-3 py-1.5 bg-slate-950/90 border-b border-white/[0.06] text-[10px] font-mono font-bold text-watermelon-rose flex items-center justify-between">
+                <span>4. ORB CLONED KEYPOINTS</span>
+                <span className="text-watermelon-coral font-semibold">{layer1.clone_count} pairs</span>
               </div>
-              <div className="flex-1 flex items-center justify-center p-2">
+              <div className="flex-1 flex items-center justify-center p-2.5 bg-black/60">
                 <img
                   src={layer1.clone_b64}
                   alt="Clone"
@@ -271,16 +330,18 @@ export const ForensicViewer: React.FC<ForensicViewerProps> = ({
             </div>
           </div>
         ) : (
-          /* Single Multi-Spectral Canvas with SVG Overlay */
+          /* Single Multi-Spectral Canvas with SVG Overlay & Scaling */
           <div
             ref={containerRef}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
             onMouseMove={handleMouseMove}
-            className="relative max-h-full flex items-center justify-center rounded-lg overflow-hidden shadow-2xl border border-[#1e293b] bg-black"
+            className="relative flex items-center justify-center rounded-2xl overflow-hidden shadow-2xl border border-white/[0.1] bg-black transition-transform duration-150"
             style={{
-              maxHeight: "calc(100vh - 180px)",
+              maxHeight: "calc(100vh - 170px)",
               aspectRatio: `${image_width} / ${image_height}`,
+              transform: `scale(${zoomLevel})`,
+              transformOrigin: "center center",
             }}
           >
             {/* Base Image */}
@@ -318,8 +379,8 @@ export const ForensicViewer: React.FC<ForensicViewerProps> = ({
                         x2={x2}
                         y2={y}
                         stroke={isTampered ? "#f43f5e" : "#38bdf8"}
-                        strokeWidth={isTampered ? "2.5" : "1.5"}
-                        strokeDasharray={isTampered ? "none" : "4 3"}
+                        strokeWidth={isTampered ? "3" : "1.5"}
+                        strokeDasharray={isTampered ? "none" : "5 3"}
                         className={
                           isTampered ? "laser-critical" : "laser-aligned"
                         }
@@ -329,25 +390,25 @@ export const ForensicViewer: React.FC<ForensicViewerProps> = ({
                       <circle
                         cx={x1}
                         cy={y}
-                        r={isTampered ? 4 : 2.5}
+                        r={isTampered ? 4.5 : 2.5}
                         fill={isTampered ? "#f43f5e" : "#38bdf8"}
                       />
 
                       {/* Callout Badge for Tampered Drift */}
                       {isTampered && laser.callout_text && (
-                        <g transform={`translate(${x2 + 8}, ${y - 8})`}>
+                        <g transform={`translate(${x2 + 8}, ${y - 9})`}>
                           <rect
                             x="0"
                             y="0"
-                            width="110"
+                            width="118"
                             height="18"
-                            rx="3"
+                            rx="4"
                             fill="#f43f5e"
                             stroke="#ffffff"
-                            strokeWidth="0.5"
+                            strokeWidth="0.8"
                           />
                           <text
-                            x="5"
+                            x="6"
                             y="13"
                             fill="#ffffff"
                             fontSize="11"
@@ -382,6 +443,21 @@ export const ForensicViewer: React.FC<ForensicViewerProps> = ({
 
                   return (
                     <g key={`bbox-${bIdx}`}>
+                      {/* Selected Locus Glow Indicator */}
+                      {isSelected && (
+                        <rect
+                          x={box.x - 6}
+                          y={box.y - 6}
+                          width={box.width + 12}
+                          height={box.height + 12}
+                          fill="none"
+                          stroke="#fb7185"
+                          strokeWidth="2"
+                          strokeDasharray="4 4"
+                          className="animate-spin"
+                        />
+                      )}
+
                       {/* Main Box Outline */}
                       <rect
                         x={box.x}
@@ -390,11 +466,11 @@ export const ForensicViewer: React.FC<ForensicViewerProps> = ({
                         height={box.height}
                         fill={
                           isLocus
-                            ? "rgba(245, 158, 11, 0.15)"
+                            ? "rgba(245, 158, 11, 0.18)"
                             : "rgba(244, 63, 94, 0.08)"
                         }
                         stroke={strokeColor}
-                        strokeWidth={isLocus || isSelected ? "3" : "1.8"}
+                        strokeWidth={isLocus || isSelected ? "3.2" : "1.8"}
                         strokeDasharray={isLocus ? "none" : "3 3"}
                       />
 
@@ -439,15 +515,15 @@ export const ForensicViewer: React.FC<ForensicViewerProps> = ({
                         <rect
                           x="0"
                           y="-14"
-                          width={Math.min(box.width + 20, 240)}
+                          width={Math.min(box.width + 24, 250)}
                           height="16"
-                          rx="2"
+                          rx="3"
                           fill={strokeColor}
                         />
                         <text
                           x="4"
                           y="-2"
-                          fill="#070b14"
+                          fill="#080c16"
                           fontSize="10"
                           fontWeight="bold"
                           fontFamily="monospace"
@@ -477,6 +553,22 @@ export const ForensicViewer: React.FC<ForensicViewerProps> = ({
           imgWidth={image_width}
           imgHeight={image_height}
         />
+
+        {/* Bottom Floating Telemetry Badge */}
+        <div className="absolute bottom-3 left-4 px-3 py-1.5 rounded-xl watermelon-glass border border-white/[0.08] text-[11px] font-mono text-slate-400 flex items-center space-x-3 pointer-events-none z-10 shadow-lg">
+          <div className="flex items-center space-x-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-watermelon-coral" />
+            <span className="text-white font-semibold">{layerLabel}</span>
+          </div>
+          <span className="text-slate-600">|</span>
+          <span>
+            POS: ({pixelCoords.x}, {pixelCoords.y})
+          </span>
+          <span className="text-slate-600">|</span>
+          <span>
+            CANVAS: {image_width} × {image_height} px
+          </span>
+        </div>
       </div>
     </div>
   );
