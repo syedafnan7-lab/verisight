@@ -17,6 +17,7 @@ During workspace inspection, the following native Antigravity skills and toolkit
 | **`lucide-icons`** | `.agents/skills/lucide-icons/SKILL.md` | UI Iconography | Vector iconography across forensic modes, navigation, status, and severity tags. |
 | **`motion-primitives`** | `.agents/skills/motion-primitives/SKILL.md` | Animation Primitives | Smooth micro-interactions, layout transitions, and accordion expansions. |
 | **`21st-dev` / `21st-ui-build`**| `.agents/skills/21st-dev/SKILL.md` | Component Catalog | UI patterns and accessible components. |
+| **`frontend-design`** | `.agents/skills/frontend-design/SKILL.md` | Visual Identity & Design Guidance | Distinctive, non-templated visual design guidance from Anthropic skills, avoiding cliché tropes and grounding design in subject matter. |
 | **`playwright` MCP Server** | System MCP Configuration | Browser Automation | Headless Chromium navigation, interactive testing, viewport resizing (390px–1920px), DOM snapshotting, console monitoring, and full-page screenshot verification. |
 
 ---
