@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { TopCommandBar } from "./components/TopCommandBar";
+import React, { useEffect, useState, useRef } from "react";
+import { NavigationSidebar } from "./components/NavigationSidebar";
+import { TopHeaderBar } from "./components/TopHeaderBar";
 import { ForensicViewer } from "./components/ForensicViewer";
 import { RiskDossierSidebar } from "./components/RiskDossierSidebar";
 import { BentoCaseDashboard } from "./components/BentoCaseDashboard";
@@ -44,6 +45,7 @@ export const App: React.FC = () => {
   const [selectedLocus, setSelectedLocus] = useState<BoundingBox | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Modals state
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] =
@@ -96,6 +98,12 @@ export const App: React.FC = () => {
       alert(`Upload Analysis Failed: ${err.message}`);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGlobalFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      handleFileUpload(e.target.files[0]);
     }
   };
 
@@ -172,8 +180,17 @@ export const App: React.FC = () => {
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className="h-screen w-screen flex flex-col bg-[#080c16] overflow-hidden relative"
+      className="h-screen w-screen flex bg-[#080c16] overflow-hidden relative font-sans text-slate-100"
     >
+      {/* Hidden Global File Input for Header Shortcuts */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleGlobalFileChange}
+        accept="image/*"
+        className="hidden"
+      />
+
       {/* Global Drag-and-Drop Overlay */}
       {isDragging && (
         <div className="absolute inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-8 border-4 border-dashed border-watermelon-coral animate-in fade-in duration-150">
@@ -189,8 +206,8 @@ export const App: React.FC = () => {
         </div>
       )}
 
-      {/* Top Command Bar */}
-      <TopCommandBar
+      {/* Left Navigation Sidebar (The whole control bar comes to the side!) */}
+      <NavigationSidebar
         demoSamples={demoSamples}
         selectedSampleId={selectedSampleId}
         onSelectSample={handleSelectSample}
@@ -203,28 +220,42 @@ export const App: React.FC = () => {
         onViewChange={(v) => setActiveView(v)}
       />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex overflow-hidden relative">
-        {activeView === "DASHBOARD" ? (
-          /* Bento Intelligence Dashboard View */
-          <BentoCaseDashboard
-            report={report}
-            onSwitchToInspector={handleSwitchToInspector}
-            onOpenWhatsAppModal={handleTriggerWhatsAppSimulation}
-            onOpenReportModal={() => setIsReportModalOpen(true)}
-            onOpenMobileModal={() => setIsMobileModalOpen(true)}
-          />
-        ) : (
-          /* Deep Inspector Workbench: Central Multi-Spectral Viewer + Right Risk Dossier */
-          <div className="flex-1 flex overflow-hidden w-full">
-            <ForensicViewer report={report} selectedLocus={selectedLocus} />
-            <RiskDossierSidebar
+      {/* Main Right Workspace Area */}
+      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
+        {/* Top Header Bar featuring React Bits PillNav */}
+        <TopHeaderBar
+          report={report}
+          activeView={activeView}
+          onViewChange={(v) => setActiveView(v)}
+          onOpenReportModal={() => setIsReportModalOpen(true)}
+          onOpenMobileModal={() => setIsMobileModalOpen(true)}
+          onOpenWhatsAppModal={handleTriggerWhatsAppSimulation}
+          onUploadClick={() => fileInputRef.current?.click()}
+        />
+
+        {/* Dynamic Main View */}
+        <div className="flex-1 flex overflow-hidden relative">
+          {activeView === "DASHBOARD" ? (
+            /* Bento Intelligence Dashboard View */
+            <BentoCaseDashboard
               report={report}
-              selectedLocus={selectedLocus}
-              onSelectLocus={(box) => setSelectedLocus(box)}
+              onSwitchToInspector={handleSwitchToInspector}
+              onOpenWhatsAppModal={handleTriggerWhatsAppSimulation}
+              onOpenReportModal={() => setIsReportModalOpen(true)}
+              onOpenMobileModal={() => setIsMobileModalOpen(true)}
             />
-          </div>
-        )}
+          ) : (
+            /* Deep Inspector Workbench */
+            <div className="flex-1 flex overflow-hidden w-full">
+              <ForensicViewer report={report} selectedLocus={selectedLocus} />
+              <RiskDossierSidebar
+                report={report}
+                selectedLocus={selectedLocus}
+                onSelectLocus={(box) => setSelectedLocus(box)}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Modals */}
