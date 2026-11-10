@@ -7,6 +7,8 @@ import { MobileUploadModal } from "./components/MobileUploadModal";
 import { MobileUploadView } from "./components/MobileUploadView";
 import { ForensicReportModal } from "./components/ForensicReportModal";
 import { Section91NoticeModal } from "./components/Section91NoticeModal";
+import { EvidenceIntakeModal } from "./components/EvidenceIntakeModal";
+import { AtmosphericBackground } from "./components/ui/AtmosphericBackground";
 import {
   ForensicAnalysisReport,
   DemoSampleMeta,
@@ -37,13 +39,20 @@ const DesktopWorkbench: React.FC = () => {
   const [appError, setAppError] = useState<string | null>(null);
   const [selectedLocus, setSelectedLocus] = useState<BoundingBox | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [databaseStatus, setDatabaseStatus] = useState<"CHECKING" | "HEALTHY" | "UNAVAILABLE" | "NOT_CONFIGURED">("CHECKING");
+  const [databaseStatus, setDatabaseStatus] = useState<
+    "CHECKING" | "HEALTHY" | "UNAVAILABLE" | "NOT_CONFIGURED"
+  >("CHECKING");
   const [demoLoadFailed, setDemoLoadFailed] = useState(false);
   const [demoRetry, setDemoRetry] = useState(0);
 
+  // 5-Stage Investigation Workflow state
+  const [activeStage, setActiveStage] = useState<
+    "INTAKE" | "ANALYSIS" | "CANVAS" | "RISK" | "DOSSIER"
+  >("CANVAS");
+
   // Modals state
-  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] =
-    useState<boolean>(false);
+  const [isEvidenceIntakeOpen, setIsEvidenceIntakeOpen] = useState<boolean>(false);
+  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState<boolean>(false);
   const [isWhatsAppLoading, setIsWhatsAppLoading] = useState<boolean>(false);
   const [whatsAppData, setWhatsAppDat] =
     useState<WhatsAppSimulationResponse | null>(null);
@@ -52,13 +61,16 @@ const DesktopWorkbench: React.FC = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
   const [isSection91ModalOpen, setIsSection91ModalOpen] = useState<boolean>(false);
 
-  // Keep the normal Sample 1 startup view, but request the catalog and analysis
-  // in parallel so the catalog request does not add a serial round trip.
+  // Request health and demo samples catalog on mount
   useEffect(() => {
     let active = true;
     fetchHealth()
-      .then((health) => { if (active) setDatabaseStatus(health.database); })
-      .catch(() => { if (active) setDatabaseStatus("UNAVAILABLE"); });
+      .then((health) => {
+        if (active) setDatabaseStatus(health.database);
+      })
+      .catch(() => {
+        if (active) setDatabaseStatus("UNAVAILABLE");
+      });
 
     const catalogRequest = fetchDemoSamples()
       .then((samples) => {
@@ -76,7 +88,9 @@ const DesktopWorkbench: React.FC = () => {
       });
     void catalogRequest;
     void handleSelectSample("sample_1");
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [demoRetry]);
 
   // Handle selecting a golden demo sample
@@ -85,12 +99,15 @@ const DesktopWorkbench: React.FC = () => {
     setSelectedLocus(null);
     setIsLoading(true);
     setAppError(null);
+    setActiveStage("CANVAS");
 
     try {
       const res = await analyzeDemoSample(sampleId);
       setReport(res);
     } catch (err) {
-      setAppError(`Sample analysis failed: ${err instanceof Error ? err.message : "Unknown error"}`);
+      setAppError(
+        `Sample analysis failed: ${err instanceof Error ? err.message : "Unknown error"}`,
+      );
     } finally {
       setIsLoading(false);
     }
@@ -102,14 +119,29 @@ const DesktopWorkbench: React.FC = () => {
     setSelectedLocus(null);
     setIsLoading(true);
     setAppError(null);
+    setActiveStage("CANVAS");
 
     try {
       const res = await analyzeUpload(file);
       setReport(res);
     } catch (err) {
-      setAppError(`Upload analysis failed: ${err instanceof Error ? err.message : "Unknown error"}`);
+      setAppError(
+        `Upload analysis failed: ${err instanceof Error ? err.message : "Unknown error"}`,
+      );
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Handle stage selection in TopCommandBar
+  const handleStageSelect = (
+    stage: "INTAKE" | "ANALYSIS" | "CANVAS" | "RISK" | "DOSSIER",
+  ) => {
+    setActiveStage(stage);
+    if (stage === "INTAKE") {
+      setIsEvidenceIntakeOpen(true);
+    } else if (stage === "DOSSIER") {
+      setIsReportModalOpen(true);
     }
   };
 
@@ -120,7 +152,6 @@ const DesktopWorkbench: React.FC = () => {
     setIsWhatsAppLoading(true);
 
     try {
-      // Convert base64 original to blob
       const base64Data =
         report.original_image_b64.split(",")[1] || report.original_image_b64;
       const byteCharacters = atob(base64Data);
@@ -129,7 +160,8 @@ const DesktopWorkbench: React.FC = () => {
         byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
       const byteArray = new Uint8Array(byteNumbers);
-      const previewMime = report.original_image_b64.match(/^data:([^;]+);/)?.[1] || "image/png";
+      const previewMime =
+        report.original_image_b64.match(/^data:([^;]+);/)?.[1] || "image/png";
       const blob = new Blob([byteArray], { type: previewMime });
 
       const simRes = await simulateWhatsApp(
@@ -138,7 +170,9 @@ const DesktopWorkbench: React.FC = () => {
       );
       setWhatsAppDat(simRes);
     } catch (err) {
-      setAppError(`WhatsApp simulation failed: ${err instanceof Error ? err.message : "Unknown error"}`);
+      setAppError(
+        `WhatsApp simulation failed: ${err instanceof Error ? err.message : "Unknown error"}`,
+      );
     } finally {
       setIsWhatsAppLoading(false);
     }
@@ -149,36 +183,68 @@ const DesktopWorkbench: React.FC = () => {
     setSelectedSampleId(null);
     setSelectedLocus(null);
     setReport(newReport);
+    setActiveStage("CANVAS");
   };
 
   return (
-    <div className="flex h-[100dvh] min-h-[100dvh] w-full flex-col overflow-hidden bg-[#070b14] md:h-screen md:min-h-0">
+    <div className="relative flex h-[100dvh] min-h-[100dvh] w-full flex-col overflow-hidden bg-[#070b14] text-[#f8fafc] md:h-screen md:min-h-0">
+      {/* Subtle Atmospheric Grid Background */}
+      <AtmosphericBackground />
+
       {/* Top Command Bar */}
       <TopCommandBar
         databaseStatus={databaseStatus}
         demoSamples={demoSamples}
         selectedSampleId={selectedSampleId}
+        report={report}
         onSelectSample={handleSelectSample}
         onFileUpload={handleFileUpload}
+        onOpenIntakeModal={() => setIsEvidenceIntakeOpen(true)}
         onOpenWhatsAppModal={handleTriggerWhatsAppSimulation}
         onOpenMobileModal={() => setIsMobileModalOpen(true)}
         onOpenReportModal={() => setIsReportModalOpen(true)}
         onOpenSection91Modal={() => setIsSection91ModalOpen(true)}
+        onStageSelect={handleStageSelect}
+        activeStage={activeStage}
         isLoading={isLoading}
       />
+
+      {/* Application Alerts */}
       {appError && (
-        <div role="alert" className="px-4 py-2 bg-rose-950/80 border-b border-rose-800 text-rose-200 text-xs flex items-center justify-between">
+        <div
+          role="alert"
+          className="relative z-30 px-4 py-2 bg-rose-950/90 border-b border-rose-800 text-rose-200 text-xs flex items-center justify-between shadow-lg"
+        >
           <span>{appError}</span>
           <div className="ml-4 flex shrink-0 items-center gap-3">
-            {demoLoadFailed && <button onClick={() => setDemoRetry((n) => n + 1)} className="text-rose-100 underline hover:text-white">Retry</button>}
-            <button onClick={() => setAppError(null)} className="text-rose-100 hover:text-white">Dismiss</button>
+            {demoLoadFailed && (
+              <button
+                onClick={() => setDemoRetry((n) => n + 1)}
+                className="text-rose-100 underline hover:text-white"
+              >
+                Retry
+              </button>
+            )}
+            <button
+              onClick={() => setAppError(null)}
+              className="text-rose-100 hover:text-white"
+            >
+              Dismiss
+            </button>
           </div>
         </div>
       )}
 
-      {/* Main Workspace: Central Multi-Spectral Viewer + Right Risk Dossier */}
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row md:overflow-hidden">
-        <ForensicViewer report={report} selectedLocus={selectedLocus} />
+      {/* Main Forensic Investigation Workbench */}
+      <div className="relative z-10 flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row md:overflow-hidden">
+        {/* Centerpiece Evidence Workspace */}
+        <ForensicViewer
+          report={report}
+          selectedLocus={selectedLocus}
+          onSelectLocus={(box) => setSelectedLocus(box)}
+        />
+
+        {/* Right Forensic Risk Dossier */}
         <RiskDossierSidebar
           report={report}
           selectedLocus={selectedLocus}
@@ -187,7 +253,24 @@ const DesktopWorkbench: React.FC = () => {
         />
       </div>
 
-      {/* Modals */}
+      {/* STAGE 1: Evidence Intake Modal */}
+      <EvidenceIntakeModal
+        isOpen={isEvidenceIntakeOpen}
+        onClose={() => setIsEvidenceIntakeOpen(false)}
+        demoSamples={demoSamples}
+        selectedSampleId={selectedSampleId}
+        onSelectSample={(sampleId) => {
+          handleSelectSample(sampleId);
+          setIsEvidenceIntakeOpen(false);
+        }}
+        onFileUpload={(file) => {
+          handleFileUpload(file);
+          setIsEvidenceIntakeOpen(false);
+        }}
+        isLoading={isLoading}
+      />
+
+      {/* WhatsApp Re-Compression & Launderer Simulator Modal */}
       <WhatsAppSimulatorModal
         isOpen={isWhatsAppModalOpen}
         onClose={() => setIsWhatsAppModalOpen(false)}
@@ -196,18 +279,21 @@ const DesktopWorkbench: React.FC = () => {
         onApplyLaunderedImage={(newReport) => setReport(newReport)}
       />
 
+      {/* Judge Stage QR Mobile Upload Modal */}
       <MobileUploadModal
         isOpen={isMobileModalOpen}
         onClose={() => setIsMobileModalOpen(false)}
         onMobileUploadReceived={handleMobileUploadReceived}
       />
 
+      {/* Comprehensive Forensic Dossier Modal */}
       <ForensicReportModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         report={report}
       />
 
+      {/* Section 91 Cr.P.C. Statutory Notice Modal */}
       {isSection91ModalOpen && report && (
         <Section91NoticeModal
           report={report}
