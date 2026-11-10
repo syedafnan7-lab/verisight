@@ -8,10 +8,19 @@ import {
   Check,
   Radio,
   Loader2,
-  Sparkles,
 } from "lucide-react";
-import { NetworkInfo, ForensicAnalysisReport } from "../types/forensic";
-import { fetchNetworkInfo, fetchLatestMobileUpload } from "../services/api";
+import { ForensicAnalysisReport } from "../types/forensic";
+import { fetchLatestMobileUpload } from "../services/api";
+
+function createSessionId(): string {
+  if (typeof crypto.randomUUID === "function") return crypto.randomUUID();
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
 
 interface MobileUploadModalProps {
   isOpen: boolean;
@@ -24,43 +33,40 @@ export const MobileUploadModal: React.FC<MobileUploadModalProps> = ({
   onClose,
   onMobileUploadReceived,
 }) => {
-  const [networkInfo, setNetworkInfo] = useState<NetworkInfo | null>(null);
+  const [sessionId] = useState(createSessionId);
   const [copied, setCopied] = useState<boolean>(false);
   const [isListening, setIsListening] = useState<boolean>(true);
-
-  // Load network info on open
-  useEffect(() => {
-    if (!isOpen) return;
-
-    fetchNetworkInfo()
-      .then((info) => setNetworkInfo(info))
-      .catch((err) => console.error("Failed to load network info:", err));
-  }, [isOpen]);
 
   // Live polling for stage judge uploads
   useEffect(() => {
     if (!isOpen || !isListening) return;
 
+    let inFlight = false;
     const interval = setInterval(async () => {
+      if (inFlight) return;
+      inFlight = true;
       try {
-        const latestReport = await fetchLatestMobileUpload();
+        const latestReport = await fetchLatestMobileUpload(sessionId);
         if (latestReport) {
           onMobileUploadReceived(latestReport);
           onClose();
         }
       } catch (e) {
-        // Ignore polling errors
+        console.error("Mobile upload polling failed:", e);
+      } finally {
+        inFlight = false;
       }
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [isOpen, isListening, onMobileUploadReceived, onClose]);
+  }, [isOpen, isListening, onMobileUploadReceived, onClose, sessionId]);
 
   if (!isOpen) return null;
 
-  const mobileUrl =
-    networkInfo?.mobile_upload_url ||
-    `http://${window.location.hostname}:5173/?mode=mobile`;
+  const mobileLink = new URL(window.location.href);
+  mobileLink.searchParams.set("mode", "mobile");
+  mobileLink.searchParams.set("session_id", sessionId);
+  const mobileUrl = mobileLink.toString();
 
   const copyUrl = () => {
     navigator.clipboard.writeText(mobileUrl);
@@ -69,26 +75,27 @@ export const MobileUploadModal: React.FC<MobileUploadModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
-      <div className="watermelon-glass border border-white/[0.1] rounded-3xl w-full max-w-lg flex flex-col shadow-2xl overflow-hidden relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+      <div className="bg-[#0b1120] border border-[#1e293b] rounded-2xl w-full max-w-lg flex flex-col shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="h-16 px-6 border-b border-white/[0.08] bg-slate-950/80 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/40 flex items-center justify-center">
+        <div className="h-14 px-6 border-b border-[#1e293b] bg-[#070b14] flex items-center justify-between">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-7 h-7 rounded-lg bg-amber-950 border border-amber-600/50 flex items-center justify-center">
               <QrCode className="w-4 h-4 text-amber-400" />
             </div>
             <div>
-              <h3 className="font-bold text-sm text-white tracking-wide">
-                Stage Judge Wireless Mobile Upload
+              <h3 className="font-semibold text-sm text-[#f1f5f9] tracking-wide">
+                Stage Judge Live Mobile Upload
               </h3>
-              <p className="text-[11px] text-slate-400">
-                Zero-cable live intake direct from judge smartphone camera
+              <p className="text-[11px] text-[#64748b]">
+                Real-time zero-cable screenshot analysis direct from smartphone
+                camera
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition-all"
+            className="p-1.5 rounded-lg text-[#64748b] hover:text-[#f1f5f9] hover:bg-[#1e293b] transition-all"
           >
             <X className="w-4 h-4" />
           </button>
@@ -96,7 +103,7 @@ export const MobileUploadModal: React.FC<MobileUploadModalProps> = ({
 
         {/* QR Body */}
         <div className="p-6 flex flex-col items-center space-y-5">
-          <div className="p-4 bg-white rounded-2xl shadow-xl flex items-center justify-center border-4 border-amber-400/40">
+          <div className="p-4 bg-white rounded-2xl shadow-xl flex items-center justify-center border-4 border-amber-500/30">
             <QRCodeSVG
               value={mobileUrl}
               size={220}
@@ -106,47 +113,48 @@ export const MobileUploadModal: React.FC<MobileUploadModalProps> = ({
           </div>
 
           {/* Pulse Status */}
-          <div className="flex items-center space-x-2 text-xs font-mono text-watermelon-mint bg-watermelon-emerald/15 border border-watermelon-emerald/40 px-3.5 py-1.5 rounded-full">
-            <Radio className="w-3.5 h-3.5 animate-pulse text-watermelon-emerald" />
-            <span className="font-semibold tracking-wider">LISTENING FOR WIRELESS MOBILE UPLOAD...</span>
+          <div className="flex items-center space-x-2 text-xs font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-800/60 px-3 py-1.5 rounded-full">
+            <Radio className="w-3.5 h-3.5 animate-pulse" />
+            <span>LISTENING FOR STAGE JUDGE UPLOAD...</span>
           </div>
 
           {/* Direct URL */}
-          <div className="w-full watermelon-glass-card rounded-2xl p-3 flex items-center justify-between">
-            <div className="flex items-center space-x-2.5 overflow-hidden">
+          <div className="w-full bg-[#070b14] border border-[#1e293b] rounded-xl p-3 flex items-center justify-between">
+            <div className="flex items-center space-x-2 overflow-hidden">
               <Smartphone className="w-4 h-4 text-amber-400 shrink-0" />
-              <span className="font-mono text-xs text-slate-300 truncate">
+              <span className="font-mono text-xs text-[#94a3b8] truncate">
                 {mobileUrl}
               </span>
             </div>
             <button
               onClick={copyUrl}
-              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-400 transition-all shrink-0 ml-2 border border-white/[0.06]"
+              className="p-1.5 rounded bg-[#1e293b] hover:bg-[#334155] text-sky-400 transition-all shrink-0 ml-2"
               title="Copy mobile upload URL"
             >
               {copied ? (
-                <Check className="w-4 h-4 text-watermelon-emerald" />
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
               ) : (
-                <Copy className="w-4 h-4" />
+                <Copy className="w-3.5 h-3.5" />
               )}
             </button>
           </div>
 
           {/* Instructions for HackStellar Judges */}
-          <div className="w-full text-[11px] text-slate-400 space-y-1 text-center leading-relaxed font-mono">
-            <p>1. Connect smartphone to the same Wi-Fi / Local Area Network.</p>
+          <div className="w-full text-[11px] text-[#64748b] space-y-1 text-center leading-relaxed">
+            <p>1. Scan this link on your phone. For a local session, use the same Wi-Fi network.</p>
             <p>2. Scan QR with iOS Camera or Android Google Lens.</p>
-            <p className="text-slate-300">
-              3. Snap any UPI screenshot to trigger instant 4-layer audit on this screen.
+            <p>
+              3. Snap any UPI payment screenshot on your phone to trigger
+              instant 4-layer audit on this screen.
             </p>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="h-14 px-6 border-t border-white/[0.08] bg-slate-950/80 flex items-center justify-end">
+        <div className="h-12 px-6 border-t border-[#1e293b] bg-[#070b14] flex items-center justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-xs font-semibold text-slate-300 transition-all"
+            className="px-4 py-1.5 rounded-lg bg-[#1e293b] hover:bg-[#334155] text-xs font-medium text-[#f1f5f9] transition-all"
           >
             Close
           </button>

@@ -29,11 +29,19 @@ set SCRIPT_DIR=%~dp0
 set BACKEND_DIR=%SCRIPT_DIR%backend
 set FRONTEND_DIR=%SCRIPT_DIR%frontend
 
+:: Auto-detect virtualenv if available
+set "PYTHON_EXE=python"
+if exist "%SCRIPT_DIR%backend\.venv\Scripts\python.exe" (
+    set "PYTHON_EXE=%SCRIPT_DIR%backend\.venv\Scripts\python.exe"
+) else if exist "%SCRIPT_DIR%..\verisight-hackstellar-ps12\.venv\Scripts\python.exe" (
+    set "PYTHON_EXE=%SCRIPT_DIR%..\verisight-hackstellar-ps12\.venv\Scripts\python.exe"
+)
+
 echo [1/4] Ensuring Golden Demo Samples are generated...
-python "%SCRIPT_DIR%samples\generator.py"
+"%PYTHON_EXE%" "%SCRIPT_DIR%samples\generator.py"
 
 echo [2/4] Starting FastAPI Forensic Core on http://127.0.0.1:8000...
-start "VeriSight-Backend" cmd /k "cd /d "%BACKEND_DIR%" && python -m uvicorn app.main:app --host 127.0.0.1 --port 8000"
+start "VeriSight-Backend" cmd /k "cd /d "%BACKEND_DIR%" && "%PYTHON_EXE%" -m uvicorn app.main:app --host 127.0.0.1 --port 8000"
 
 echo [3/4] Starting Vite Workbench Frontend on http://localhost:5173...
 start "VeriSight-Frontend" cmd /k "cd /d "%FRONTEND_DIR%" && npm run dev"

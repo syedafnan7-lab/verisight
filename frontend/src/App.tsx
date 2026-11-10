@@ -1,15 +1,12 @@
-import React, { useEffect, useState, useRef } from "react";
-import { NavigationSidebar } from "./components/NavigationSidebar";
-import { TopHeaderBar } from "./components/TopHeaderBar";
+import React, { useEffect, useState } from "react";
+import { TopCommandBar } from "./components/TopCommandBar";
 import { ForensicViewer } from "./components/ForensicViewer";
 import { RiskDossierSidebar } from "./components/RiskDossierSidebar";
-import { BentoCaseDashboard } from "./components/BentoCaseDashboard";
 import { WhatsAppSimulatorModal } from "./components/WhatsAppSimulatorModal";
 import { MobileUploadModal } from "./components/MobileUploadModal";
 import { MobileUploadView } from "./components/MobileUploadView";
 import { ForensicReportModal } from "./components/ForensicReportModal";
 import { Section91NoticeModal } from "./components/Section91NoticeModal";
-import { UploadCloud } from "lucide-react";
 import {
   ForensicAnalysisReport,
   DemoSampleMeta,
@@ -21,32 +18,28 @@ import {
   analyzeDemoSample,
   analyzeUpload,
   simulateWhatsApp,
+  fetchHealth,
 } from "./services/api";
 
 export const App: React.FC = () => {
-  // Check if mobile mode is requested (?mode=mobile)
   const isMobileMode =
     new URLSearchParams(window.location.search).get("mode") === "mobile";
+  return isMobileMode ? <MobileUploadView /> : <DesktopWorkbench />;
+};
 
-  if (isMobileMode) {
-    return <MobileUploadView />;
-  }
-
-  // Active view: Bento Dashboard or Deep Inspector
-  const [activeView, setActiveView] = useState<"DASHBOARD" | "INSPECTOR">(
-    "DASHBOARD",
-  );
-
+const DesktopWorkbench: React.FC = () => {
   // Desktop Workbench State
   const [demoSamples, setDemoSamples] = useState<DemoSampleMeta[]>([]);
   const [selectedSampleId, setSelectedSampleId] = useState<string | null>(
     "sample_1",
   );
   const [report, setReport] = useState<ForensicAnalysisReport | null>(null);
+  const [appError, setAppError] = useState<string | null>(null);
   const [selectedLocus, setSelectedLocus] = useState<BoundingBox | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [databaseStatus, setDatabaseStatus] = useState<"CHECKING" | "HEALTHY" | "UNAVAILABLE" | "NOT_CONFIGURED">("CHECKING");
+  const [demoLoadFailed, setDemoLoadFailed] = useState(false);
+  const [demoRetry, setDemoRetry] = useState(0);
 
   // Modals state
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] =
@@ -59,85 +52,65 @@ export const App: React.FC = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
   const [isSection91ModalOpen, setIsSection91ModalOpen] = useState<boolean>(false);
 
-  // Load demo samples list and analyze sample_1 on startup
+  // Keep the normal Sample 1 startup view, but request the catalog and analysis
+  // in parallel so the catalog request does not add a serial round trip.
   useEffect(() => {
-    fetchDemoSamples()
+    let active = true;
+    fetchHealth()
+      .then((health) => { if (active) setDatabaseStatus(health.database); })
+      .catch(() => { if (active) setDatabaseStatus("UNAVAILABLE"); });
+
+    const catalogRequest = fetchDemoSamples()
       .then((samples) => {
+        if (!active) return;
         setDemoSamples(samples);
-        if (samples.length > 0) {
-          handleSelectSample("sample_1");
+        setDemoLoadFailed(false);
+        if (samples.length === 0) {
+          setAppError("The demo sample list is empty.");
         }
       })
-      .catch((err) => console.error("Failed to load demo samples:", err));
-  }, []);
+      .catch((err) => {
+        if (!active) return;
+        setDemoLoadFailed(true);
+        setAppError(`Could not load demo samples: ${err.message}`);
+      });
+    void catalogRequest;
+    void handleSelectSample("sample_1");
+    return () => { active = false; };
+  }, [demoRetry]);
 
   // Handle selecting a golden demo sample
-  const handleSelectSample = async (sampleId: string) => {
+  async function handleSelectSample(sampleId: string) {
     setSelectedSampleId(sampleId);
     setSelectedLocus(null);
     setIsLoading(true);
+    setAppError(null);
 
     try {
       const res = await analyzeDemoSample(sampleId);
       setReport(res);
     } catch (err) {
-      console.error("Failed to analyze sample:", err);
+      setAppError(`Sample analysis failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   // Handle custom screenshot upload
   const handleFileUpload = async (file: File) => {
     setSelectedSampleId(null);
     setSelectedLocus(null);
     setIsLoading(true);
+    setAppError(null);
 
     try {
       const res = await analyzeUpload(file);
       setReport(res);
-    } catch (err: any) {
-      alert(`Upload Analysis Failed: ${err.message}`);
+    } catch (err) {
+      setAppError(`Upload analysis failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleGlobalFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      handleFileUpload(e.target.files[0]);
-    }
-  };
-
-  // Drag and drop handlers
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFileUpload(e.dataTransfer.files[0]);
-    }
-  };
-
-  // Switch to Deep Inspector and focus locus
-  const handleSwitchToInspector = (locus?: BoundingBox) => {
-    if (locus) {
-      setSelectedLocus(locus);
-    }
-    setActiveView("INSPECTOR");
   };
 
   // Handle WhatsApp simulation on current screenshot
@@ -147,6 +120,7 @@ export const App: React.FC = () => {
     setIsWhatsAppLoading(true);
 
     try {
+      // Convert base64 original to blob
       const base64Data =
         report.original_image_b64.split(",")[1] || report.original_image_b64;
       const byteCharacters = atob(base64Data);
@@ -155,7 +129,8 @@ export const App: React.FC = () => {
         byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
       const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: "image/png" });
+      const previewMime = report.original_image_b64.match(/^data:([^;]+);/)?.[1] || "image/png";
+      const blob = new Blob([byteArray], { type: previewMime });
 
       const simRes = await simulateWhatsApp(
         blob,
@@ -163,7 +138,7 @@ export const App: React.FC = () => {
       );
       setWhatsAppDat(simRes);
     } catch (err) {
-      console.error("WhatsApp simulation failed:", err);
+      setAppError(`WhatsApp simulation failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setIsWhatsAppLoading(false);
     }
@@ -174,89 +149,42 @@ export const App: React.FC = () => {
     setSelectedSampleId(null);
     setSelectedLocus(null);
     setReport(newReport);
-    setActiveView("DASHBOARD");
   };
 
   return (
-    <div
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-      className="h-screen w-screen flex bg-[#080c16] overflow-hidden relative font-sans text-slate-100"
-    >
-      {/* Hidden Global File Input for Header Shortcuts */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleGlobalFileChange}
-        accept="image/*"
-        className="hidden"
+    <div className="flex h-[100dvh] min-h-[100dvh] w-full flex-col overflow-hidden bg-[#070b14] md:h-screen md:min-h-0">
+      {/* Top Command Bar */}
+      <TopCommandBar
+        databaseStatus={databaseStatus}
+        demoSamples={demoSamples}
+        selectedSampleId={selectedSampleId}
+        onSelectSample={handleSelectSample}
+        onFileUpload={handleFileUpload}
+        onOpenWhatsAppModal={handleTriggerWhatsAppSimulation}
+        onOpenMobileModal={() => setIsMobileModalOpen(true)}
+        onOpenReportModal={() => setIsReportModalOpen(true)}
+        onOpenSection91Modal={() => setIsSection91ModalOpen(true)}
+        isLoading={isLoading}
       />
-
-      {/* Global Drag-and-Drop Overlay */}
-      {isDragging && (
-        <div className="absolute inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-8 border-4 border-dashed border-watermelon-coral animate-in fade-in duration-150">
-          <div className="w-20 h-20 rounded-3xl bg-watermelon-coral/15 border border-watermelon-coral/40 flex items-center justify-center mb-4">
-            <UploadCloud className="w-10 h-10 text-watermelon-coral animate-bounce" />
+      {appError && (
+        <div role="alert" className="px-4 py-2 bg-rose-950/80 border-b border-rose-800 text-rose-200 text-xs flex items-center justify-between">
+          <span>{appError}</span>
+          <div className="ml-4 flex shrink-0 items-center gap-3">
+            {demoLoadFailed && <button onClick={() => setDemoRetry((n) => n + 1)} className="text-rose-100 underline hover:text-white">Retry</button>}
+            <button onClick={() => setAppError(null)} className="text-rose-100 hover:text-white">Dismiss</button>
           </div>
-          <h2 className="text-xl font-bold text-white tracking-wide">
-            Drop Forensic Screenshot to Inspect
-          </h2>
-          <p className="text-xs font-mono text-slate-400 mt-2">
-            Auto-executes 4-Layer Signal, OCR Baseline Lasers & Viewport Audit
-          </p>
         </div>
       )}
 
-      {/* Main Interactive Workbench (Guaranteed hidden during PDF Print) */}
-      <div className="flex h-full w-full no-print">
-        {/* Left Navigation Sidebar */}
-        <NavigationSidebar
-          demoSamples={demoSamples}
-          selectedSampleId={selectedSampleId}
-          onSelectSample={handleSelectSample}
-          onFileUpload={handleFileUpload}
-          onOpenWhatsAppModal={handleTriggerWhatsAppSimulation}
-          onOpenMobileModal={() => setIsMobileModalOpen(true)}
-          onOpenReportModal={() => setIsReportModalOpen(true)}
-          isLoading={isLoading}
+      {/* Main Workspace: Central Multi-Spectral Viewer + Right Risk Dossier */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row md:overflow-hidden">
+        <ForensicViewer report={report} selectedLocus={selectedLocus} />
+        <RiskDossierSidebar
+          report={report}
+          selectedLocus={selectedLocus}
+          onSelectLocus={(box) => setSelectedLocus(box)}
+          onOpenSection91Modal={() => setIsSection91ModalOpen(true)}
         />
-
-        {/* Main Right Workspace Area */}
-        <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
-          {/* Top Header Bar featuring React Bits PillNav */}
-          <TopHeaderBar
-            report={report}
-            activeView={activeView}
-            onViewChange={(v) => setActiveView(v)}
-          />
-
-          {/* Dynamic Main View */}
-          <div className="flex-1 flex overflow-hidden relative">
-            {activeView === "DASHBOARD" ? (
-              /* Bento Intelligence Dashboard View */
-              <BentoCaseDashboard
-                report={report}
-                onSwitchToInspector={handleSwitchToInspector}
-                onOpenWhatsAppModal={handleTriggerWhatsAppSimulation}
-                onOpenReportModal={() => setIsReportModalOpen(true)}
-                onOpenMobileModal={() => setIsMobileModalOpen(true)}
-                onOpenSection91Modal={() => setIsSection91ModalOpen(true)}
-              />
-            ) : (
-              /* Deep Inspector Workbench */
-              <div className="flex-1 flex overflow-hidden w-full">
-                <ForensicViewer report={report} selectedLocus={selectedLocus} />
-                <RiskDossierSidebar
-                  report={report}
-                  selectedLocus={selectedLocus}
-                  onSelectLocus={(box) => setSelectedLocus(box)}
-                  onOpenSection91Modal={() => setIsSection91ModalOpen(true)}
-                />
-              </div>
-            )}
-          </div>
-        </div>
       </div>
 
       {/* Modals */}
@@ -265,10 +193,7 @@ export const App: React.FC = () => {
         onClose={() => setIsWhatsAppModalOpen(false)}
         simulationData={whatsAppData}
         isLoading={isWhatsAppLoading}
-        onApplyLaunderedImage={(newReport) => {
-          setReport(newReport);
-          setActiveView("DASHBOARD");
-        }}
+        onApplyLaunderedImage={(newReport) => setReport(newReport)}
       />
 
       <MobileUploadModal
