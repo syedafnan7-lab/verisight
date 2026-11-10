@@ -26,6 +26,12 @@ from app.services.forensic.pixel_analysis.wavelet_noise import (
     run_wavelet_noise_analysis,
 )
 from app.services.forensic.provenance.c2pa_inspector import inspect_c2pa_provenance
+from app.services.forensic.qr_inspector import inspect_qr_codes
+from app.services.forensic.intelligence.syndicate import (
+    extract_financial_entities,
+    evaluate_syndicate_threat,
+    generate_section91_subpoena,
+)
 from app.services.forensic.typography.baseline_laser import run_baseline_laser_audit
 from app.services.forensic.typography.cielab_patch import (
     run_cielab_patch_and_sharpness_audit,
@@ -66,6 +72,7 @@ def analyze_screenshot(
     )
     viewport_name, is_cropped, viewport_details = check_viewport_geometry(w, h)
     has_c2pa, c2pa_status, c2pa_details = inspect_c2pa_provenance(image_bytes)
+    qr_details = inspect_qr_codes(img_bgr)
 
     # 4. Layer 1: Pixel & Frequency Signal Forensics
     ela_score, ela_b64, ela_blocks, ela_boxes, ela_details = run_ela_analysis(
@@ -103,6 +110,19 @@ def analyze_screenshot(
 
     # 5. Layer 2: Typographic Geometry & OCR Forensic Audit
     tokens = extract_text_tokens(img_bgr, use_neural=False)
+    tokens_before_qr_exclusion = len(tokens)
+    # Exclude tokens in QR code regions so QR pattern noise doesn't trigger false baseline drift
+    qr_boxes = qr_details.get("regions", [])
+    if qr_boxes:
+        def _in_any_qr(t: Any) -> bool:
+            box = t.box if hasattr(t, "box") else t.get("box", [0, 0, 0, 0])
+            tx, ty, tw, th = box[0], box[1], box[2], box[3]
+            for qb in qr_boxes:
+                if not (tx + tw < qb["x"] or tx > qb["x"] + qb["width"] or ty + th < qb["y"] or ty > qb["y"] + qb["height"]):
+                    return True
+            return False
+        tokens = [t for t in tokens if not _in_any_qr(t)]
+
     drift_score, max_drift_px, lasers, baseline_boxes, baseline_details = run_baseline_laser_audit(
         tokens, img_width=w, img_height=h
     )
@@ -125,7 +145,8 @@ def analyze_screenshot(
         details={
             "baseline": baseline_details,
             "patch_sharpness": patch_details,
-            "tokens_extracted": len(tokens)
+            "tokens_extracted": len(tokens),
+            "tokens_in_qr_regions_excluded": tokens_before_qr_exclusion - len(tokens),
         }
     )
 
@@ -169,7 +190,8 @@ def analyze_screenshot(
             "metadata": metadata_info,
             "viewport": viewport_details,
             "rules": rule_details,
-            "c2pa": c2pa_details
+            "c2pa": c2pa_details,
+            "qr_inspection": qr_details,
         }
     )
 
@@ -192,9 +214,28 @@ def analyze_screenshot(
         is_whatsapp=is_whatsapp
     )
 
-    # 9. Encode Original Image as base64 PNG for frontend viewer
-    _, orig_png = cv2.imencode('.png', img_bgr)
-    orig_b64 = f"data:image/png;base64,{base64.b64encode(orig_png.tobytes()).decode('utf-8')}"
+    # 9. ScamShield AI-Inspired Syndicate Intelligence & Section 91 Subpoena Generation
+    entities = extract_financial_entities(tokens, qr_details)
+    syndicate_intel = evaluate_syndicate_threat(
+        entities=entities,
+        tamper_score=overall_score,
+        verdict=verdict,
+        clock_paradox=clock_paradox,
+        is_whatsapp_laundered=is_whatsapp,
+    )
+    section91 = generate_section91_subpoena(
+        report_sha256=sha256_hash,
+        filename=filename,
+        timestamp=timestamp_iso,
+        entities=entities,
+        tamper_score=overall_score,
+        verdict=verdict,
+        findings=[f.model_dump() for f in findings],
+    )
+
+    # 10. WebP base64 encoding (Scalability optimization: ~70% smaller payload than PNG)
+    _, orig_webp = cv2.imencode('.webp', img_bgr, [cv2.IMWRITE_WEBP_QUALITY, 101])
+    orig_b64 = f"data:image/webp;base64,{base64.b64encode(orig_webp.tobytes()).decode('utf-8')}"
 
     return ForensicAnalysisReport(
         file_sha256=sha256_hash,
@@ -213,5 +254,7 @@ def analyze_screenshot(
         synergy=synergy,
         findings=findings,
         all_bounding_boxes=all_boxes,
-        original_image_b64=orig_b64
+        original_image_b64=orig_b64,
+        syndicate_intelligence=syndicate_intel,
+        section91_notice=section91,
     )

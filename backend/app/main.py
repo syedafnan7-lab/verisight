@@ -21,9 +21,10 @@ from app.core.config import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: ensure golden demo samples are generated
+    # Startup: ensure golden demo samples are present without re-generating every boot
     try:
-        generate_all_samples()
+        if not any(settings.SAMPLES_DIR.glob("sample_*")):
+            generate_all_samples()
     except Exception as e:
         print(f"[Startup Warning] Could not auto-generate samples: {e}")
     yield

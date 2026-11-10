@@ -1,4 +1,8 @@
+import asyncio
 import socket
+from datetime import datetime
+from functools import lru_cache
+from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
@@ -117,15 +121,23 @@ async def get_demo_samples():
     ]
     return samples
 
+@lru_cache(maxsize=10)
+def _cached_demo_analysis(filename: str, mtime_ns: int, path_str: str) -> ForensicAnalysisReport:
+    """Caches forensic analysis of static demo fixtures so CPU isn't thrashing on repeated clicks."""
+    with open(path_str, "rb") as f:
+        content = f.read()
+    return analyze_screenshot(content, filename=filename)
+
+
 @router.post("/analyze", response_model=ForensicAnalysisReport)
 async def analyze_upload(file: UploadFile = File(...)):
-    """Upload and run full 4-layer forensic investigation on any screenshot."""
+    """Upload and run full 4-layer forensic investigation on any screenshot (non-blocking threadpool execution)."""
     content = await file.read()
     if len(content) > settings.MAX_FILE_SIZE_BYTES:
         raise HTTPException(status_code=400, detail="File size exceeds 20MB limit.")
     
     try:
-        report = analyze_screenshot(content, filename=file.filename or "upload.png")
+        report = await asyncio.to_thread(analyze_screenshot, content, filename=file.filename or "upload.png")
         return report
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Forensic investigation failed: {e!s}")
@@ -157,17 +169,16 @@ async def execute_sample_analysis(sample_id: str) -> ForensicAnalysisReport:
         from samples.generator import generate_all_samples
         generate_all_samples()
 
-    with open(sample_path, "rb") as f:
-        content = f.read()
-
-    return analyze_screenshot(content, filename=filename)
+    mtime_ns = sample_path.stat().st_mtime_ns
+    report = await asyncio.to_thread(_cached_demo_analysis, filename, mtime_ns, str(sample_path))
+    return report.model_copy(update={"timestamp": datetime.now().isoformat()})
 
 @router.post("/simulate-whatsapp", response_model=WhatsAppSimulationResponse)
 async def simulate_whatsapp(file: UploadFile = File(...)):
     """Simulates WhatsApp laundering on an uploaded image and returns before vs after comparison."""
     content = await file.read()
     try:
-        sim_response = run_whatsapp_simulation(content, filename=file.filename or "image.png")
+        sim_response = await asyncio.to_thread(run_whatsapp_simulation, content, filename=file.filename or "image.png")
         return sim_response
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Simulation failed: {e!s}")
@@ -180,7 +191,7 @@ async def mobile_upload(file: UploadFile = File(...)):
     """
     global _LATEST_MOBILE_UPLOAD
     content = await file.read()
-    report = analyze_screenshot(content, filename=file.filename or "mobile_upload.jpg")
+    report = await asyncio.to_thread(analyze_screenshot, content, filename=file.filename or "mobile_upload.jpg")
 
     _LATEST_MOBILE_UPLOAD = {
         "filename": file.filename or "mobile_upload.jpg",

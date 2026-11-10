@@ -3,7 +3,6 @@ from typing import Any
 
 import cv2
 import numpy as np
-import pywt
 
 from app.core.schemas import BoundingBox
 
@@ -25,8 +24,15 @@ def run_wavelet_noise_analysis(
 
     # 2. 2D Daubechies db4 decomposition
     # cA: approximation, (cH, cV, cD): horizontal, vertical, diagonal details
-    coeffs = pywt.dwt2(Y, 'db4')
-    cA, (cH, cV, cD) = coeffs
+    # Separable orthonormal Daubechies-4 analysis filters (periodic symmetric border).
+    low = np.array([-0.010597401785069032, 0.0328830116668852, 0.030841381835560764,
+                    -0.18703481171909309, -0.027983769416859854, 0.6308807679298587,
+                    0.7148465705529154, 0.2303778133088964], dtype=np.float32)
+    high = low[::-1].copy(); high[::2] *= -1
+    # Filter rows then columns; critically sampled detail coefficients approximate PyWavelets dwt2.
+    lo_x = cv2.filter2D(Y, cv2.CV_32F, low.reshape(1, -1), borderType=cv2.BORDER_REFLECT)
+    hi_x = cv2.filter2D(Y, cv2.CV_32F, high.reshape(1, -1), borderType=cv2.BORDER_REFLECT)
+    cD = cv2.filter2D(hi_x, cv2.CV_32F, high.reshape(-1, 1), borderType=cv2.BORDER_REFLECT)[::2, ::2]
 
     # cD represents the high-frequency diagonal noise sub-band
     cD_abs = np.abs(cD)
@@ -100,8 +106,8 @@ def run_wavelet_noise_analysis(
     heatmap_colored = cv2.applyColorMap(norm_noise, cv2.COLORMAP_COOL)
     
     # Invert so voids show dark/black and edges glow brightly
-    _, noise_png = cv2.imencode('.png', heatmap_colored)
-    wavelet_noise_b64 = f"data:image/png;base64,{base64.b64encode(noise_png.tobytes()).decode('utf-8')}"
+    _, noise_webp = cv2.imencode('.webp', heatmap_colored, [cv2.IMWRITE_WEBP_QUALITY, 101])
+    wavelet_noise_b64 = f"data:image/webp;base64,{base64.b64encode(noise_webp.tobytes()).decode('utf-8')}"
 
     # 7. Compute noise inconsistency score (0-100)
     # Calibrated primarily by localized zero-noise voids and splicing boundaries

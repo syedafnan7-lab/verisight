@@ -103,8 +103,8 @@ class ForensicAnalysisReport(BaseModel):
     image_width: int
     image_height: int
     overall_tamper_score: float
-    confidence_score: float
-    verdict: str  # "AUTHENTIC_VERIFIED", "SUSPICIOUS_ANOMALIES", "MANIPULATED_FORGERY"
+    confidence_score: float | None = None
+    verdict: str  # "AUTHENTIC_VERIFIED", "SUSPICIOUS_ANOMALIES", "MANIPULATED_FORGERY", "CORROBORATED_ANOMALIES", "REVIEW_REQUIRED", "INCONCLUSIVE"
     channel_detected: str
     layer1: Layer1SignalResult
     layer2: Layer2GeometryResult
@@ -114,6 +114,8 @@ class ForensicAnalysisReport(BaseModel):
     findings: list[ForensicFinding] = Field(default_factory=list)
     all_bounding_boxes: list[BoundingBox] = Field(default_factory=list)
     original_image_b64: str
+    syndicate_intelligence: dict[str, Any] | None = None
+    section91_notice: str | None = None
 
 class DemoSampleMeta(BaseModel):
     id: str
