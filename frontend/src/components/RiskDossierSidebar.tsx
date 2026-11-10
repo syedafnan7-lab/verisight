@@ -36,12 +36,12 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
 
   if (!report) {
     return (
-      <div className="w-96 border-l border-white/[0.08] watermelon-glass p-6 flex flex-col items-center justify-center text-center text-slate-500">
-        <Layers className="w-8 h-8 mb-3 text-slate-600 stroke-[1.5]" />
-        <span className="text-xs font-mono tracking-wider uppercase font-semibold text-slate-400">
+      <div className="w-96 border-l border-[#efebce]/10 watermelon-glass p-6 flex flex-col items-center justify-center text-center text-[#a3a380]">
+        <Layers className="w-8 h-8 mb-3 text-[#a3a380]/60 stroke-[1.5]" />
+        <span className="text-xs font-mono tracking-wider uppercase font-semibold text-[#efebce]">
           No Evidence Dossier
         </span>
-        <span className="text-[11px] text-slate-600 mt-1">
+        <span className="text-[11px] text-[#a3a380]/60 mt-1">
           Select or drop a screenshot
         </span>
       </div>
@@ -75,10 +75,10 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
     circumference - (overall_tamper_score / 100) * circumference;
 
   const gaugeColor = isAuthentic
-    ? "#10b981"
+    ? "#a3a380" // dry-sage
     : isSuspicious
-      ? "#f59e0b"
-      : "#f43f5e";
+      ? "#d6ce93" // vanilla-custard
+      : "#bb8588"; // dusty-rose
 
   const copyHash = () => {
     navigator.clipboard.writeText(file_sha256);
@@ -87,28 +87,28 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
   };
 
   return (
-    <aside className="w-96 border-l border-white/[0.08] watermelon-glass flex flex-col h-full overflow-hidden text-xs select-text">
+    <aside className="w-96 border-l border-[#efebce]/10 watermelon-glass flex flex-col h-full overflow-hidden text-xs select-text">
       {/* Sidebar Header */}
-      <div className="p-3.5 border-b border-white/[0.08] flex items-center justify-between bg-slate-950/60">
+      <div className="p-3.5 border-b border-[#efebce]/10 flex items-center justify-between bg-[#0c0e12]/80">
         <div className="flex items-center space-x-2">
-          <Fingerprint className="w-4 h-4 text-watermelon-coral" />
-          <span className="font-bold text-white tracking-wide uppercase font-mono text-[11px]">
+          <Fingerprint className="w-4 h-4 text-[#d8a48f]" />
+          <span className="font-bold text-[#efebce] tracking-wide uppercase font-mono text-[11px]">
             Risk Dossier
           </span>
         </div>
-        <span className="font-mono text-[10px] text-watermelon-emerald bg-watermelon-emerald/10 border border-watermelon-emerald/30 px-2 py-0.5 rounded-full font-semibold">
+        <span className="font-mono text-[10px] text-[#a3a380] bg-[#a3a380]/15 border border-[#a3a380]/30 px-2 py-0.5 rounded-full font-semibold">
           EVIDENCE CHAIN
         </span>
       </div>
 
       {/* Tab Selector */}
-      <div className="flex border-b border-white/[0.08] bg-slate-950/40 p-1 text-[11px] font-mono">
+      <div className="flex border-b border-[#efebce]/10 bg-[#0c0e12]/60 p-1 text-[11px] font-mono">
         <button
           onClick={() => setActiveTab("OVERVIEW")}
           className={`flex-1 py-1.5 rounded-lg text-center transition-all ${
             activeTab === "OVERVIEW"
-              ? "bg-slate-800 text-white font-bold shadow-sm"
-              : "text-slate-400 hover:text-white"
+              ? "bg-[#efebce] text-[#0c0e12] font-bold shadow-sm"
+              : "text-[#a3a380] hover:text-[#efebce]"
           }`}
         >
           Scoring
@@ -117,12 +117,12 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
           onClick={() => setActiveTab("FINDINGS")}
           className={`flex-1 py-1.5 rounded-lg text-center transition-all flex items-center justify-center space-x-1 ${
             activeTab === "FINDINGS"
-              ? "bg-slate-800 text-white font-bold shadow-sm"
-              : "text-slate-400 hover:text-white"
+              ? "bg-[#efebce] text-[#0c0e12] font-bold shadow-sm"
+              : "text-[#a3a380] hover:text-[#efebce]"
           }`}
         >
           <span>Findings</span>
-          <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-900 border border-white/10">
+          <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[#161a22] border border-[#efebce]/10">
             {findings.length}
           </span>
         </button>
@@ -130,8 +130,8 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
           onClick={() => setActiveTab("SPECS")}
           className={`flex-1 py-1.5 rounded-lg text-center transition-all ${
             activeTab === "SPECS"
-              ? "bg-slate-800 text-white font-bold shadow-sm"
-              : "text-slate-400 hover:text-white"
+              ? "bg-[#efebce] text-[#0c0e12] font-bold shadow-sm"
+              : "text-[#a3a380] hover:text-[#efebce]"
           }`}
         >
           Specs
@@ -150,7 +150,7 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
                     cx="60"
                     cy="60"
                     r={radius}
-                    className="stroke-slate-800/80"
+                    className="stroke-[#161a22]"
                     strokeWidth="10"
                     fill="none"
                   />
@@ -164,14 +164,17 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
                     strokeDasharray={circumference}
                     strokeDashoffset={strokeDashoffset}
                     strokeLinecap="round"
-                    className="transition-all duration-1000 ease-out filter drop-shadow-[0_0_6px_rgba(244,63,94,0.3)]"
+                    className="transition-all duration-1000 ease-out"
+                    style={{
+                      filter: `drop-shadow(0 0 6px ${gaugeColor}88)`,
+                    }}
                   />
                 </svg>
                 <div className="absolute flex flex-col items-center justify-center">
-                  <span className="text-2xl font-extrabold font-mono text-white">
+                  <span className="text-2xl font-extrabold font-mono text-[#efebce]">
                     {overall_tamper_score.toFixed(1)}%
                   </span>
-                  <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400">
+                  <span className="text-[9px] font-mono uppercase tracking-wider text-[#a3a380]">
                     Tamper Risk
                   </span>
                 </div>
@@ -180,28 +183,27 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
               {/* Verdict Banner */}
               <div className="mt-3 flex flex-col items-center w-full">
                 <div
-                  className={`px-3 py-1 rounded-full text-xs font-semibold tracking-wider flex items-center space-x-1.5 border ${
-                    isAuthentic
-                      ? "bg-watermelon-emerald/15 text-watermelon-mint border-watermelon-emerald/40"
-                      : isSuspicious
-                        ? "bg-amber-950/70 text-amber-300 border-amber-600/50"
-                        : "bg-watermelon-coral/15 text-watermelon-rose border-watermelon-coral/40"
-                  }`}
+                  className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider flex items-center space-x-1.5 border"
+                  style={{
+                    backgroundColor: `${gaugeColor}18`,
+                    borderColor: `${gaugeColor}40`,
+                    color: gaugeColor,
+                  }}
                 >
                   {isAuthentic ? (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-watermelon-emerald" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#a3a380]" />
                   ) : isSuspicious ? (
-                    <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
+                    <AlertCircle className="w-3.5 h-3.5 text-[#d6ce93]" />
                   ) : (
-                    <AlertTriangle className="w-3.5 h-3.5 text-watermelon-coral" />
+                    <AlertTriangle className="w-3.5 h-3.5 text-[#bb8588]" />
                   )}
                   <span>{verdict.replace(/_/g, " ")}</span>
                 </div>
 
-                <div className="flex items-center space-x-2 text-[11px] text-slate-400 mt-1.5">
+                <div className="flex items-center space-x-2 text-[11px] text-[#a3a380] mt-1.5">
                   <span>Confidence: {confidence_score.toFixed(1)}%</span>
                   <span>•</span>
-                  <span className="truncate max-w-[160px] font-mono">
+                  <span className="truncate max-w-[160px] font-mono text-[#d6ce93]">
                     {channel_detected}
                   </span>
                 </div>
@@ -210,17 +212,17 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
 
             {/* 2. Cross-Layer Spatial Synergy Banner */}
             {synergy.synergy_multiplier_applied && (
-              <div className="watermelon-glass-card border-amber-500/40 rounded-xl p-3 bg-gradient-to-r from-amber-950/30 to-amber-900/10">
-                <div className="flex items-center justify-between text-amber-300 font-semibold mb-1">
+              <div className="watermelon-glass-card border-[#d6ce93]/40 rounded-xl p-3 bg-gradient-to-r from-[#d6ce93]/10 to-transparent">
+                <div className="flex items-center justify-between text-[#d6ce93] font-semibold mb-1">
                   <div className="flex items-center space-x-1.5">
-                    <Sparkles className="w-3.5 h-3.5 animate-pulse text-amber-400" />
+                    <Sparkles className="w-3.5 h-3.5 animate-pulse text-[#d6ce93]" />
                     <span className="text-xs">Spatial IoU Synergy</span>
                   </div>
-                  <span className="px-1.5 py-0.5 rounded bg-amber-900/60 text-amber-300 font-mono text-[10px]">
+                  <span className="px-1.5 py-0.5 rounded bg-[#d6ce93]/20 text-[#d6ce93] font-mono text-[10px]">
                     x{synergy.multiplier_factor} MULTIPLIER
                   </span>
                 </div>
-                <p className="text-[11px] text-amber-200/80 leading-relaxed">
+                <p className="text-[11px] text-[#efebce]/90 leading-relaxed">
                   {synergy.synergy_explanation}
                 </p>
                 {synergy.primary_forgery_locus && (
@@ -228,7 +230,7 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
                     onClick={() =>
                       onSelectLocus(synergy.primary_forgery_locus || null)
                     }
-                    className="mt-2 w-full py-1 bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 rounded-lg font-mono text-[10px] flex items-center justify-center space-x-1.5 border border-amber-500/40 transition-colors"
+                    className="mt-2 w-full py-1 bg-[#d6ce93]/20 hover:bg-[#d6ce93]/30 text-[#d6ce93] rounded-lg font-mono text-[10px] flex items-center justify-center space-x-1.5 border border-[#d6ce93]/40 transition-colors"
                   >
                     <Target className="w-3 h-3" />
                     <span>Focus Primary Forgery Locus</span>
@@ -239,27 +241,27 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
 
             {/* 3. 4-Layer Forensic Scores Breakdown */}
             <div className="space-y-2">
-              <span className="text-[11px] font-mono text-slate-400 tracking-wider uppercase font-semibold">
+              <span className="text-[11px] font-mono text-[#a3a380] tracking-wider uppercase font-semibold">
                 4-Layer Evidentiary Scoring
               </span>
 
               {/* Layer 1 */}
               <div className="watermelon-glass-card rounded-xl p-3 space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-white">
+                  <span className="text-xs font-semibold text-[#efebce]">
                     Layer 1: Signal & Noise
                   </span>
-                  <span className="font-mono text-xs font-bold text-sky-400">
+                  <span className="font-mono text-xs font-bold text-[#a3a380]">
                     {layer1.layer_score.toFixed(1)}%
                   </span>
                 </div>
-                <div className="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden">
+                <div className="w-full bg-[#161a22] h-1.5 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-sky-500 rounded-full transition-all duration-700"
+                    className="h-full bg-[#a3a380] rounded-full transition-all duration-700"
                     style={{ width: `${layer1.layer_score}%` }}
                   />
                 </div>
-                <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono pt-0.5">
+                <div className="flex items-center justify-between text-[10px] text-[#a3a380] font-mono pt-0.5">
                   <span>ELA: {layer1.ela_score.toFixed(1)}%</span>
                   <span>db4: {layer1.wavelet_noise_score.toFixed(1)}%</span>
                   <span>Clones: {layer1.clone_count}</span>
@@ -269,20 +271,20 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
               {/* Layer 2 */}
               <div className="watermelon-glass-card rounded-xl p-3 space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-white">
+                  <span className="text-xs font-semibold text-[#efebce]">
                     Layer 2: Typography & Lasers
                   </span>
-                  <span className="font-mono text-xs font-bold text-watermelon-coral">
+                  <span className="font-mono text-xs font-bold text-[#bb8588]">
                     {layer2.layer_score.toFixed(1)}%
                   </span>
                 </div>
-                <div className="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden">
+                <div className="w-full bg-[#161a22] h-1.5 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-watermelon-coral rounded-full transition-all duration-700"
+                    className="h-full bg-[#bb8588] rounded-full transition-all duration-700"
                     style={{ width: `${layer2.layer_score}%` }}
                   />
                 </div>
-                <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono pt-0.5">
+                <div className="flex items-center justify-between text-[10px] text-[#a3a380] font-mono pt-0.5">
                   <span>Drift: +{layer2.max_baseline_drift_px.toFixed(1)}px</span>
                   <span>ΔE: {layer2.max_delta_e.toFixed(1)}</span>
                   <span>Lasers: {layer2.lasers.length}</span>
@@ -292,20 +294,20 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
               {/* Layer 3 */}
               <div className="watermelon-glass-card rounded-xl p-3 space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-white">
+                  <span className="text-xs font-semibold text-[#efebce]">
                     Layer 3: Metadata & Protocol
                   </span>
-                  <span className="font-mono text-xs font-bold text-watermelon-purple">
+                  <span className="font-mono text-xs font-bold text-[#d8a48f]">
                     {layer3.layer_score.toFixed(1)}%
                   </span>
                 </div>
-                <div className="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden">
+                <div className="w-full bg-[#161a22] h-1.5 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-watermelon-purple rounded-full transition-all duration-700"
+                    className="h-full bg-[#d8a48f] rounded-full transition-all duration-700"
                     style={{ width: `${layer3.layer_score}%` }}
                   />
                 </div>
-                <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono pt-0.5">
+                <div className="flex items-center justify-between text-[10px] text-[#a3a380] font-mono pt-0.5">
                   <span>Ratio: {layer3.viewport_aspect_ratio.split(" ")[0]}</span>
                   <span>
                     Clock: {layer3.clock_paradox_detected ? "PARADOX" : "OK"}
@@ -319,20 +321,20 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
               {/* Layer 4 */}
               <div className="watermelon-glass-card rounded-xl p-3 space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-white">
+                  <span className="text-xs font-semibold text-[#efebce]">
                     Layer 4: Ensemble & Synergy
                   </span>
-                  <span className="font-mono text-xs font-bold text-amber-400">
+                  <span className="font-mono text-xs font-bold text-[#d6ce93]">
                     {layer4.layer_score.toFixed(1)}%
                   </span>
                 </div>
-                <div className="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden">
+                <div className="w-full bg-[#161a22] h-1.5 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-amber-500 rounded-full transition-all duration-700"
+                    className="h-full bg-[#d6ce93] rounded-full transition-all duration-700"
                     style={{ width: `${layer4.layer_score}%` }}
                   />
                 </div>
-                <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono pt-0.5">
+                <div className="flex items-center justify-between text-[10px] text-[#a3a380] font-mono pt-0.5">
                   <span>
                     Synergy:{" "}
                     {synergy.synergy_multiplier_applied ? "ACTIVE" : "NONE"}
@@ -348,12 +350,12 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
 
         {activeTab === "FINDINGS" && (
           <div className="space-y-2">
-            <span className="text-[11px] font-mono text-slate-400 tracking-wider uppercase font-semibold">
+            <span className="text-[11px] font-mono text-[#a3a380] tracking-wider uppercase font-semibold">
               Findings Catalog ({findings.length})
             </span>
 
             {findings.length === 0 ? (
-              <div className="p-4 watermelon-glass-card rounded-xl text-center text-slate-500 font-mono text-[11px]">
+              <div className="p-4 watermelon-glass-card rounded-xl text-center text-[#a3a380] font-mono text-[11px]">
                 No tampering indicators identified. All layers verified authentic.
               </div>
             ) : (
@@ -361,42 +363,44 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
                 const isCritical = f.severity === "CRITICAL";
                 const isHigh = f.severity === "HIGH";
 
+                const badgeColor = isCritical
+                  ? "#bb8588"
+                  : isHigh
+                    ? "#d8a48f"
+                    : "#d6ce93";
+
                 return (
                   <div
                     key={f.id}
                     onClick={() => onSelectLocus(f.bounding_box || null)}
-                    className={`p-3 rounded-xl border transition-all cursor-pointer ${
-                      isCritical
-                        ? "bg-watermelon-darkrose/20 border-watermelon-coral/60 hover:bg-watermelon-darkrose/30"
-                        : isHigh
-                          ? "bg-amber-950/20 border-amber-600/60 hover:bg-amber-950/30"
-                          : "watermelon-glass-card hover:bg-white/[0.04]"
-                    }`}
+                    className="p-3 rounded-xl border transition-all cursor-pointer watermelon-glass-card hover:bg-white/[0.04]"
+                    style={{
+                      borderColor: isCritical ? "#bb858866" : isHigh ? "#d8a48f66" : "rgba(239, 235, 206, 0.1)",
+                    }}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-semibold text-xs text-white truncate max-w-[190px]">
+                      <span className="font-semibold text-xs text-[#efebce] truncate max-w-[190px]">
                         {f.title}
                       </span>
                       <span
-                        className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ${
-                          isCritical
-                            ? "bg-watermelon-darkrose text-watermelon-rose"
-                            : isHigh
-                              ? "bg-amber-900 text-amber-200"
-                              : "bg-sky-900 text-sky-200"
-                        }`}
+                        className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border"
+                        style={{
+                          backgroundColor: `${badgeColor}20`,
+                          borderColor: `${badgeColor}50`,
+                          color: badgeColor,
+                        }}
                       >
                         {f.severity}
                       </span>
                     </div>
 
-                    <p className="text-[11px] text-slate-300 leading-snug line-clamp-2">
+                    <p className="text-[11px] text-[#efebce]/80 leading-snug line-clamp-2">
                       {f.description}
                     </p>
 
-                    <div className="mt-2 flex items-center justify-between text-[10px] font-mono text-slate-400 border-t border-white/[0.04] pt-1.5">
+                    <div className="mt-2 flex items-center justify-between text-[10px] font-mono text-[#a3a380] border-t border-[#efebce]/10 pt-1.5">
                       <span>Layer {f.layer}</span>
-                      <span className="text-sky-400 font-semibold">
+                      <span className="text-[#d6ce93] font-semibold">
                         {f.metric_name}: {f.metric_value}
                       </span>
                     </div>
@@ -410,20 +414,20 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
         {activeTab === "SPECS" && (
           <div className="space-y-3">
             <div className="watermelon-glass-card rounded-xl p-3.5 space-y-2 text-[11px] font-mono">
-              <div className="text-[10px] text-slate-500 uppercase font-semibold">
+              <div className="text-[10px] text-[#a3a380] uppercase font-semibold">
                 Cryptographic Digest
               </div>
-              <div className="flex items-center justify-between text-slate-300 bg-slate-950/60 p-2 rounded-lg border border-white/[0.05]">
+              <div className="flex items-center justify-between text-[#efebce] bg-[#0c0e12]/80 p-2 rounded-lg border border-[#efebce]/10">
                 <span className="truncate max-w-[200px]" title={file_sha256}>
                   {file_sha256}
                 </span>
                 <button
                   onClick={copyHash}
-                  className="text-watermelon-coral hover:text-white p-1"
+                  className="text-[#d8a48f] hover:text-[#efebce] p-1"
                   title="Copy SHA-256"
                 >
                   {copiedHash ? (
-                    <Check className="w-3.5 h-3.5 text-watermelon-emerald" />
+                    <Check className="w-3.5 h-3.5 text-[#a3a380]" />
                   ) : (
                     <Copy className="w-3.5 h-3.5" />
                   )}
@@ -432,28 +436,28 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
             </div>
 
             <div className="watermelon-glass-card rounded-xl p-3.5 space-y-2 text-[11px] font-mono">
-              <div className="text-[10px] text-slate-500 uppercase font-semibold">
+              <div className="text-[10px] text-[#a3a380] uppercase font-semibold">
                 Device & Canvas Geometry
               </div>
-              <div className="space-y-1.5 text-slate-300">
+              <div className="space-y-1.5 text-[#efebce]/90">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Dimensions:</span>
+                  <span className="text-[#a3a380]">Dimensions:</span>
                   <span>{image_width} × {image_height} px</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Aspect Ratio:</span>
+                  <span className="text-[#a3a380]">Aspect Ratio:</span>
                   <span>{layer3.viewport_aspect_ratio}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Native Viewport:</span>
+                  <span className="text-[#a3a380]">Native Viewport:</span>
                   <span>{layer3.is_non_native_viewport ? "MISMATCH" : "VERIFIED"}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">WhatsApp Laundered:</span>
+                  <span className="text-[#a3a380]">WhatsApp Laundered:</span>
                   <span>{layer3.is_whatsapp_laundered ? "YES" : "NO"}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">EXIF Stripped:</span>
+                  <span className="text-[#a3a380]">EXIF Stripped:</span>
                   <span>{layer3.exif_stripped ? "YES" : "NO"}</span>
                 </div>
               </div>

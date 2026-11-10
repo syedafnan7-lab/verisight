@@ -5,72 +5,81 @@
 @layer base {
   :root {
     color-scheme: dark;
+    --dry-sage: #a3a380;
+    --vanilla-custard: #d6ce93;
+    --beige: #efebce;
+    --light-bronze: #d8a48f;
+    --dusty-rose: #bb8588;
   }
 
   body {
-    background-color: #080c16;
-    color: #f8fafc;
+    background-color: #0c0e12;
+    color: #efebce;
     font-family: "Inter", system-ui, -apple-system, sans-serif;
     overflow-x: hidden;
   }
 }
 
-/* Watermelon Glassmorphism & Surface Utilities */
+/* Custom Earthy Palette Glassmorphism */
 .watermelon-glass {
-  background: rgba(13, 21, 39, 0.75);
+  background: rgba(18, 22, 29, 0.82);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(239, 235, 206, 0.09);
+  box-shadow: inset 0 1px 0 0 rgba(239, 235, 206, 0.08);
 }
 
 .watermelon-glass-card {
-  background: linear-gradient(135deg, rgba(16, 26, 48, 0.7) 0%, rgba(10, 16, 30, 0.8) 100%);
+  background: linear-gradient(135deg, rgba(22, 27, 36, 0.75) 0%, rgba(14, 17, 23, 0.85) 100%);
   backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.07), 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(239, 235, 206, 0.09);
+  box-shadow: inset 0 1px 0 0 rgba(239, 235, 206, 0.08), 0 4px 20px -2px rgba(0, 0, 0, 0.55);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .watermelon-glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.16);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12), 0 8px 30px -4px rgba(0, 0, 0, 0.6);
+  border-color: rgba(239, 235, 206, 0.2);
+  box-shadow: inset 0 1px 0 0 rgba(239, 235, 206, 0.14), 0 8px 30px -4px rgba(0, 0, 0, 0.65);
   transform: translateY(-1px);
 }
 
-/* Subtle Watermelon Ambient Glows */
-.ambient-glow-emerald {
-  background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.07) 0%, transparent 60%);
+/* Subtle Ambient Glows */
+.ambient-glow-sage {
+  background: radial-gradient(circle at 50% 0%, rgba(163, 163, 128, 0.08) 0%, transparent 60%);
 }
 
-.ambient-glow-coral {
-  background: radial-gradient(circle at 50% 0%, rgba(244, 63, 94, 0.08) 0%, transparent 60%);
+.ambient-glow-rose {
+  background: radial-gradient(circle at 50% 0%, rgba(187, 133, 136, 0.1) 0%, transparent 60%);
 }
 
-/* Custom Watermelon Workbench Scrollbars */
+.ambient-glow-custard {
+  background: radial-gradient(circle at 50% 0%, rgba(214, 206, 147, 0.08) 0%, transparent 60%);
+}
+
+/* Scrollbars */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(8, 12, 22, 0.5);
+  background: rgba(12, 14, 18, 0.6);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(239, 235, 206, 0.15);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.24);
+  background: rgba(239, 235, 206, 0.3);
 }
 
 /* Glowing Laser Animations for Typographic Baseline Alignment */
 @keyframes laserPulse {
   0%, 100% {
-    filter: drop-shadow(0 0 2px #f43f5e) drop-shadow(0 0 8px #f43f5e);
+    filter: drop-shadow(0 0 2px #bb8588) drop-shadow(0 0 8px #bb8588);
     stroke-opacity: 0.9;
   }
   50% {
-    filter: drop-shadow(0 0 6px #f43f5e) drop-shadow(0 0 16px #f43f5e);
+    filter: drop-shadow(0 0 6px #bb8588) drop-shadow(0 0 16px #bb8588);
     stroke-opacity: 1;
   }
 }
@@ -81,11 +90,11 @@
 
 @keyframes cyanGlow {
   0%, 100% {
-    filter: drop-shadow(0 0 2px #38bdf8);
+    filter: drop-shadow(0 0 2px #a3a380);
     stroke-opacity: 0.7;
   }
   50% {
-    filter: drop-shadow(0 0 6px #38bdf8);
+    filter: drop-shadow(0 0 6px #a3a380);
     stroke-opacity: 0.95;
   }
 }

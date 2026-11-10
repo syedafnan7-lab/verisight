@@ -50,15 +50,15 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
 
   if (!report) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-500">
-        <div className="w-16 h-16 rounded-2xl bg-slate-900/80 border border-white/10 flex items-center justify-center mb-4">
-          <Layers className="w-8 h-8 text-watermelon-coral/60 animate-pulse" />
+      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-[#a3a380]">
+        <div className="w-16 h-16 rounded-2xl bg-[#161a22] border border-[#efebce]/10 flex items-center justify-center mb-4">
+          <Layers className="w-8 h-8 text-[#d8a48f] animate-pulse" />
         </div>
-        <h3 className="text-base font-semibold text-slate-300">
+        <h3 className="text-base font-semibold text-[#efebce]">
           No Forensic Evidence Loaded
         </h3>
-        <p className="text-xs text-slate-500 mt-1 max-w-sm">
-          Select one of the 5 Golden Demo Samples from the top toolbar or upload
+        <p className="text-xs text-[#a3a380]/70 mt-1 max-w-sm">
+          Select one of the 5 Golden Demo Samples from the sidebar or upload
           a custom screenshot to initialize the 4-layer inspection.
         </p>
       </div>
@@ -87,6 +87,13 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
   const isSuspicious = verdict === "SUSPICIOUS_ANOMALIES";
   const isManipulated = verdict === "MANIPULATED_FORGERY";
 
+  // Palette assignments
+  const primaryStatusColor = isAuthentic
+    ? "#a3a380" // dry-sage
+    : isSuspicious
+      ? "#d6ce93" // vanilla-custard
+      : "#bb8588"; // dusty-rose
+
   // Circular gauge math
   const radius = 54;
   const circumference = 2 * Math.PI * radius;
@@ -111,21 +118,24 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
   return (
     <div className="flex-1 overflow-y-auto p-5 space-y-6 max-w-7xl mx-auto w-full">
       {/* Top Welcome / Case Identity Row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-white/[0.06]">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-[#efebce]/10">
         <div>
-          <div className="flex items-center space-x-2 text-xs font-mono text-watermelon-emerald mb-1">
-            <span className="w-2 h-2 rounded-full bg-watermelon-emerald animate-ping" />
+          <div className="flex items-center space-x-2 text-xs font-mono mb-1" style={{ color: "#a3a380" }}>
+            <span
+              className="w-2 h-2 rounded-full animate-ping"
+              style={{ backgroundColor: primaryStatusColor }}
+            />
             <span className="tracking-wider uppercase">
               CASE EVIDENCE IDENTIFIER: #{file_sha256.substring(0, 8)}
             </span>
-            <span className="text-slate-600">•</span>
-            <span className="text-slate-400">
+            <span className="text-[#a3a380]/40">•</span>
+            <span className="text-[#d6ce93]">
               {channel_detected.replace(/_/g, " ")}
             </span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center space-x-3">
+          <h1 className="text-2xl font-bold tracking-tight text-[#efebce] flex items-center space-x-3">
             <span>Forensics Intelligence Dashboard</span>
-            <span className="text-xs px-2.5 py-0.5 rounded-full font-mono font-medium border bg-white/[0.04] border-white/10 text-slate-300">
+            <span className="text-xs px-2.5 py-0.5 rounded-full font-mono font-medium border bg-[#efebce]/[0.04] border-[#efebce]/10 text-[#d6ce93]">
               {filename || "Active Evidence Capture"}
             </span>
           </h1>
@@ -135,23 +145,23 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
         <div className="flex items-center space-x-2">
           <button
             onClick={() => onSwitchToInspector()}
-            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-watermelon-coral to-watermelon-crimson hover:from-watermelon-rose hover:to-watermelon-coral text-white text-xs font-semibold flex items-center space-x-2 shadow-lg shadow-watermelon-coral/25 transition-all"
+            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#bb8588] to-[#d8a48f] hover:from-[#d8a48f] hover:to-[#bb8588] text-[#0c0e12] text-xs font-bold flex items-center space-x-2 shadow-lg shadow-[#bb8588]/20 transition-all"
           >
-            <Eye className="w-3.5 h-3.5" />
+            <Eye className="w-3.5 h-3.5 text-[#0c0e12]" />
             <span>Launch Deep Inspector</span>
           </button>
           <button
             onClick={onOpenWhatsAppModal}
-            className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-watermelon-emerald/30 text-watermelon-mint text-xs font-medium flex items-center space-x-2 transition-all"
+            className="px-3.5 py-1.5 rounded-xl bg-[#161a22] hover:bg-[#1c212c] border border-[#a3a380]/30 text-[#a3a380] text-xs font-medium flex items-center space-x-2 transition-all"
           >
-            <Share2 className="w-3.5 h-3.5 text-watermelon-emerald" />
+            <Share2 className="w-3.5 h-3.5 text-[#a3a380]" />
             <span>WhatsApp Lab</span>
           </button>
           <button
             onClick={onOpenReportModal}
-            className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-white/10 text-slate-200 text-xs font-medium flex items-center space-x-2 transition-all"
+            className="px-3.5 py-1.5 rounded-xl bg-[#161a22] hover:bg-[#1c212c] border border-[#efebce]/10 text-[#efebce] text-xs font-medium flex items-center space-x-2 transition-all"
           >
-            <FileText className="w-3.5 h-3.5 text-sky-400" />
+            <FileText className="w-3.5 h-3.5 text-[#d6ce93]" />
             <span>Audit PDF</span>
           </button>
         </div>
@@ -161,30 +171,24 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Bento 1: Master Threat Gauge Hero (Col 1-5) */}
         <div className="lg:col-span-5 watermelon-glass-card rounded-2xl p-6 flex flex-col justify-between relative overflow-hidden">
-          {/* Subtle ambient backglow */}
+          {/* Ambient Glow */}
           <div
-            className={`absolute -right-16 -top-16 w-56 h-56 rounded-full blur-3xl opacity-20 pointer-events-none ${
-              isAuthentic
-                ? "bg-watermelon-emerald"
-                : isSuspicious
-                  ? "bg-watermelon-amber"
-                  : "bg-watermelon-coral"
-            }`}
+            className="absolute -right-16 -top-16 w-56 h-56 rounded-full blur-3xl opacity-20 pointer-events-none"
+            style={{ backgroundColor: primaryStatusColor }}
           />
 
           <div className="flex items-center justify-between mb-4">
-            <span className="text-xs font-mono tracking-wider uppercase text-slate-400 font-semibold flex items-center space-x-2">
-              <ShieldAlert className="w-4 h-4 text-slate-400" />
-              <span>Synthesized Authenticity Gauge</span>
+            <span className="text-xs font-mono tracking-wider uppercase text-[#a3a380] font-semibold flex items-center space-x-2">
+              <ShieldAlert className="w-4 h-4 text-[#d8a48f]" />
+              <span>Authenticity Risk Gauge</span>
             </span>
             <span
-              className={`text-[10px] font-mono px-2 py-0.5 rounded-full uppercase font-bold tracking-wider border ${
-                isAuthentic
-                  ? "bg-watermelon-rind/50 border-watermelon-emerald/40 text-watermelon-mint"
-                  : isSuspicious
-                    ? "bg-amber-950/50 border-amber-500/40 text-amber-300"
-                    : "bg-watermelon-darkrose/50 border-watermelon-coral/40 text-watermelon-rose"
-              }`}
+              className="text-[10px] font-mono px-2 py-0.5 rounded-full uppercase font-bold tracking-wider border"
+              style={{
+                backgroundColor: `${primaryStatusColor}20`,
+                borderColor: `${primaryStatusColor}50`,
+                color: primaryStatusColor,
+              }}
             >
               Tier {isAuthentic ? "I (Genuine)" : isSuspicious ? "II (Triage)" : "III (Manipulated)"}
             </span>
@@ -199,7 +203,7 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
                   cx="70"
                   cy="70"
                   r={radius}
-                  className="stroke-slate-800/80"
+                  className="stroke-[#161a22]"
                   strokeWidth="11"
                   fill="none"
                 />
@@ -208,27 +212,24 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
                   cx="70"
                   cy="70"
                   r={radius}
-                  stroke={
-                    isAuthentic
-                      ? "#10b981"
-                      : isSuspicious
-                        ? "#f59e0b"
-                        : "#f43f5e"
-                  }
+                  stroke={primaryStatusColor}
                   strokeWidth="11"
                   fill="none"
                   strokeDasharray={circumference}
                   strokeDashoffset={strokeDashoffset}
                   strokeLinecap="round"
-                  className="transition-all duration-1000 ease-out filter drop-shadow-[0_0_8px_rgba(244,63,94,0.3)]"
+                  className="transition-all duration-1000 ease-out"
+                  style={{
+                    filter: `drop-shadow(0 0 8px ${primaryStatusColor}66)`,
+                  }}
                 />
               </svg>
 
               <div className="absolute flex flex-col items-center justify-center text-center">
-                <span className="text-4xl font-extrabold font-mono text-white tracking-tight">
+                <span className="text-4xl font-extrabold font-mono text-[#efebce] tracking-tight">
                   {overall_tamper_score.toFixed(1)}%
                 </span>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold mt-0.5">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[#a3a380] font-semibold mt-0.5">
                   Tamper Risk Index
                 </span>
               </div>
@@ -236,29 +237,28 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
           </div>
 
           {/* Verdict Banner */}
-          <div className="mt-4 pt-4 border-t border-white/[0.06] space-y-3">
+          <div className="mt-4 pt-4 border-t border-[#efebce]/10 space-y-3">
             <div
-              className={`p-3 rounded-xl flex items-center justify-between border ${
-                isAuthentic
-                  ? "bg-watermelon-emerald/10 border-watermelon-emerald/30 text-watermelon-mint"
-                  : isSuspicious
-                    ? "bg-amber-500/10 border-amber-500/30 text-amber-300"
-                    : "bg-watermelon-coral/10 border-watermelon-coral/30 text-watermelon-rose"
-              }`}
+              className="p-3 rounded-xl flex items-center justify-between border"
+              style={{
+                backgroundColor: `${primaryStatusColor}18`,
+                borderColor: `${primaryStatusColor}40`,
+                color: primaryStatusColor,
+              }}
             >
               <div className="flex items-center space-x-2.5">
                 {isAuthentic ? (
-                  <ShieldCheck className="w-5 h-5 text-watermelon-emerald" />
+                  <ShieldCheck className="w-5 h-5 text-[#a3a380]" />
                 ) : isSuspicious ? (
-                  <AlertCircle className="w-5 h-5 text-amber-400" />
+                  <AlertCircle className="w-5 h-5 text-[#d6ce93]" />
                 ) : (
-                  <AlertTriangle className="w-5 h-5 text-watermelon-coral" />
+                  <AlertTriangle className="w-5 h-5 text-[#bb8588]" />
                 )}
                 <div>
                   <div className="text-xs font-bold tracking-wide">
                     {verdict.replace(/_/g, " ")}
                   </div>
-                  <div className="text-[10px] opacity-80">
+                  <div className="text-[10px] opacity-85">
                     {isAuthentic
                       ? "Signal, typography and viewport verify genuine"
                       : isSuspicious
@@ -278,18 +278,18 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
             </div>
 
             {/* Cryptographic SHA-256 Fingerprint */}
-            <div className="flex items-center justify-between px-3 py-2 bg-slate-950/60 rounded-xl border border-white/[0.05] text-[11px] font-mono">
-              <span className="text-slate-500">SHA-256:</span>
-              <span className="text-slate-300 truncate max-w-[200px] mx-2">
+            <div className="flex items-center justify-between px-3 py-2 bg-[#0c0e12]/80 rounded-xl border border-[#efebce]/10 text-[11px] font-mono">
+              <span className="text-[#a3a380]">SHA-256:</span>
+              <span className="text-[#efebce] truncate max-w-[200px] mx-2">
                 {file_sha256}
               </span>
               <button
                 onClick={handleCopyHash}
-                className="text-slate-400 hover:text-white p-1 transition-colors"
+                className="text-[#d8a48f] hover:text-[#efebce] p-1 transition-colors"
                 title="Copy SHA-256 Hash"
               >
                 {copiedHash ? (
-                  <Check className="w-3.5 h-3.5 text-watermelon-emerald" />
+                  <Check className="w-3.5 h-3.5 text-[#a3a380]" />
                 ) : (
                   <Copy className="w-3.5 h-3.5" />
                 )}
@@ -305,50 +305,50 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-2">
-                  <div className="w-7 h-7 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+                  <div className="w-7 h-7 rounded-lg bg-[#a3a380]/15 border border-[#a3a380]/30 flex items-center justify-center text-[#a3a380]">
                     <Waves className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-white uppercase tracking-wide">
+                    <h4 className="text-xs font-bold text-[#efebce] uppercase tracking-wide">
                       Layer 1: Signal & Noise
                     </h4>
-                    <span className="text-[10px] text-slate-500 font-mono">
+                    <span className="text-[10px] text-[#a3a380] font-mono">
                       ELA & Daubechies db4
                     </span>
                   </div>
                 </div>
-                <span className="font-mono text-sm font-bold text-sky-400">
+                <span className="font-mono text-sm font-bold text-[#d6ce93]">
                   {layer1.layer_score.toFixed(1)}%
                 </span>
               </div>
 
               {/* Progress Bar */}
-              <div className="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden mb-3">
+              <div className="w-full bg-[#161a22] h-1.5 rounded-full overflow-hidden mb-3">
                 <div
-                  className="h-full bg-gradient-to-r from-sky-500 to-indigo-500 rounded-full transition-all duration-700"
+                  className="h-full bg-gradient-to-r from-[#a3a380] to-[#d6ce93] rounded-full transition-all duration-700"
                   style={{ width: `${Math.min(100, layer1.layer_score)}%` }}
                 />
               </div>
 
               {/* Metrics grid */}
-              <div className="grid grid-cols-3 gap-2 text-[10px] font-mono text-slate-400 pt-1 border-t border-white/[0.05]">
-                <div className="bg-slate-950/40 p-1.5 rounded-lg border border-white/[0.04]">
-                  <span className="text-slate-500 block">ELA Heat:</span>
-                  <span className="text-slate-200 font-semibold">
+              <div className="grid grid-cols-3 gap-2 text-[10px] font-mono text-[#a3a380] pt-1 border-t border-[#efebce]/10">
+                <div className="bg-[#0c0e12]/60 p-1.5 rounded-lg border border-[#efebce]/10">
+                  <span className="text-[#a3a380]/70 block">ELA Heat:</span>
+                  <span className="text-[#efebce] font-semibold">
                     {layer1.ela_score.toFixed(1)}%
                   </span>
                 </div>
-                <div className="bg-slate-950/40 p-1.5 rounded-lg border border-white/[0.04]">
-                  <span className="text-slate-500 block">db4 Residual:</span>
-                  <span className="text-slate-200 font-semibold">
+                <div className="bg-[#0c0e12]/60 p-1.5 rounded-lg border border-[#efebce]/10">
+                  <span className="text-[#a3a380]/70 block">db4 Noise:</span>
+                  <span className="text-[#efebce] font-semibold">
                     {layer1.wavelet_noise_score.toFixed(1)}%
                   </span>
                 </div>
-                <div className="bg-slate-950/40 p-1.5 rounded-lg border border-white/[0.04]">
-                  <span className="text-slate-500 block">ORB Clones:</span>
+                <div className="bg-[#0c0e12]/60 p-1.5 rounded-lg border border-[#efebce]/10">
+                  <span className="text-[#a3a380]/70 block">ORB Clones:</span>
                   <span
                     className={`font-semibold ${
-                      layer1.clone_count > 0 ? "text-watermelon-coral" : "text-slate-200"
+                      layer1.clone_count > 0 ? "text-[#bb8588]" : "text-[#efebce]"
                     }`}
                   >
                     {layer1.clone_count} pairs
@@ -359,7 +359,7 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
 
             <button
               onClick={() => onSwitchToInspector()}
-              className="mt-3 w-full py-1.5 rounded-lg bg-sky-950/40 hover:bg-sky-900/50 text-sky-300 text-[11px] font-medium flex items-center justify-center space-x-1.5 border border-sky-800/40 transition-colors"
+              className="mt-3 w-full py-1.5 rounded-lg bg-[#a3a380]/15 hover:bg-[#a3a380]/25 text-[#a3a380] text-[11px] font-medium flex items-center justify-center space-x-1.5 border border-[#a3a380]/30 transition-colors"
             >
               <span>Inspect Spectral Masks</span>
               <ArrowRight className="w-3 h-3" />
@@ -371,54 +371,54 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-2">
-                  <div className="w-7 h-7 rounded-lg bg-watermelon-coral/10 border border-watermelon-coral/20 flex items-center justify-center text-watermelon-rose">
+                  <div className="w-7 h-7 rounded-lg bg-[#bb8588]/15 border border-[#bb8588]/30 flex items-center justify-center text-[#bb8588]">
                     <ScanText className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-white uppercase tracking-wide">
+                    <h4 className="text-xs font-bold text-[#efebce] uppercase tracking-wide">
                       Layer 2: Typography & Lasers
                     </h4>
-                    <span className="text-[10px] text-slate-500 font-mono">
+                    <span className="text-[10px] text-[#a3a380] font-mono">
                       MSER & Sub-pixel Baselines
                     </span>
                   </div>
                 </div>
-                <span className="font-mono text-sm font-bold text-watermelon-coral">
+                <span className="font-mono text-sm font-bold text-[#bb8588]">
                   {layer2.layer_score.toFixed(1)}%
                 </span>
               </div>
 
               {/* Progress Bar */}
-              <div className="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden mb-3">
+              <div className="w-full bg-[#161a22] h-1.5 rounded-full overflow-hidden mb-3">
                 <div
-                  className="h-full bg-gradient-to-r from-watermelon-coral to-watermelon-rose rounded-full transition-all duration-700"
+                  className="h-full bg-gradient-to-r from-[#bb8588] to-[#d8a48f] rounded-full transition-all duration-700"
                   style={{ width: `${Math.min(100, layer2.layer_score)}%` }}
                 />
               </div>
 
               {/* Metrics grid */}
-              <div className="grid grid-cols-3 gap-2 text-[10px] font-mono text-slate-400 pt-1 border-t border-white/[0.05]">
-                <div className="bg-slate-950/40 p-1.5 rounded-lg border border-white/[0.04]">
-                  <span className="text-slate-500 block">Baseline Drift:</span>
+              <div className="grid grid-cols-3 gap-2 text-[10px] font-mono text-[#a3a380] pt-1 border-t border-[#efebce]/10">
+                <div className="bg-[#0c0e12]/60 p-1.5 rounded-lg border border-[#efebce]/10">
+                  <span className="text-[#a3a380]/70 block">Drift:</span>
                   <span
                     className={`font-semibold ${
                       layer2.max_baseline_drift_px > 3
-                        ? "text-watermelon-coral"
-                        : "text-watermelon-mint"
+                        ? "text-[#bb8588]"
+                        : "text-[#a3a380]"
                     }`}
                   >
                     +{layer2.max_baseline_drift_px.toFixed(1)}px
                   </span>
                 </div>
-                <div className="bg-slate-950/40 p-1.5 rounded-lg border border-white/[0.04]">
-                  <span className="text-slate-500 block">CIELAB ΔE:</span>
-                  <span className="text-slate-200 font-semibold">
+                <div className="bg-[#0c0e12]/60 p-1.5 rounded-lg border border-[#efebce]/10">
+                  <span className="text-[#a3a380]/70 block">CIELAB ΔE:</span>
+                  <span className="text-[#efebce] font-semibold">
                     {layer2.max_delta_e.toFixed(1)}
                   </span>
                 </div>
-                <div className="bg-slate-950/40 p-1.5 rounded-lg border border-white/[0.04]">
-                  <span className="text-slate-500 block">Laser Tracks:</span>
-                  <span className="text-slate-200 font-semibold">
+                <div className="bg-[#0c0e12]/60 p-1.5 rounded-lg border border-[#efebce]/10">
+                  <span className="text-[#a3a380]/70 block">Lasers:</span>
+                  <span className="text-[#efebce] font-semibold">
                     {layer2.lasers.length} rows
                   </span>
                 </div>
@@ -427,7 +427,7 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
 
             <button
               onClick={() => onSwitchToInspector()}
-              className="mt-3 w-full py-1.5 rounded-lg bg-watermelon-darkrose/30 hover:bg-watermelon-darkrose/50 text-watermelon-rose text-[11px] font-medium flex items-center justify-center space-x-1.5 border border-watermelon-coral/30 transition-colors"
+              className="mt-3 w-full py-1.5 rounded-lg bg-[#bb8588]/15 hover:bg-[#bb8588]/25 text-[#bb8588] text-[11px] font-medium flex items-center justify-center space-x-1.5 border border-[#bb8588]/30 transition-colors"
             >
               <span>Examine Baseline Lasers</span>
               <ArrowRight className="w-3 h-3" />
@@ -439,52 +439,52 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-2">
-                  <div className="w-7 h-7 rounded-lg bg-watermelon-purple/10 border border-watermelon-purple/20 flex items-center justify-center text-watermelon-purple">
+                  <div className="w-7 h-7 rounded-lg bg-[#d8a48f]/15 border border-[#d8a48f]/30 flex items-center justify-center text-[#d8a48f]">
                     <Smartphone className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-white uppercase tracking-wide">
+                    <h4 className="text-xs font-bold text-[#efebce] uppercase tracking-wide">
                       Layer 3: Metadata & UPI
                     </h4>
-                    <span className="text-[10px] text-slate-500 font-mono">
+                    <span className="text-[10px] text-[#a3a380] font-mono">
                       Viewport DB & NPCI Rules
                     </span>
                   </div>
                 </div>
-                <span className="font-mono text-sm font-bold text-watermelon-purple">
+                <span className="font-mono text-sm font-bold text-[#d8a48f]">
                   {layer3.layer_score.toFixed(1)}%
                 </span>
               </div>
 
               {/* Progress Bar */}
-              <div className="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden mb-3">
+              <div className="w-full bg-[#161a22] h-1.5 rounded-full overflow-hidden mb-3">
                 <div
-                  className="h-full bg-gradient-to-r from-watermelon-purple to-purple-400 rounded-full transition-all duration-700"
+                  className="h-full bg-gradient-to-r from-[#d8a48f] to-[#d6ce93] rounded-full transition-all duration-700"
                   style={{ width: `${Math.min(100, layer3.layer_score)}%` }}
                 />
               </div>
 
               {/* Status items */}
-              <div className="space-y-1.5 text-[11px] pt-1 border-t border-white/[0.05]">
+              <div className="space-y-1.5 text-[11px] pt-1 border-t border-[#efebce]/10">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400">12-Digit UTR Check:</span>
+                  <span className="text-[#a3a380]">12-Digit UTR Check:</span>
                   <span
-                    className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${
+                    className={`font-mono text-[10px] px-1.5 py-0.5 rounded border ${
                       layer3.upi_utr_valid
-                        ? "bg-emerald-950 text-emerald-400 border border-emerald-800"
-                        : "bg-rose-950 text-rose-400 border border-rose-800"
+                        ? "bg-[#a3a380]/15 text-[#a3a380] border-[#a3a380]/40"
+                        : "bg-[#bb8588]/15 text-[#bb8588] border-[#bb8588]/40"
                     }`}
                   >
                     {layer3.upi_utr_valid ? "VALID CHECKSUM" : "ANOMALOUS / FAKE"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400">Clock vs Receipt:</span>
+                  <span className="text-[#a3a380]">Clock vs Receipt:</span>
                   <span
-                    className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${
+                    className={`font-mono text-[10px] px-1.5 py-0.5 rounded border ${
                       layer3.clock_paradox_detected
-                        ? "bg-rose-950 text-rose-400 border border-rose-800"
-                        : "bg-emerald-950 text-emerald-400 border border-emerald-800"
+                        ? "bg-[#bb8588]/15 text-[#bb8588] border-[#bb8588]/40"
+                        : "bg-[#a3a380]/15 text-[#a3a380] border-[#a3a380]/40"
                     }`}
                   >
                     {layer3.clock_paradox_detected ? "TEMPORAL PARADOX" : "COHERENT"}
@@ -493,7 +493,7 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
               </div>
             </div>
 
-            <div className="mt-3 flex items-center justify-between text-[10px] font-mono text-slate-500 px-1">
+            <div className="mt-3 flex items-center justify-between text-[10px] font-mono text-[#a3a380]/80 px-1">
               <span>Ratio: {layer3.viewport_aspect_ratio}</span>
               <span>Laundered: {layer3.is_whatsapp_laundered ? "YES" : "NO"}</span>
             </div>
@@ -504,26 +504,26 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-2">
-                  <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                  <div className="w-7 h-7 rounded-lg bg-[#d6ce93]/15 border border-[#d6ce93]/30 flex items-center justify-center text-[#d6ce93]">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-white uppercase tracking-wide">
+                    <h4 className="text-xs font-bold text-[#efebce] uppercase tracking-wide">
                       Layer 4: Spatial Synergy
                     </h4>
-                    <span className="text-[10px] text-slate-500 font-mono">
+                    <span className="text-[10px] text-[#a3a380] font-mono">
                       Bayesian Cross-Layer Fusion
                     </span>
                   </div>
                 </div>
-                <span className="font-mono text-xs px-2 py-0.5 rounded-full bg-amber-950/60 border border-amber-500/40 text-amber-300 font-bold">
+                <span className="font-mono text-xs px-2 py-0.5 rounded-full bg-[#d6ce93]/15 border border-[#d6ce93]/40 text-[#d6ce93] font-bold">
                   {synergy.synergy_multiplier_applied
                     ? `x${synergy.multiplier_factor} MULTIPLIER`
                     : "STANDALONE"}
                 </span>
               </div>
 
-              <p className="text-[11px] text-slate-300 leading-relaxed mb-3">
+              <p className="text-[11px] text-[#efebce]/90 leading-relaxed mb-3">
                 {synergy.synergy_explanation}
               </p>
             </div>
@@ -533,13 +533,13 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
                 onClick={() =>
                   onSwitchToInspector(synergy.primary_forgery_locus)
                 }
-                className="w-full py-1.5 rounded-lg bg-amber-950/40 hover:bg-amber-900/50 text-amber-300 text-[11px] font-medium flex items-center justify-center space-x-1.5 border border-amber-700/40 transition-colors"
+                className="w-full py-1.5 rounded-lg bg-[#d6ce93]/15 hover:bg-[#d6ce93]/25 text-[#d6ce93] text-[11px] font-medium flex items-center justify-center space-x-1.5 border border-[#d6ce93]/40 transition-colors"
               >
                 <Target className="w-3.5 h-3.5" />
                 <span>Focus Corroborated Locus</span>
               </button>
             ) : (
-              <div className="text-[10px] font-mono text-slate-500 text-center py-1 bg-slate-950/40 rounded-lg border border-white/[0.04]">
+              <div className="text-[10px] font-mono text-[#a3a380]/70 text-center py-1 bg-[#0c0e12]/60 rounded-lg border border-[#efebce]/10">
                 No cross-layer intersection anomalies found
               </div>
             )}
@@ -549,16 +549,16 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
 
       {/* Bento 3: Findings Timeline & Evidentiary Log */}
       <div className="watermelon-glass-card rounded-2xl p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-3 border-b border-white/[0.06]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-3 border-b border-[#efebce]/10">
           <div className="flex items-center space-x-2">
-            <Activity className="w-4 h-4 text-watermelon-coral" />
-            <h3 className="text-sm font-bold text-white uppercase tracking-wide">
+            <Activity className="w-4 h-4 text-[#d8a48f]" />
+            <h3 className="text-sm font-bold text-[#efebce] uppercase tracking-wide">
               Forensic Evidentiary Findings Stream ({findings.length})
             </h3>
           </div>
 
           {/* Filter Pills */}
-          <div className="flex items-center space-x-1 bg-slate-950/60 p-1 rounded-xl border border-white/[0.06] text-[11px] font-mono">
+          <div className="flex items-center space-x-1 bg-[#0c0e12]/80 p-1 rounded-xl border border-[#efebce]/10 text-[11px] font-mono">
             {(["ALL", "CRITICAL", "HIGH", "MEDIUM", "INFO"] as const).map(
               (filter) => (
                 <button
@@ -566,8 +566,8 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
                   onClick={() => setFindingsFilter(filter)}
                   className={`px-2.5 py-1 rounded-lg transition-all ${
                     findingsFilter === filter
-                      ? "bg-slate-800 text-white font-bold shadow-sm"
-                      : "text-slate-400 hover:text-white"
+                      ? "bg-[#efebce] text-[#0c0e12] font-bold shadow-sm"
+                      : "text-[#a3a380] hover:text-[#efebce]"
                   }`}
                 >
                   {filter}
@@ -580,7 +580,7 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
         {/* Findings List */}
         <div className="space-y-3">
           {filteredFindings.length === 0 ? (
-            <div className="p-8 text-center text-slate-500 font-mono text-xs">
+            <div className="p-8 text-center text-[#a3a380] font-mono text-xs">
               No findings matching the selected filter category.
             </div>
           ) : (
@@ -589,33 +589,38 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
               const isHigh = finding.severity === "HIGH";
               const isMed = finding.severity === "MEDIUM";
 
+              const badgeColor = isCrit
+                ? "#bb8588" // dusty-rose
+                : isHigh
+                  ? "#d8a48f" // light-bronze
+                  : isMed
+                    ? "#d6ce93" // vanilla-custard
+                    : "#a3a380"; // dry-sage
+
               return (
                 <div
                   key={finding.id}
-                  className="p-3.5 rounded-xl bg-slate-950/50 border border-white/[0.06] hover:border-white/[0.14] transition-all flex flex-col md:flex-row md:items-center justify-between gap-3"
+                  className="p-3.5 rounded-xl bg-[#0c0e12]/60 border border-[#efebce]/10 hover:border-[#efebce]/20 transition-all flex flex-col md:flex-row md:items-center justify-between gap-3"
                 >
                   <div className="flex items-start space-x-3">
                     <span
-                      className={`text-[10px] font-mono px-2 py-1 rounded font-bold uppercase mt-0.5 whitespace-nowrap border ${
-                        isCrit
-                          ? "bg-rose-950/80 border-rose-600/60 text-rose-300"
-                          : isHigh
-                            ? "bg-orange-950/80 border-orange-600/60 text-orange-300"
-                            : isMed
-                              ? "bg-amber-950/80 border-amber-600/60 text-amber-300"
-                              : "bg-sky-950/80 border-sky-600/60 text-sky-300"
-                      }`}
+                      className="text-[10px] font-mono px-2 py-1 rounded font-bold uppercase mt-0.5 whitespace-nowrap border"
+                      style={{
+                        backgroundColor: `${badgeColor}20`,
+                        borderColor: `${badgeColor}50`,
+                        color: badgeColor,
+                      }}
                     >
                       {finding.severity}
                     </span>
                     <div>
-                      <div className="text-xs font-semibold text-white flex items-center space-x-2">
+                      <div className="text-xs font-semibold text-[#efebce] flex items-center space-x-2">
                         <span>{finding.title}</span>
-                        <span className="text-[10px] font-mono text-slate-500">
+                        <span className="text-[10px] font-mono text-[#a3a380]/60">
                           (Layer {finding.layer})
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+                      <p className="text-[11px] text-[#efebce]/80 mt-0.5 leading-relaxed">
                         {finding.description}
                       </p>
                     </div>
@@ -623,10 +628,10 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
 
                   <div className="flex items-center space-x-3 self-end md:self-center">
                     <div className="text-right">
-                      <div className="text-[10px] font-mono text-slate-500 uppercase">
+                      <div className="text-[10px] font-mono text-[#a3a380] uppercase">
                         {finding.metric_name}
                       </div>
-                      <div className="text-xs font-mono font-bold text-slate-200">
+                      <div className="text-xs font-mono font-bold text-[#efebce]">
                         {finding.metric_value}
                       </div>
                     </div>
@@ -636,10 +641,10 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
                         onClick={() =>
                           onSwitchToInspector(finding.bounding_box)
                         }
-                        className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors border border-white/[0.06]"
+                        className="p-1.5 rounded-lg bg-[#161a22] hover:bg-[#1c212c] text-[#d6ce93] hover:text-[#efebce] transition-colors border border-[#efebce]/10"
                         title="Locate region in Deep Inspector"
                       >
-                        <Crosshair className="w-4 h-4 text-sky-400" />
+                        <Crosshair className="w-4 h-4 text-[#d6ce93]" />
                       </button>
                     )}
                   </div>

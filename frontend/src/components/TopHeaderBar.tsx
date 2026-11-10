@@ -39,7 +39,7 @@ export const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
   const isManipulated = report?.verdict === "MANIPULATED_FORGERY";
 
   return (
-    <header className="h-16 border-b border-white/[0.08] watermelon-glass px-5 flex items-center justify-between shrink-0 z-20">
+    <header className="h-16 border-b border-[#efebce]/10 watermelon-glass px-5 flex items-center justify-between shrink-0 z-20">
       {/* Left: Case Evidence Breadcrumb */}
       <div className="flex items-center space-x-3 min-w-0">
         {report ? (
@@ -47,37 +47,37 @@ export const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
             <span
               className={`w-2 h-2 rounded-full shrink-0 ${
                 isAuthentic
-                  ? "bg-watermelon-emerald shadow-[0_0_8px_#10b981]"
+                  ? "bg-[#a3a380] shadow-[0_0_8px_#a3a380]"
                   : isSuspicious
-                    ? "bg-amber-400 shadow-[0_0_8px_#f59e0b]"
-                    : "bg-watermelon-coral shadow-[0_0_8px_#f43f5e]"
+                    ? "bg-[#d6ce93] shadow-[0_0_8px_#d6ce93]"
+                    : "bg-[#bb8588] shadow-[0_0_8px_#bb8588]"
               }`}
             />
             <div className="truncate">
               <div className="flex items-center space-x-2">
-                <span className="text-xs font-bold text-white font-mono truncate">
+                <span className="text-xs font-bold text-[#efebce] font-mono truncate">
                   {report.filename || "Screenshot Evidence"}
                 </span>
                 <span
                   className={`text-[9px] font-mono px-2 py-0.5 rounded-full font-bold uppercase border ${
                     isAuthentic
-                      ? "bg-watermelon-emerald/15 text-watermelon-mint border-watermelon-emerald/40"
+                      ? "bg-[#a3a380]/15 text-[#a3a380] border-[#a3a380]/40"
                       : isSuspicious
-                        ? "bg-amber-950/70 text-amber-300 border-amber-600/50"
-                        : "bg-watermelon-coral/15 text-watermelon-rose border-watermelon-coral/40"
+                        ? "bg-[#d6ce93]/15 text-[#d6ce93] border-[#d6ce93]/40"
+                        : "bg-[#bb8588]/15 text-[#bb8588] border-[#bb8588]/40"
                   }`}
                 >
                   {report.verdict.replace(/_/g, " ")}
                 </span>
               </div>
-              <div className="text-[10px] font-mono text-slate-500 truncate">
+              <div className="text-[10px] font-mono text-[#a3a380]/70 truncate">
                 SHA-256: {report.file_sha256.slice(0, 16)}... • {report.image_width} ×{" "}
                 {report.image_height} px
               </div>
             </div>
           </div>
         ) : (
-          <div className="text-xs font-mono text-slate-500">
+          <div className="text-xs font-mono text-[#a3a380]/60">
             Awaiting Evidence Analysis...
           </div>
         )}
@@ -108,9 +108,9 @@ export const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
           itemStyle="pill"
           hoverEffect="glide"
           indicator="dot"
-          highlightColor="#f43f5e"
-          highlightTextColor="#ffffff"
-          className="shadow-md shadow-black/40"
+          highlightColor="#bb8588"
+          highlightTextColor="#efebce"
+          className="shadow-md shadow-black/40 border border-[#efebce]/10"
         />
       </div>
 
@@ -118,26 +118,26 @@ export const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
       <div className="flex items-center space-x-2">
         <button
           onClick={onUploadClick}
-          className="px-3 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-xs font-semibold text-slate-200 transition-all flex items-center space-x-1.5 border border-white/[0.08]"
+          className="px-3 py-1.5 rounded-xl bg-[#efebce]/[0.05] hover:bg-[#efebce]/[0.1] text-xs font-semibold text-[#efebce] transition-all flex items-center space-x-1.5 border border-[#efebce]/10"
         >
-          <Upload className="w-3.5 h-3.5 text-watermelon-coral" />
+          <Upload className="w-3.5 h-3.5 text-[#d8a48f]" />
           <span className="hidden sm:inline">Upload</span>
         </button>
 
         <button
           onClick={onOpenMobileModal}
-          className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-xs font-medium text-amber-300 transition-all flex items-center space-x-1.5 border border-amber-500/30"
+          className="px-3 py-1.5 rounded-xl bg-[#d6ce93]/10 hover:bg-[#d6ce93]/20 text-xs font-medium text-[#d6ce93] transition-all flex items-center space-x-1.5 border border-[#d6ce93]/30"
           title="Scan QR to live-upload from phone camera"
         >
-          <QrCode className="w-3.5 h-3.5 text-amber-400" />
+          <QrCode className="w-3.5 h-3.5 text-[#d6ce93]" />
           <span className="hidden md:inline">Judge QR</span>
         </button>
 
         <button
           onClick={onOpenReportModal}
-          className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-watermelon-coral to-watermelon-crimson hover:from-watermelon-rose hover:to-watermelon-coral text-xs font-semibold text-white transition-all flex items-center space-x-1.5 shadow-md shadow-watermelon-coral/25"
+          className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#bb8588] to-[#d8a48f] hover:from-[#d8a48f] hover:to-[#bb8588] text-xs font-semibold text-[#0c0e12] transition-all flex items-center space-x-1.5 shadow-md shadow-[#bb8588]/25"
         >
-          <FileText className="w-3.5 h-3.5" />
+          <FileText className="w-3.5 h-3.5 text-[#0c0e12]" />
           <span className="hidden sm:inline">Audit Dossier</span>
         </button>
       </div>
