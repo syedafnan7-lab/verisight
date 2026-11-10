@@ -97,6 +97,24 @@ export interface ForensicFinding {
   bounding_box?: BoundingBox;
 }
 
+export interface SyndicateIntelligence {
+  syndicate_risk_level: "CRITICAL_SYNDICATE_THREAT" | "MODERATE_REVIEW_REQUIRED" | "LOW" | string;
+  threat_indicators: string[];
+  entity_summary: {
+    payee_vpa?: string | null;
+    payee_name?: string | null;
+    utr_number?: string | null;
+    amount?: string | null;
+    qr_linked?: boolean;
+    qr_intent?: {
+      vpa?: string | null;
+      payee?: string | null;
+      amount?: string | null;
+    } | null;
+  };
+  recommended_action: string;
+}
+
 export interface ForensicAnalysisReport {
   file_sha256: string;
   filename?: string;
@@ -104,11 +122,14 @@ export interface ForensicAnalysisReport {
   image_width: number;
   image_height: number;
   overall_tamper_score: number;
-  confidence_score: number;
+  confidence_score?: number | null;
   verdict:
     | "AUTHENTIC_VERIFIED"
     | "SUSPICIOUS_ANOMALIES"
     | "MANIPULATED_FORGERY"
+    | "CORROBORATED_ANOMALIES"
+    | "REVIEW_REQUIRED"
+    | "INCONCLUSIVE"
     | string;
   channel_detected: string;
   layer1: Layer1SignalResult;
@@ -119,6 +140,8 @@ export interface ForensicAnalysisReport {
   findings: ForensicFinding[];
   all_bounding_boxes: BoundingBox[];
   original_image_b64: string;
+  syndicate_intelligence?: SyndicateIntelligence;
+  section91_notice?: string;
 }
 
 export interface DemoSampleMeta {

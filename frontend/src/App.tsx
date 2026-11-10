@@ -8,6 +8,7 @@ import { WhatsAppSimulatorModal } from "./components/WhatsAppSimulatorModal";
 import { MobileUploadModal } from "./components/MobileUploadModal";
 import { MobileUploadView } from "./components/MobileUploadView";
 import { ForensicReportModal } from "./components/ForensicReportModal";
+import { Section91NoticeModal } from "./components/Section91NoticeModal";
 import { UploadCloud } from "lucide-react";
 import {
   ForensicAnalysisReport,
@@ -56,6 +57,7 @@ export const App: React.FC = () => {
 
   const [isMobileModalOpen, setIsMobileModalOpen] = useState<boolean>(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
+  const [isSection91ModalOpen, setIsSection91ModalOpen] = useState<boolean>(false);
 
   // Load demo samples list and analyze sample_1 on startup
   useEffect(() => {
@@ -239,6 +241,7 @@ export const App: React.FC = () => {
                 onOpenWhatsAppModal={handleTriggerWhatsAppSimulation}
                 onOpenReportModal={() => setIsReportModalOpen(true)}
                 onOpenMobileModal={() => setIsMobileModalOpen(true)}
+                onOpenSection91Modal={() => setIsSection91ModalOpen(true)}
               />
             ) : (
               /* Deep Inspector Workbench */
@@ -248,6 +251,7 @@ export const App: React.FC = () => {
                   report={report}
                   selectedLocus={selectedLocus}
                   onSelectLocus={(box) => setSelectedLocus(box)}
+                  onOpenSection91Modal={() => setIsSection91ModalOpen(true)}
                 />
               </div>
             )}
@@ -278,6 +282,13 @@ export const App: React.FC = () => {
         onClose={() => setIsReportModalOpen(false)}
         report={report}
       />
+
+      {isSection91ModalOpen && report && (
+        <Section91NoticeModal
+          report={report}
+          onClose={() => setIsSection91ModalOpen(false)}
+        />
+      )}
     </div>
   );
 };

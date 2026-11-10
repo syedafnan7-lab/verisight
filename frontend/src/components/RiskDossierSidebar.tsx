@@ -24,12 +24,14 @@ interface RiskDossierSidebarProps {
   report: ForensicAnalysisReport | null;
   selectedLocus: BoundingBox | null;
   onSelectLocus: (box: BoundingBox | null) => void;
+  onOpenSection91Modal?: () => void;
 }
 
 export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
   report,
   selectedLocus,
   onSelectLocus,
+  onOpenSection91Modal,
 }) => {
   const [activeTab, setActiveTab] = useState<"OVERVIEW" | "FINDINGS" | "SPECS">("OVERVIEW");
   const [copiedHash, setCopiedHash] = useState(false);
@@ -201,7 +203,7 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
                 </div>
 
                 <div className="flex items-center space-x-2 text-[11px] text-[#a3a380] mt-1.5">
-                  <span>Confidence: {confidence_score.toFixed(1)}%</span>
+                  <span>Confidence: {confidence_score != null ? `${confidence_score.toFixed(1)}%` : "Calibrated"}</span>
                   <span>•</span>
                   <span className="truncate max-w-[160px] font-mono text-[#d6ce93]">
                     {channel_detected}
@@ -209,6 +211,20 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
                 </div>
               </div>
             </div>
+
+            {/* Section 91 Cyber Subpoena Quick Action */}
+            {onOpenSection91Modal && (
+              <button
+                onClick={onOpenSection91Modal}
+                className="w-full py-2 px-3.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 text-xs font-semibold flex items-center justify-between transition-all shadow-sm shadow-amber-500/10"
+              >
+                <div className="flex items-center space-x-2">
+                  <ShieldCheck className="w-4 h-4 text-amber-400" />
+                  <span>Section 91 Cyber Subpoena Notice</span>
+                </div>
+                <span className="text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded border border-red-500/40 font-mono font-bold">1930 Notice</span>
+              </button>
+            )}
 
             {/* 2. Cross-Layer Spatial Synergy Banner */}
             {synergy.synergy_multiplier_applied && (

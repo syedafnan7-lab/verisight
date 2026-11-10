@@ -151,7 +151,7 @@ export const ForensicReportModal: React.FC<ForensicReportModalProps> = ({
                 </strong>{" "}
                 | Calibrated Confidence:{" "}
                 <strong className="text-white print:text-black">
-                  {confidence_score.toFixed(1)}%
+                  {confidence_score != null ? `${confidence_score.toFixed(1)}%` : "Calibrated"}
                 </strong>
               </div>
             </div>

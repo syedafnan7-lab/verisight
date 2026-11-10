@@ -25,6 +25,11 @@ import {
   Crosshair,
   TrendingDown,
   TrendingUp,
+  CreditCard,
+  Building,
+  Hash,
+  QrCode,
+  Scale,
 } from "lucide-react";
 import { ForensicAnalysisReport, BoundingBox } from "../types/forensic";
 
@@ -34,6 +39,7 @@ interface BentoCaseDashboardProps {
   onOpenWhatsAppModal: () => void;
   onOpenReportModal: () => void;
   onOpenMobileModal: () => void;
+  onOpenSection91Modal: () => void;
 }
 
 export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
@@ -42,6 +48,7 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
   onOpenWhatsAppModal,
   onOpenReportModal,
   onOpenMobileModal,
+  onOpenSection91Modal,
 }) => {
   const [copiedHash, setCopiedHash] = useState(false);
   const [findingsFilter, setFindingsFilter] = useState<
@@ -139,6 +146,27 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
               {filename || "Active Evidence Capture"}
             </span>
           </h1>
+        </div>
+
+        {/* Quick Action Buttons */}
+        <div className="flex items-center space-x-2.5">
+          <button
+            onClick={onOpenSection91Modal}
+            className="px-3.5 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 text-xs font-semibold flex items-center space-x-2 transition-all shadow-md shadow-amber-500/10"
+            title="Generate Statutory Section 91 Requisition Notice for Police & Banks"
+          >
+            <ShieldAlert className="w-4 h-4 text-amber-400" />
+            <span>Section 91 Cyber Subpoena</span>
+            <span className="text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded border border-red-500/40 font-mono font-bold">1930</span>
+          </button>
+
+          <button
+            onClick={onOpenReportModal}
+            className="px-3.5 py-2 rounded-xl bg-[#efebce]/10 hover:bg-[#efebce]/15 border border-[#efebce]/15 text-[#efebce] text-xs font-medium flex items-center space-x-1.5 transition-colors"
+          >
+            <FileText className="w-3.5 h-3.5 text-[#d8a48f]" />
+            <span>Generate PDF Dossier</span>
+          </button>
         </div>
       </div>
 
@@ -244,10 +272,10 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
               </div>
               <div className="text-right">
                 <div className="text-xs font-mono font-bold">
-                  {confidence_score.toFixed(0)}%
+                  {confidence_score != null ? `${confidence_score.toFixed(0)}%` : "Calibrated"}
                 </div>
                 <div className="text-[9px] uppercase tracking-wider opacity-70">
-                  Confidence
+                  {confidence_score != null ? "Confidence" : "Triage Model"}
                 </div>
               </div>
             </div>
@@ -521,6 +549,116 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Bento 2.5: Syndicate Entity Resolution & Law Enforcement Intelligence (ScamShield AI Architecture) */}
+      {report.syndicate_intelligence && (
+        <div className="watermelon-glass-card rounded-2xl p-6 border border-amber-500/30 bg-gradient-to-br from-amber-500/[0.04] via-transparent to-transparent relative overflow-hidden">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-3 border-b border-[#efebce]/10">
+            <div className="flex items-center space-x-2.5">
+              <div className="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                <Scale className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <h3 className="text-sm font-bold text-[#efebce] uppercase tracking-wide">
+                    Syndicate Entity Resolution & Threat Network
+                  </h3>
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                    ScamShield AI Architecture
+                  </span>
+                </div>
+                <p className="text-[11px] text-[#a3a380] mt-0.5">
+                  Automated financial entity extraction, APK generator signature resolution, and statutory requisition triage
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <span className={`text-[10px] font-mono px-2.5 py-1 rounded-full uppercase font-bold tracking-wider border ${
+                report.syndicate_intelligence.syndicate_risk_level === "CRITICAL_SYNDICATE_THREAT"
+                  ? "bg-red-500/20 text-red-300 border-red-500/40"
+                  : report.syndicate_intelligence.syndicate_risk_level === "MODERATE_REVIEW_REQUIRED"
+                  ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                  : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+              }`}>
+                {report.syndicate_intelligence.syndicate_risk_level.replace(/_/g, " ")}
+              </span>
+
+              <button
+                onClick={onOpenSection91Modal}
+                className="px-3 py-1 rounded-xl bg-amber-500 text-black font-bold text-xs hover:bg-amber-400 transition-colors flex items-center space-x-1.5 shadow-sm shadow-amber-500/20"
+              >
+                <ShieldAlert className="w-3.5 h-3.5" />
+                <span>Open Subpoena Notice</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Extracted Entity Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+            <div className="p-3 rounded-xl bg-[#0c0e12]/60 border border-[#efebce]/10">
+              <div className="flex items-center space-x-1.5 text-[11px] text-[#a3a380] mb-1 font-mono">
+                <CreditCard className="w-3.5 h-3.5 text-amber-400" />
+                <span>BENEFICIARY VPA / UPI</span>
+              </div>
+              <div className="text-xs font-mono font-semibold text-[#efebce] truncate" title={report.syndicate_intelligence.entity_summary.payee_vpa || "None"}>
+                {report.syndicate_intelligence.entity_summary.payee_vpa || "Not Extracted"}
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-[#0c0e12]/60 border border-[#efebce]/10">
+              <div className="flex items-center space-x-1.5 text-[11px] text-[#a3a380] mb-1 font-mono">
+                <Building className="w-3.5 h-3.5 text-cyan-400" />
+                <span>REPORTED PAYEE</span>
+              </div>
+              <div className="text-xs font-semibold text-[#efebce] truncate">
+                {report.syndicate_intelligence.entity_summary.payee_name || "Unknown Subject"}
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-[#0c0e12]/60 border border-[#efebce]/10">
+              <div className="flex items-center space-x-1.5 text-[11px] text-[#a3a380] mb-1 font-mono">
+                <Hash className="w-3.5 h-3.5 text-emerald-400" />
+                <span>REFERENCE UTR</span>
+              </div>
+              <div className="text-xs font-mono font-semibold text-[#efebce] truncate">
+                {report.syndicate_intelligence.entity_summary.utr_number || "Fictitious / Non-standard"}
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-[#0c0e12]/60 border border-[#efebce]/10">
+              <div className="flex items-center space-x-1.5 text-[11px] text-[#a3a380] mb-1 font-mono">
+                <QrCode className="w-3.5 h-3.5 text-purple-400" />
+                <span>QR CODE INTENT</span>
+              </div>
+              <div className="text-xs font-mono font-semibold text-[#efebce] truncate">
+                {report.syndicate_intelligence.entity_summary.qr_linked ? "Decoded & Correlated" : "No QR Embedded"}
+              </div>
+            </div>
+          </div>
+
+          {/* Threat Indicators & Recommended Action */}
+          {report.syndicate_intelligence.threat_indicators.length > 0 && (
+            <div className="p-3.5 rounded-xl bg-[#0c0e12]/80 border border-amber-500/20 text-xs space-y-2">
+              <div className="text-[11px] font-mono uppercase text-amber-400 font-bold tracking-wide">
+                Identified Syndicate Threat Patterns:
+              </div>
+              <ul className="space-y-1 text-[#efebce]/90 pl-1">
+                {report.syndicate_intelligence.threat_indicators.map((indicator, idx) => (
+                  <li key={idx} className="flex items-start space-x-2">
+                    <span className="text-amber-400 font-bold">•</span>
+                    <span>{indicator}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="pt-2 border-t border-white/5 text-[11px] text-[#a3a380] flex items-center justify-between">
+                <span><strong className="text-white">Recommended Action:</strong> {report.syndicate_intelligence.recommended_action}</span>
+                <span className="font-mono text-amber-300/80">Sec 91 Ready</span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Bento 3: Findings Timeline & Evidentiary Log */}
       <div className="watermelon-glass-card rounded-2xl p-6">
