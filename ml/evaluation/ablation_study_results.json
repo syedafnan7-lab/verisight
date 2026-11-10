@@ -1,0 +1,45 @@
+{
+  "baseline": {
+    "auth_overall_score": 33.6,
+    "auth_calibrated_prob": 0.3412,
+    "splice_overall_score": 24.8,
+    "splice_calibrated_prob": 0.6328
+  },
+  "watermark_header_masked": {
+    "auth_calibrated_prob": 0.3412,
+    "delta_from_baseline": 0.0
+  },
+  "jpeg_q95": {
+    "auth_calibrated_prob": 0.3412,
+    "overall_tamper_score": 33.9,
+    "ela_score": 40.3
+  },
+  "jpeg_q80": {
+    "auth_calibrated_prob": 0.3261,
+    "overall_tamper_score": 39.6,
+    "ela_score": 0.4
+  },
+  "jpeg_q60": {
+    "auth_calibrated_prob": 0.3261,
+    "overall_tamper_score": 28.4,
+    "ela_score": 0.4
+  },
+  "scale_0.8x": {
+    "auth_calibrated_prob": 0.3412,
+    "overall_tamper_score": 36.0,
+    "ela_score": 0.4
+  },
+  "scale_1.25x": {
+    "auth_calibrated_prob": 0.426,
+    "overall_tamper_score": 42.4,
+    "ela_score": 40.1
+  },
+  "lum_shift_15": {
+    "auth_calibrated_prob": 0.3412,
+    "max_delta_e": 0.0
+  },
+  "lum_shift_-15": {
+    "auth_calibrated_prob": 0.3412,
+    "max_delta_e": 0.0
+  }
+}

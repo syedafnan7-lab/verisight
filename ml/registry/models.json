@@ -35,19 +35,20 @@
     },
     {
       "model_id": "verisight-fusion-gbdt-v1",
-      "model_version": "1.2.0",
-      "architecture": "HistGradientBoosting Decision Trees with Out-of-Fold Calibration",
+      "model_version": "1.2.1",
+      "architecture": "HistGradientBoosting Classifier with 3-fold CalibratedClassifierCV",
       "source_checkpoint": "ml/checkpoints/verisight_fusion_gbdt_v1.joblib",
       "dataset_version": "v1.0-benchmark-27",
-      "evaluation_report_ref": "docs/MODEL_EVALUATION.md",
-      "calibration_status": "CALIBRATED_ISOTONIC_SIGMOID",
+      "feature_schema_version": "1.0.0",
+      "evaluation_report_ref": "docs/UPDATED_EVALUATION.md",
+      "calibration_status": "CALIBRATED_SIGMOID_CV3",
       "hardware_requirements": {
         "min_ram_mb": 256,
         "gpu_required": false
       },
       "license_information": "MIT / Project Owned",
-      "promotion_status": "PRODUCTION",
-      "registered_at": "2026-11-11T01:49:00Z"
+      "promotion_status": "EXPERIMENTAL",
+      "registered_at": "2026-11-11T02:30:00Z"
     }
   ]
 }

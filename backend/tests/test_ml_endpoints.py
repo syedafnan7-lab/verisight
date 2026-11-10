@@ -14,7 +14,8 @@ def test_get_model_status():
     data = resp.json()
     assert "active_model_id" in data
     assert data["active_model_id"] == "verisight-fusion-gbdt-v1"
-    assert data["calibration_status"] == "CALIBRATED_ISOTONIC_SIGMOID"
+    assert "CALIBRATED" in data["calibration_status"]
+    assert data["promotion_status"] == "EXPERIMENTAL"
     assert data["ml_environment_ready"] is True
     assert len(data["available_models"]) >= 1
 

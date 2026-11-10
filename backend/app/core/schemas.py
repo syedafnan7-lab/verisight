@@ -83,6 +83,7 @@ class Layer4SemanticResult(BaseModel):
 class CrossLayerSynergy(BaseModel):
     synergy_multiplier_applied: bool = False
     multiplier_factor: float = 1.0
+    max_iou: float = 0.0
     primary_forgery_locus: BoundingBox | None = None
     synergy_explanation: str = "No cross-layer anomaly alignment detected."
 
@@ -109,12 +110,18 @@ class AssessmentDimensions(BaseModel):
 
 class ModelInferenceMetadata(BaseModel):
     model_id: str = "verisight-fusion-gbdt-v1"
-    model_version: str = "1.2.0"
-    architecture: str = "HistGradientBoosting Decision Trees with Out-of-Fold Calibration"
-    calibration_status: str = "CALIBRATED_ISOTONIC_SIGMOID"
+    model_version: str = "1.2.1"
+    architecture: str = "HistGradientBoosting Classifier with 3-fold CalibratedClassifierCV"
+    calibration_status: str = "CALIBRATED_SIGMOID_CV3"
+    promotion_status: str = "EXPERIMENTAL"
+    feature_schema_version: str = "1.0.0"
+    inference_status: str = "EXECUTED"
     calibrated_probability: float | None = None
+    raw_model_score: float | None = None
+    missing_evidence: list[str] = Field(default_factory=list)
     is_operational_triage_alert: bool = False
     is_synthetic_benchmark: bool = False
+    disclaimer: str = "EXPERIMENTAL MODEL: Evaluated on synthetic benchmark. Not validated for independent real-world legal certainty."
 
 class ForensicAnalysisReport(BaseModel):
     file_sha256: str

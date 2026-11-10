@@ -86,12 +86,15 @@ def calibrate_ensemble(
 
     l1_boxes = layer1.bounding_boxes
     l2_boxes = layer2.bounding_boxes
+    max_iou = 0.0
 
     for b1 in l1_boxes:
         for b2 in l2_boxes:
             iou = compute_box_iou(b1, b2)
+            if iou > max_iou:
+                max_iou = iou
             proximate = are_boxes_proximate(b1, b2, max_dist=25.0)
-            if iou > 0.15 or proximate:
+            if (iou > 0.15 or proximate) and not synergy_applied:
                 synergy_applied = True
                 synergy_factor = settings.CROSS_LAYER_SYNERGY_MULTIPLIER
                 
@@ -117,9 +120,6 @@ def calibrate_ensemble(
                     f"Cross-Layer Synergy Triggered: Physical signal anomaly '{b1.label}' spatial footprint "
                     f"intersects typographic anomaly '{b2.label}' (IoU={iou:.2f}). 1.35x confidence boost applied."
                 )
-                break
-        if synergy_applied:
-            break
 
     if primary_locus:
         all_boxes.insert(0, primary_locus)
@@ -295,6 +295,7 @@ def calibrate_ensemble(
     synergy = CrossLayerSynergy(
         synergy_multiplier_applied=synergy_applied,
         multiplier_factor=synergy_factor,
+        max_iou=round(float(max_iou), 4),
         primary_forgery_locus=primary_locus,
         synergy_explanation=synergy_explanation
     )

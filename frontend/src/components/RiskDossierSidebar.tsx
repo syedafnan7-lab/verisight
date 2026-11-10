@@ -193,6 +193,131 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
           </div>
         )}
 
+        {/* Forensic ML Engine & Decoupled Dimensions (Phase 8 Parity) */}
+        <div className="bg-[#070b14] border border-[#1e293b] rounded-xl p-3.5 shadow-md space-y-3">
+          {/* Header & Status Badges */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-1.5">
+              <Zap className="w-4 h-4 text-amber-400" />
+              <span className="font-semibold text-xs text-[#f1f5f9] tracking-wide">
+                ML Fusion Engine
+              </span>
+            </div>
+            <div className="flex items-center space-x-1 font-mono text-[9px]">
+              <span className="px-1.5 py-0.5 rounded font-bold bg-amber-950/80 text-amber-300 border border-amber-700/60">
+                {report.model_metadata?.promotion_status || "EXPERIMENTAL MODEL"}
+              </span>
+              <span className="px-1.5 py-0.5 rounded bg-[#1e293b] text-[#94a3b8] border border-[#334155]">
+                {report.model_metadata?.inference_status || "EXECUTED"}
+              </span>
+            </div>
+          </div>
+
+          {/* Model Identification Specs */}
+          <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono bg-[#0b1120] p-2 rounded-lg border border-[#1e293b]">
+            <div>
+              <span className="text-[#64748b] block text-[9px]">ACTIVE MODEL:</span>
+              <span className="text-[#38bdf8] truncate block" title={report.model_metadata?.model_id || "verisight-fusion-gbdt-v1"}>
+                {report.model_metadata?.model_id || "verisight-fusion-gbdt-v1"}
+              </span>
+            </div>
+            <div>
+              <span className="text-[#64748b] block text-[9px]">VERSION / SCHEMA:</span>
+              <span className="text-white block">
+                v{report.model_metadata?.model_version || "1.2.1"} · s{report.model_metadata?.feature_schema_version || "1.0.0"}
+              </span>
+            </div>
+          </div>
+
+          {/* Calibrated Probability Readout */}
+          <div className="p-2.5 rounded-lg bg-[#0b1120] border border-[#1e293b] space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-mono text-[#94a3b8]">Calibrated P(Tampered | x):</span>
+              <span className="font-mono text-sm font-bold text-amber-400">
+                {report.model_metadata?.calibrated_probability != null
+                  ? `${(report.model_metadata.calibrated_probability * 100).toFixed(1)}%`
+                  : "N/A"}
+              </span>
+            </div>
+            <div className="w-full bg-[#1e293b] h-1.5 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-amber-500 rounded-full transition-all duration-700"
+                style={{
+                  width: `${(report.model_metadata?.calibrated_probability ?? 0) * 100}%`,
+                }}
+              />
+            </div>
+            <p className="text-[9px] text-[#64748b] leading-tight">
+              Platt sigmoid calibration (cv=3). Disclaimer: Experimental estimate on synthetic benchmark. Not validated for legal certainty.
+            </p>
+          </div>
+
+          {/* Decoupled 4 Forensic Dimensions */}
+          <div className="space-y-1.5">
+            <span className="text-[10px] font-mono text-[#64748b] uppercase tracking-wider block font-semibold">
+              Decoupled Assessment Dimensions
+            </span>
+            <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono">
+              <div className="bg-[#0b1120] p-1.5 rounded border border-[#1e293b]">
+                <span className="text-[#64748b] block text-[9px]">A: IMAGE INTEGRITY</span>
+                <span className={`font-bold ${
+                  report.assessment_dimensions?.image_integrity_status === "INTACT"
+                    ? "text-emerald-400"
+                    : "text-rose-400"
+                }`}>
+                  {report.assessment_dimensions?.image_integrity_status || "INTACT"}
+                </span>
+              </div>
+              <div className="bg-[#0b1120] p-1.5 rounded border border-[#1e293b]">
+                <span className="text-[#64748b] block text-[9px]">B: TEXT CONSISTENCY</span>
+                <span className={`font-bold ${
+                  report.assessment_dimensions?.text_consistency_status === "CONSISTENT"
+                    ? "text-emerald-400"
+                    : "text-amber-400"
+                }`}>
+                  {report.assessment_dimensions?.text_consistency_status || "CONSISTENT"}
+                </span>
+              </div>
+              <div className="bg-[#0b1120] p-1.5 rounded border border-[#1e293b] col-span-2">
+                <span className="text-[#64748b] block text-[9px]">C: PAYMENT SETTLEMENT</span>
+                <span className="text-amber-300 font-bold block truncate">
+                  {report.assessment_dimensions?.payment_verification_status || "INDEPENDENT_SOURCE_QUERY_REQUIRED"}
+                </span>
+                <span className="text-[8.5px] text-[#94a3b8] leading-tight block mt-0.5">
+                  Screenshots cannot prove financial settlement; independent banking log query mandatory.
+                </span>
+              </div>
+              <div className="bg-[#0b1120] p-1.5 rounded border border-[#1e293b] col-span-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[#64748b] text-[9px]">D: FORENSIC UNCERTAINTY</span>
+                  <span className="text-sky-400 font-bold">
+                    {report.assessment_dimensions?.forensic_uncertainty_status || "HIGH_CONFIDENCE"}
+                  </span>
+                </div>
+                <span className="text-[8.5px] text-[#94a3b8] leading-tight block mt-0.5">
+                  {report.assessment_dimensions?.uncertainty_explanation || "Sufficient SNR and typographic resolution."}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Missing Evidence Indicators */}
+          {report.model_metadata?.missing_evidence && report.model_metadata.missing_evidence.length > 0 && (
+            <div className="bg-rose-950/20 border border-rose-900/40 rounded-lg p-2 space-y-1">
+              <span className="text-[9px] font-mono text-rose-300 uppercase tracking-wider block font-semibold">
+                Missing Evidence Caveats ({report.model_metadata.missing_evidence.length})
+              </span>
+              <ul className="list-disc list-inside text-[9px] text-rose-200/80 space-y-0.5 font-mono">
+                {report.model_metadata.missing_evidence.map((item, idx) => (
+                  <li key={idx} className="truncate" title={item}>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
         {/* 2. Cross-Layer Spatial IoU Synergy Banner */}
         {synergy.synergy_multiplier_applied && (
           <div className="bg-amber-950/30 border border-amber-500/60 rounded-xl p-3 shadow-md shadow-amber-500/10">

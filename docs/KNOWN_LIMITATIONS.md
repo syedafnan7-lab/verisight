@@ -1,61 +1,63 @@
-# VERISIGHT — KNOWN LIMITATIONS & SCIENTIFIC DEFICIENCY AUDIT
+# VeriSight Known Limitations & External Validation Boundaries
 
-**Date:** 2026-11-11  
-**Author:** Principal Research Engineer & Forensic ML Architect  
-**Project:** VeriSight (Adaptive Digital Evidence Forensics)  
-**Document Ref:** `docs/KNOWN_LIMITATIONS.md`  
-**Compliance Mandate:** Section 17 Final Decision Report & Defensibility Framework  
+**Document Version:** 1.0.0  
+**Status Classification:** `EXPERIMENTAL`  
+**Last Updated:** 2026-11-11  
 
 ---
 
-## 1. Executive Scientific Status Matrix
+## 1. Classification & Status Boundaries
 
-| Question / Dimension | Assessment Status | Forensic Reality & Experimental Evidence |
-| :--- | :--- | :--- |
-| **1. Reviewed Research Approaches** | **VERIFIED** | Error Level Analysis (Krawetz 2007), Noise Inconsistency (Lukas et al. 2006, Mahdian & Saic 2009), Copy-Move Keypoint matching (Amerini 2011), Multi-layer learned feature fusion (Cozzolino et al. 2015, Bayar & Stamm 2018). |
-| **2. Reproductions Built & Tested** | **VERIFIED** | 4-Layer Deterministic Pipeline (ELA, Wavelet Daubechies-4, SIFT/ORB keypoints, heuristic OCR geometry) + 8-dimensional feature fusion (Logistic & GBDT). |
-| **3. Accessible Datasets** | **VERIFIED** | CASIA v2.0 (manipulated photographic, non-screenshot), COVERAGE (copy-move photographic), and VeriSight-27 screenshot benchmark corpus (synthetic GPAY/PhonePe/Paytm screenshots under MIT/Project ownership). |
-| **4. Permitted Licenses** | **VERIFIED** | Public benchmarks (CASIA/COVERAGE) are non-commercial academic research only. Commercial deployment relies strictly on project-owned synthetically generated test sets. |
-| **5. Hardware Budget** | **VERIFIED** | Tested on consumer-grade CPU/CUDA GPU. Full foundation models (CAT-Net, TruFor) require 8GB+ VRAM not guaranteed in lightweight local edge deployments; CPU-first GBDT inference (< 3ms) selected for production stability. |
-| **6. Top Model on Pilot Data** | **VERIFIED** | Calibrated GBDT Fusion achieved **0.9286 ROC-AUC**, Brier Score **0.1176**, outperforming Heuristic Baseline (0.6126 ROC-AUC) on the 27-sample benchmark. |
-| **7. Fine-Tuning Justification** | **NOT JUSTIFIED** | Fine-tuning deep CNN/ViT backbones on small (<1000) screenshot datasets causes severe catastrophic forgetting and overfits to rendering font artifacts. Rejected. |
-| **8. Feature Fusion Justification** | **VERIFIED** | Combining multi-domain signals (spatial ELA residual, wavelet variance, keypoint ratio, typographic baseline drift) improved ROC-AUC from 0.6126 to 0.9286 (+51.5%). |
-| **9. Generalization to Unseen Sources**| **EXPERIMENTAL** | Cross-app generalization tested on WhatsApp transcoding. Double-compression reduces ELA anomaly contrast by up to 64%, leading to elevated false negatives on heavily compressed images. |
-| **10. False-Positive Rate @ 95% Recall**| **KNOWN DEFECT (0.9231)**| To catch 95% of subtle font splices, the uncalibrated FPR is high (0.9231). Mitigated by separating triage index (87.0) from calibrated probability and requiring human confirmation. |
-| **11. Calibration Quality** | **VERIFIED** | Platt sigmoid scaling achieves Brier score 0.1176. Raw scores are never presented as true fraud probabilities. |
-| **12. What Remains Unproven** | **NOT VERIFIED** | Direct mathematical proof that a specific individual generated the screenshot; proof of bank balance; proof of transaction routing without external banking settlement API logs. |
-| **13. Next Engineering Phase** | **PLANNED** | Integration of secure banking aggregator webhooks (Account Aggregator / NPCI Sahamati framework) to settle Dimension C definitively. |
+To prevent misleading claims of forensic infallibility or production certainty, all core components are formally classified under strict status designations:
+
+| Dimension / Component | Status | Empirical Rationale |
+|:---|:---:|:---|
+| **Pipeline Feature Parity** | `VERIFIED` | 8-fixture test suite proves offline and live extraction match at $\Delta = 0.0000$. |
+| **GBDT Serving Execution** | `VERIFIED` | `verisight_fusion_gbdt_v1.joblib` loaded directly via joblib; legacy bypass removed. |
+| **CIELAB Semantic Bug Fix** | `VERIFIED` | Measures background patch discontinuity ($\Delta E < 2.5$ on clean images); $1.000$ saturation eliminated. |
+| **Model Promotion Status** | `EXPERIMENTAL` | Evaluated strictly on 27 synthetic benchmark receipts. Not promoted to `PRODUCTION`. |
+| **Independent External Validation** | `UNVERIFIED` | No external real-world consumer dataset has been evaluated. Generalization remains unproven. |
+| **Standalone Financial Settlement** | `BLOCKED` | Digital screenshots cannot prove banking transfer; NPCI settlement query is mandatory. |
 
 ---
 
-## 2. Exhaustive Analysis of Known Limitations
+## 2. Benchmark Dataset Limitations ($N=27$)
 
-### Limitation 1: Social Media Transcoding Destroys High-Frequency Forensics
-* **Physical Phenomenon:** WhatsApp, Telegram, and Discord re-encode screenshots using aggressive chroma subsampling (`4:2:0`) and DCT quantization matrices (quality factor $Q \approx 50-70$).
-* **Impact:** High-frequency Daubechies-4 wavelet detail coefficients and JPEG ELA residuals are smoothed. Spliced text inserted *before* WhatsApp transmission displays identical compression boundaries as the container image.
-* **Forensic Guardrail:** When `is_whatsapp` or WhatsApp metadata is detected, VeriSight downgrades the confidence level to `MODERATE_UNCERTAINTY` or `INCONCLUSIVE` and notifies investigators that signal-level proof is masked by secondary compression.
-
-### Limitation 2: Native Android/iOS Font Rasterization Variance
-* **Physical Phenomenon:** Different mobile OS builds (OneUI, MIUI, iOS, Pixel OS) employ proprietary anti-aliasing, subpixel font hinting, and dynamic HDR tone mapping.
-* **Impact:** Typographic baseline alignment and CIELAB patch $\Delta E$ can flag authentic text as anomalous if an unfamiliar font rasterizer is encountered.
-* **Forensic Guardrail:** Dimension B text analysis results are marked as circumstantial layout heuristics, not mathematical proofs of forgery.
-
-### Limitation 3: The Screenshot Epistemology Boundary
-* **Core Doctrine:** **A screenshot can never prove payment settlement.**
-* **Risk:** Even a 100% authentic, untouched screenshot can be generated in a genuine app for a payment that was subsequently reversed, charged back, or failed at the clearinghouse level. Conversely, a simulated UI screenshot in a demo app may be bit-for-bit identical to a genuine banking screenshot.
-* **Forensic Guardrail:** Dimension C (Payment Verification) is decoupled from Image Integrity. The system displays a clear warning: *"Screenshot verification evaluates image pixel integrity only. Financial settlement confirmation requires independent banking/NPCI gateway logs."*
-
-### Limitation 4: Adversarial Anti-Forensic Retouching
-* **Physical Phenomenon:** Fraudsters utilizing Gaussian blurring, additive Poisson noise, or whole-image screenshot re-capture (taking a screenshot of a modified image) harmonize pixel noise statistics.
-* **Forensic Guardrail:** VeriSight flags whole-image uniform noise signatures and warns that adversarial smoothing may be present.
+1. **Synthetic Nature of Dataset:**
+   All 27 samples in `v1.0-benchmark-27` were created using a PIL/OpenCV image synthesis pipeline simulating Google Pay, PhonePe, and Paytm receipts. While realistic, synthetic generation cannot replicate the diversity of physical smartphone screen captures, camera re-photographing (Moiré patterns), OS-level antialiasing, and device-specific display color profiles.
+2. **Small Sample Size:**
+   With 20 development samples and 7 held-out test samples, individual sub-categories (e.g., Copy-Move with $N=3$, DOM edits with $N=3$) have wide binomial confidence intervals. A single classification error shifts test accuracy by $14.3\%$.
+3. **Template Bias:**
+   The majority of synthetic samples utilize standard Android Google Pay-style cards. Third-party banking apps (BHIM, CRED, Amazon Pay, YONO SBI) with custom layouts and dark/light gradients remain unvalidated.
 
 ---
 
-## 3. Statutory & Courtroom Admissibility Standards
+## 3. Generator Artifact & Ablation Analysis
 
-1. **Indian Evidence Act / BSA Section 63 (formerly Section 65B):**
-   * Electronic evidence requires a contemporaneous certificate specifying device integrity, hash verification (SHA-256), and chain of custody.
-   * VeriSight automatically embeds the exact SHA-256 checksum and immutable timestamps in the generated Section 91 Cyber Subpoena notice.
-2. **Daubert Standard (Scientific Admissibility):**
-   * Forensics tools must declare their known or potential error rates.
-   * VeriSight explicitly logs ROC-AUC, Brier score, and benchmark confusion matrices in every case dossier instead of presenting black-box certainty.
+A controlled ablation experiment was conducted (`ml/experiments/run_ablation_study.py`) to determine whether the trained GBDT model exploits generator shortcuts rather than genuine forensic tampering signals:
+
+### A. Watermark & Header Banner Removal
+- **Hypothesis:** The model might detect synthetic receipts by identifying watermark artifacts or header banner edges.
+- **Test:** Masked top 12% and bottom 10% of the image with the mean card background color.
+- **Finding:** Calibrated probability on `auth_01` remained identical ($P = 0.3412$, $\Delta = 0.0000$). The model does not rely on banner edges or watermarks.
+
+### B. Transcoding & Compression Perturbations
+- **Hypothesis:** Heavy compression will induce spurious ELA or wavelet void alarms on clean images.
+- **Test:** Re-compressed clean images at JPEG $Q \in \{95, 80, 60\}$.
+- **Finding:** Probability remained well below fraud threshold ($P \approx 0.3261$). However, on tampered images, lossy WhatsApp recompression was shown to suppress high-frequency ELA residuals, resulting in 1 false negative on the held-out test set (`manip_wa_splice_03`).
+
+### C. Resolution & Display Scaling
+- **Hypothesis:** Scaling or non-native viewport resolutions degrade sub-pixel baseline OLS and DCT block alignments.
+- **Test:** Resized images by $0.8\times$ and $1.25\times$.
+- **Finding:** At $1.25\times$ scaling, interpolation artifacts caused ELA noise to rise slightly ($P = 0.4260$, still below $0.50$). For images with width $< 300\text{px}$, algorithmic SNR collapses, requiring the pipeline to return `INCONCLUSIVE`.
+
+---
+
+## 4. Fundamental Forensic Boundaries
+
+1. **Screenshots Are Not Bank Settlements:**
+   A pixel-perfect, completely authentic screenshot can still be paired with an uncompleted, reversed, or fake financial transaction. Independent confirmation against bank ledger APIs or NPCI UTR settlement logs is mandatory before disbursing funds or releasing goods.
+2. **Anti-Forensic Attacks:**
+   Adversaries who re-photograph screens with a smartphone camera (display re-capture) or apply adversarial noise filtering can disguise digital splicing boundaries.
+3. **Inconclusive Determinations:**
+   When an image has been transcoded multiple times or resized below 300px, the engine refuses to output high-confidence predictions, explicitly returning `MODERATE_UNCERTAINTY` or `INCONCLUSIVE`.
