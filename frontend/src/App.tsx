@@ -8,6 +8,7 @@ import { MobileUploadView } from "./components/MobileUploadView";
 import { ForensicReportModal } from "./components/ForensicReportModal";
 import { Section91NoticeModal } from "./components/Section91NoticeModal";
 import { EvidenceIntakeModal } from "./components/EvidenceIntakeModal";
+import { RiskThresholdModal } from "./components/RiskThresholdModal";
 import { AtmosphericBackground } from "./components/ui/AtmosphericBackground";
 import {
   ForensicAnalysisReport,
@@ -22,6 +23,13 @@ import {
   simulateWhatsApp,
   fetchHealth,
 } from "./services/api";
+import {
+  evaluateRiskState,
+  getSavedCriticalThreshold,
+  saveCriticalThreshold,
+  applyRiskCssVariables,
+  RiskState,
+} from "./services/riskTheme";
 
 export const App: React.FC = () => {
   const isMobileMode =
@@ -49,6 +57,46 @@ const DesktopWorkbench: React.FC = () => {
   const [activeStage, setActiveStage] = useState<
     "INTAKE" | "ANALYSIS" | "CANVAS" | "RISK" | "DOSSIER"
   >("CANVAS");
+
+  // Configurable Risk Threshold State (Default 87.0)
+  const [criticalThreshold, setCriticalThreshold] = useState<number>(
+    getSavedCriticalThreshold,
+  );
+  const [isThresholdModalOpen, setIsThresholdModalOpen] = useState(false);
+
+  // Collapsible Dossier State
+  const [isDossierCollapsed, setIsDossierCollapsed] = useState<boolean>(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      return localStorage.getItem("verisight_dossier_collapsed") === "true";
+    }
+    return false;
+  });
+
+  const handleToggleDossier = () => {
+    setIsDossierCollapsed((prev) => {
+      const next = !prev;
+      if (typeof window !== "undefined" && window.localStorage) {
+        localStorage.setItem("verisight_dossier_collapsed", String(next));
+      }
+      return next;
+    });
+  };
+
+  const handleSaveThreshold = (newThreshold: number) => {
+    saveCriticalThreshold(newThreshold);
+    setCriticalThreshold(newThreshold);
+  };
+
+  // Centralized Dynamic Risk State
+  const riskState: RiskState = evaluateRiskState(
+    report?.overall_tamper_score,
+    criticalThreshold,
+  );
+
+  // Apply CSS custom properties to documentElement whenever riskState updates
+  useEffect(() => {
+    applyRiskCssVariables(riskState);
+  }, [riskState]);
 
   // Modals state
   const [isEvidenceIntakeOpen, setIsEvidenceIntakeOpen] = useState<boolean>(false);
@@ -188,15 +236,16 @@ const DesktopWorkbench: React.FC = () => {
 
   return (
     <div className="relative flex h-[100dvh] min-h-[100dvh] w-full flex-col overflow-hidden bg-[#070b14] text-[#f8fafc] md:h-screen md:min-h-0">
-      {/* Subtle Atmospheric Grid Background */}
-      <AtmosphericBackground />
+      {/* Dynamic Risk Atmospheric Background */}
+      <AtmosphericBackground riskState={riskState} />
 
-      {/* Top Command Bar */}
+      {/* Top Command Bar (Simplified single 60px row + compact scenario popover + actions menu) */}
       <TopCommandBar
         databaseStatus={databaseStatus}
         demoSamples={demoSamples}
         selectedSampleId={selectedSampleId}
         report={report}
+        riskState={riskState}
         onSelectSample={handleSelectSample}
         onFileUpload={handleFileUpload}
         onOpenIntakeModal={() => setIsEvidenceIntakeOpen(true)}
@@ -204,6 +253,7 @@ const DesktopWorkbench: React.FC = () => {
         onOpenMobileModal={() => setIsMobileModalOpen(true)}
         onOpenReportModal={() => setIsReportModalOpen(true)}
         onOpenSection91Modal={() => setIsSection91ModalOpen(true)}
+        onOpenThresholdModal={() => setIsThresholdModalOpen(true)}
         onStageSelect={handleStageSelect}
         activeStage={activeStage}
         isLoading={isLoading}
@@ -235,21 +285,31 @@ const DesktopWorkbench: React.FC = () => {
         </div>
       )}
 
-      {/* Main Forensic Investigation Workbench */}
+      {/* Main Forensic Investigation Workbench (~72% evidence canvas / 28% collapsible dossier) */}
       <div className="relative z-10 flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row md:overflow-hidden">
         {/* Centerpiece Evidence Workspace */}
         <ForensicViewer
           report={report}
           selectedLocus={selectedLocus}
           onSelectLocus={(box) => setSelectedLocus(box)}
+          riskState={riskState}
+          onOpenSection91={() => setIsSection91ModalOpen(true)}
+          onOpenDossier={() => setIsReportModalOpen(true)}
+          onOpenThresholdModal={() => setIsThresholdModalOpen(true)}
+          isDossierCollapsed={isDossierCollapsed}
+          onToggleDossier={handleToggleDossier}
         />
 
-        {/* Right Forensic Risk Dossier */}
+        {/* Right Forensic Risk Dossier (Collapsible to 52px rail or full 384px) */}
         <RiskDossierSidebar
           report={report}
           selectedLocus={selectedLocus}
+          riskState={riskState}
           onSelectLocus={(box) => setSelectedLocus(box)}
           onOpenSection91Modal={() => setIsSection91ModalOpen(true)}
+          onOpenThresholdModal={() => setIsThresholdModalOpen(true)}
+          isCollapsed={isDossierCollapsed}
+          onToggleCollapse={handleToggleDossier}
         />
       </div>
 
@@ -270,7 +330,16 @@ const DesktopWorkbench: React.FC = () => {
         isLoading={isLoading}
       />
 
-      {/* WhatsApp Re-Compression & Launderer Simulator Modal */}
+      {/* Configurable Risk Threshold Modal */}
+      <RiskThresholdModal
+        isOpen={isThresholdModalOpen}
+        onClose={() => setIsThresholdModalOpen(false)}
+        currentThreshold={criticalThreshold}
+        currentScore={report?.overall_tamper_score}
+        onSaveThreshold={handleSaveThreshold}
+      />
+
+      {/* WhatsApp Re-Compression Simulator Modal */}
       <WhatsAppSimulatorModal
         isOpen={isWhatsAppModalOpen}
         onClose={() => setIsWhatsAppModalOpen(false)}
