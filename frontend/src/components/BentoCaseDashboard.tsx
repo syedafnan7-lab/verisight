@@ -140,31 +140,6 @@ export const BentoCaseDashboard: React.FC<BentoCaseDashboardProps> = ({
             </span>
           </h1>
         </div>
-
-        {/* Quick Action Group */}
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => onSwitchToInspector()}
-            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#bb8588] to-[#d8a48f] hover:from-[#d8a48f] hover:to-[#bb8588] text-[#0c0e12] text-xs font-bold flex items-center space-x-2 shadow-lg shadow-[#bb8588]/20 transition-all"
-          >
-            <Eye className="w-3.5 h-3.5 text-[#0c0e12]" />
-            <span>Launch Deep Inspector</span>
-          </button>
-          <button
-            onClick={onOpenWhatsAppModal}
-            className="px-3.5 py-1.5 rounded-xl bg-[#161a22] hover:bg-[#1c212c] border border-[#a3a380]/30 text-[#a3a380] text-xs font-medium flex items-center space-x-2 transition-all"
-          >
-            <Share2 className="w-3.5 h-3.5 text-[#a3a380]" />
-            <span>WhatsApp Lab</span>
-          </button>
-          <button
-            onClick={onOpenReportModal}
-            className="px-3.5 py-1.5 rounded-xl bg-[#161a22] hover:bg-[#1c212c] border border-[#efebce]/10 text-[#efebce] text-xs font-medium flex items-center space-x-2 transition-all"
-          >
-            <FileText className="w-3.5 h-3.5 text-[#d6ce93]" />
-            <span>Audit PDF</span>
-          </button>
-        </div>
       </div>
 
       {/* Main Bento Grid */}

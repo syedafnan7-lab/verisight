@@ -206,55 +206,52 @@ export const App: React.FC = () => {
         </div>
       )}
 
-      {/* Left Navigation Sidebar (The whole control bar comes to the side!) */}
-      <NavigationSidebar
-        demoSamples={demoSamples}
-        selectedSampleId={selectedSampleId}
-        onSelectSample={handleSelectSample}
-        onFileUpload={handleFileUpload}
-        onOpenWhatsAppModal={handleTriggerWhatsAppSimulation}
-        onOpenMobileModal={() => setIsMobileModalOpen(true)}
-        onOpenReportModal={() => setIsReportModalOpen(true)}
-        isLoading={isLoading}
-        activeView={activeView}
-        onViewChange={(v) => setActiveView(v)}
-      />
-
-      {/* Main Right Workspace Area */}
-      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
-        {/* Top Header Bar featuring React Bits PillNav */}
-        <TopHeaderBar
-          report={report}
-          activeView={activeView}
-          onViewChange={(v) => setActiveView(v)}
-          onOpenReportModal={() => setIsReportModalOpen(true)}
-          onOpenMobileModal={() => setIsMobileModalOpen(true)}
+      {/* Main Interactive Workbench (Guaranteed hidden during PDF Print) */}
+      <div className="flex h-full w-full no-print">
+        {/* Left Navigation Sidebar */}
+        <NavigationSidebar
+          demoSamples={demoSamples}
+          selectedSampleId={selectedSampleId}
+          onSelectSample={handleSelectSample}
+          onFileUpload={handleFileUpload}
           onOpenWhatsAppModal={handleTriggerWhatsAppSimulation}
-          onUploadClick={() => fileInputRef.current?.click()}
+          onOpenMobileModal={() => setIsMobileModalOpen(true)}
+          onOpenReportModal={() => setIsReportModalOpen(true)}
+          isLoading={isLoading}
         />
 
-        {/* Dynamic Main View */}
-        <div className="flex-1 flex overflow-hidden relative">
-          {activeView === "DASHBOARD" ? (
-            /* Bento Intelligence Dashboard View */
-            <BentoCaseDashboard
-              report={report}
-              onSwitchToInspector={handleSwitchToInspector}
-              onOpenWhatsAppModal={handleTriggerWhatsAppSimulation}
-              onOpenReportModal={() => setIsReportModalOpen(true)}
-              onOpenMobileModal={() => setIsMobileModalOpen(true)}
-            />
-          ) : (
-            /* Deep Inspector Workbench */
-            <div className="flex-1 flex overflow-hidden w-full">
-              <ForensicViewer report={report} selectedLocus={selectedLocus} />
-              <RiskDossierSidebar
+        {/* Main Right Workspace Area */}
+        <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
+          {/* Top Header Bar featuring React Bits PillNav */}
+          <TopHeaderBar
+            report={report}
+            activeView={activeView}
+            onViewChange={(v) => setActiveView(v)}
+          />
+
+          {/* Dynamic Main View */}
+          <div className="flex-1 flex overflow-hidden relative">
+            {activeView === "DASHBOARD" ? (
+              /* Bento Intelligence Dashboard View */
+              <BentoCaseDashboard
                 report={report}
-                selectedLocus={selectedLocus}
-                onSelectLocus={(box) => setSelectedLocus(box)}
+                onSwitchToInspector={handleSwitchToInspector}
+                onOpenWhatsAppModal={handleTriggerWhatsAppSimulation}
+                onOpenReportModal={() => setIsReportModalOpen(true)}
+                onOpenMobileModal={() => setIsMobileModalOpen(true)}
               />
-            </div>
-          )}
+            ) : (
+              /* Deep Inspector Workbench */
+              <div className="flex-1 flex overflow-hidden w-full">
+                <ForensicViewer report={report} selectedLocus={selectedLocus} />
+                <RiskDossierSidebar
+                  report={report}
+                  selectedLocus={selectedLocus}
+                  onSelectLocus={(box) => setSelectedLocus(box)}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

@@ -30,8 +30,6 @@ interface NavigationSidebarProps {
   onOpenMobileModal: () => void;
   onOpenReportModal: () => void;
   isLoading: boolean;
-  activeView: "DASHBOARD" | "INSPECTOR";
-  onViewChange: (view: "INSPECTOR" | "DASHBOARD") => void;
 }
 
 export const NavigationSidebar: React.FC<NavigationSidebarProps> = ({
@@ -43,8 +41,6 @@ export const NavigationSidebar: React.FC<NavigationSidebarProps> = ({
   onOpenMobileModal,
   onOpenReportModal,
   isLoading,
-  activeView,
-  onViewChange,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -86,32 +82,6 @@ export const NavigationSidebar: React.FC<NavigationSidebarProps> = ({
               <span>CORE ONLINE</span>
             </div>
           </div>
-        </div>
-
-        {/* View Switcher Controls */}
-        <div className="mt-4 grid grid-cols-2 gap-1.5 bg-[#0c0e12]/90 p-1 rounded-xl border border-[#efebce]/10 text-xs font-medium">
-          <button
-            onClick={() => onViewChange("DASHBOARD")}
-            className={`py-2 px-2.5 rounded-lg flex items-center justify-center space-x-2 transition-all ${
-              activeView === "DASHBOARD"
-                ? "bg-gradient-to-r from-[#bb8588] to-[#d8a48f] text-[#0c0e12] shadow-md shadow-[#bb8588]/25 font-bold"
-                : "text-[#efebce]/70 hover:text-[#efebce] hover:bg-white/[0.04]"
-            }`}
-          >
-            <LayoutDashboard className="w-3.5 h-3.5" />
-            <span>Dashboard</span>
-          </button>
-          <button
-            onClick={() => onViewChange("INSPECTOR")}
-            className={`py-2 px-2.5 rounded-lg flex items-center justify-center space-x-2 transition-all ${
-              activeView === "INSPECTOR"
-                ? "bg-gradient-to-r from-[#a3a380] to-[#d6ce93] text-[#0c0e12] shadow-md shadow-[#a3a380]/25 font-bold"
-                : "text-[#efebce]/70 hover:text-[#efebce] hover:bg-white/[0.04]"
-            }`}
-          >
-            <Eye className="w-3.5 h-3.5" />
-            <span>Inspector</span>
-          </button>
         </div>
       </div>
 

@@ -105,19 +105,68 @@
 
 /* Print Styles for Forensic Dossier */
 @media print {
-  body {
-    background-color: #ffffff !important;
-    color: #000000 !important;
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm;
   }
-  .no-print {
+
+  html, body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #111827 !important;
+    height: auto !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Force hide all interactive workbench elements when printing */
+  .no-print,
+  aside,
+  header,
+  nav,
+  button,
+  .print-hidden {
     display: none !important;
   }
-  .print-only {
+
+  /* Reset modal backdrop and cards for clean PDF rendering */
+  .forensic-modal-backdrop {
+    position: static !important;
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
     display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    inset: auto !important;
   }
-  .print-page {
-    page-break-after: always;
-    box-shadow: none !important;
+
+  .forensic-modal-card {
+    position: static !important;
     border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    width: 100% !important;
+    height: auto !important;
+    background: #ffffff !important;
+    color: #111827 !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .print-avoid-break {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .print-page-break {
+    page-break-before: always !important;
+    break-before: always !important;
   }
 }

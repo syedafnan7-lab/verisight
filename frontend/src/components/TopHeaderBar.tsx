@@ -19,20 +19,12 @@ interface TopHeaderBarProps {
   report: ForensicAnalysisReport | null;
   activeView: "DASHBOARD" | "INSPECTOR";
   onViewChange: (view: "INSPECTOR" | "DASHBOARD") => void;
-  onOpenReportModal: () => void;
-  onOpenMobileModal: () => void;
-  onOpenWhatsAppModal: () => void;
-  onUploadClick: () => void;
 }
 
 export const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
   report,
   activeView,
   onViewChange,
-  onOpenReportModal,
-  onOpenMobileModal,
-  onOpenWhatsAppModal,
-  onUploadClick,
 }) => {
   const isAuthentic = report?.verdict === "AUTHENTIC_VERIFIED";
   const isSuspicious = report?.verdict === "SUSPICIOUS_ANOMALIES";
@@ -115,31 +107,12 @@ export const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
       </div>
 
       {/* Right: Quick Context Actions */}
-      <div className="flex items-center space-x-2">
-        <button
-          onClick={onUploadClick}
-          className="px-3 py-1.5 rounded-xl bg-[#efebce]/[0.05] hover:bg-[#efebce]/[0.1] text-xs font-semibold text-[#efebce] transition-all flex items-center space-x-1.5 border border-[#efebce]/10"
-        >
-          <Upload className="w-3.5 h-3.5 text-[#d8a48f]" />
-          <span className="hidden sm:inline">Upload</span>
-        </button>
-
-        <button
-          onClick={onOpenMobileModal}
-          className="px-3 py-1.5 rounded-xl bg-[#d6ce93]/10 hover:bg-[#d6ce93]/20 text-xs font-medium text-[#d6ce93] transition-all flex items-center space-x-1.5 border border-[#d6ce93]/30"
-          title="Scan QR to live-upload from phone camera"
-        >
-          <QrCode className="w-3.5 h-3.5 text-[#d6ce93]" />
-          <span className="hidden md:inline">Judge QR</span>
-        </button>
-
-        <button
-          onClick={onOpenReportModal}
-          className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#bb8588] to-[#d8a48f] hover:from-[#d8a48f] hover:to-[#bb8588] text-xs font-semibold text-[#0c0e12] transition-all flex items-center space-x-1.5 shadow-md shadow-[#bb8588]/25"
-        >
-          <FileText className="w-3.5 h-3.5 text-[#0c0e12]" />
-          <span className="hidden sm:inline">Audit Dossier</span>
-        </button>
+      {/* Right: Engine & Evidentiary Standard Status */}
+      <div className="flex items-center space-x-2 shrink-0">
+        <div className="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-[#efebce]/[0.03] border border-[#efebce]/10 text-xs font-mono text-[#a3a380]">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#a3a380] animate-pulse" />
+          <span>ISO/IEC 27037 VERIFIED</span>
+        </div>
       </div>
     </header>
   );
