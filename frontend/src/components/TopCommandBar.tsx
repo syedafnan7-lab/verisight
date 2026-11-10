@@ -1,47 +1,27 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef } from "react";
 import {
   ShieldAlert,
+  ShieldCheck,
   Upload,
   Share2,
   QrCode,
   FileText,
   Loader2,
-  Layers,
-  Menu,
-  X,
-  Scan,
-  Compass,
-  FileSearch,
-  Scale,
-  Sparkles,
-  ChevronDown,
-  Sliders,
-  MoreHorizontal,
-  Check,
-  Eye,
-  Activity,
-  AlertTriangle,
-  CheckCircle2,
+  RefreshCw,
+  Cpu,
 } from "lucide-react";
-import { DemoSampleMeta, ForensicAnalysisReport } from "../types/forensic";
-import { RiskState } from "../services/riskTheme";
+import { DemoSampleMeta } from "../types/forensic";
 
 interface TopCommandBarProps {
   databaseStatus: "CHECKING" | "HEALTHY" | "UNAVAILABLE" | "NOT_CONFIGURED";
   demoSamples: DemoSampleMeta[];
   selectedSampleId: string | null;
-  report: ForensicAnalysisReport | null;
-  riskState: RiskState;
   onSelectSample: (sampleId: string) => void;
   onFileUpload: (file: File) => void;
-  onOpenIntakeModal: () => void;
   onOpenWhatsAppModal: () => void;
   onOpenMobileModal: () => void;
   onOpenReportModal: () => void;
   onOpenSection91Modal?: () => void;
-  onOpenThresholdModal?: () => void;
-  onStageSelect?: (stage: "INTAKE" | "ANALYSIS" | "CANVAS" | "RISK" | "DOSSIER") => void;
-  activeStage?: "INTAKE" | "ANALYSIS" | "CANVAS" | "RISK" | "DOSSIER";
   isLoading: boolean;
 }
 
@@ -49,47 +29,15 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
   databaseStatus,
   demoSamples,
   selectedSampleId,
-  report,
-  riskState,
   onSelectSample,
   onFileUpload,
-  onOpenIntakeModal,
   onOpenWhatsAppModal,
   onOpenMobileModal,
   onOpenReportModal,
   onOpenSection91Modal,
-  onOpenThresholdModal,
-  onStageSelect,
-  activeStage = "CANVAS",
   isLoading,
 }) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scenarioDropdownOpen, setScenarioDropdownOpen] = useState(false);
-  const [moreActionsOpen, setMoreActionsOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const scenarioDropdownRef = useRef<HTMLDivElement>(null);
-  const moreActionsRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdowns when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        scenarioDropdownRef.current &&
-        !scenarioDropdownRef.current.contains(e.target as Node)
-      ) {
-        setScenarioDropdownOpen(false);
-      }
-      if (
-        moreActionsRef.current &&
-        !moreActionsRef.current.contains(e.target as Node)
-      ) {
-        setMoreActionsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -97,401 +45,130 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
     if (file) onFileUpload(file);
   };
 
-  const caseId = report?.file_sha256
-    ? report.file_sha256.substring(0, 8).toUpperCase()
-    : "S1-GPAY";
-
-  const activeSample = demoSamples.find((s) => s.id === selectedSampleId);
-
-  // Risk Pill styling derived from riskState
-  const getRiskPillClass = () => {
-    switch (riskState.level) {
-      case "CRITICAL":
-        return "bg-rose-950/90 text-rose-300 border-rose-600/80 shadow-rose-950/50 shadow-sm animate-pulse";
-      case "ELEVATED":
-        return "bg-orange-950/80 text-orange-300 border-orange-600/70";
-      case "MODERATE":
-        return "bg-amber-950/80 text-amber-300 border-amber-600/70";
-      case "LOW":
-        return "bg-emerald-950/80 text-emerald-300 border-emerald-600/70";
-      default:
-        return "bg-slate-900 text-slate-400 border-slate-700";
-    }
-  };
-
   return (
-    <header className="relative z-30 flex h-16 w-full shrink-0 items-center justify-between border-b border-[#1e293b] bg-[#070b14]/95 px-3 backdrop-blur-md md:px-5">
-      {/* Hidden file input */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        accept="image/png,image/jpeg,image/webp,image/bmp"
-        className="hidden"
-      />
-
-      {/* =========================================================================
-          LEFT: BRAND IDENTITY, PRO BADGE & DYNAMIC RISK PILL
-          ========================================================================= */}
-      <div className="flex items-center space-x-3">
-        {/* Brand Icon */}
-        <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 via-sky-600 to-indigo-700 shadow-md shadow-sky-500/20">
+    <header className="relative z-20 flex w-full flex-col gap-2 border-b border-[#1e293b] bg-[#070b14]/95 px-2 py-2 backdrop-blur sm:px-4 md:h-16 md:flex-row md:items-center md:justify-between md:gap-3 md:py-0">
+      {/* Brand & System Indicator */}
+      <div className="flex min-w-0 items-center space-x-2 md:min-w-[230px] md:space-x-3">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-sky-500 to-indigo-600 shadow-lg shadow-sky-500/20">
           <ShieldAlert className="w-5 h-5 text-white" />
-          <div className="absolute inset-0 rounded-xl border border-white/20" />
         </div>
-
-        {/* Brand Title + Pro Badge */}
-        <div className="flex items-center space-x-2">
-          <span className="font-extrabold tracking-wider text-base bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">
-            VERISIGHT
-          </span>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-sky-950/80 text-sky-400 border border-sky-800 font-bold tracking-wider">
-            PRO v1.0
-          </span>
-        </div>
-
-        {/* Dynamic Risk Status Pill (Clickable to open threshold settings) */}
-        <button
-          onClick={onOpenThresholdModal}
-          title={`Click to adjust threshold (Threshold: ${riskState.criticalThreshold})`}
-          className={`hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold border transition-all cursor-pointer ${getRiskPillClass()}`}
-        >
-          <span className="h-1.5 w-1.5 rounded-full bg-current" />
-          <span>{riskState.shortLabel}</span>
-          {riskState.score != null && (
-            <span className="opacity-90 font-mono font-normal">
-              ({riskState.score.toFixed(1)})
+        <div>
+          <div className="flex items-center space-x-2">
+            <span className="font-bold tracking-wider text-base bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
+              VERISIGHT
             </span>
-          )}
-        </button>
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-sky-950 text-sky-400 border border-sky-800 font-semibold tracking-wider">
+              PRO-v1.0
+            </span>
+          </div>
+          <div className="flex items-center space-x-1.5 text-[11px] text-[#64748b]">
+            <span className={`w-1.5 h-1.5 rounded-full ${databaseStatus === "HEALTHY" ? "bg-emerald-500 animate-pulse" : databaseStatus === "CHECKING" ? "bg-amber-400 animate-pulse" : "bg-rose-500"}`} />
+            <span className="font-mono">4-LAYER CORE · DB {databaseStatus}</span>
+          </div>
+        </div>
       </div>
 
-      {/* =========================================================================
-          CENTER: COMPACT 5-STAGE WORKFLOW STEPPER (DESKTOP)
-          ========================================================================= */}
-      <nav
-        aria-label="Investigation Stages"
-        className="hidden xl:flex items-center space-x-1 rounded-xl border border-[#1e293b] bg-[#0b1220]/80 p-1 text-xs font-mono"
-      >
+      {/* Golden Demo Sample Selector Pills */}
+      <div className="flex w-full max-w-full items-center space-x-1.5 overflow-x-auto rounded-lg border border-[#1e293b] bg-[#0b1120] p-1 md:max-w-[580px] md:flex-1">
+        {demoSamples.map((sample, idx) => {
+          const isSelected = selectedSampleId === sample.id;
+          const isAuthentic = sample.id === "sample_1";
+          return (
+            <button
+              key={sample.id}
+              onClick={() => onSelectSample(sample.id)}
+              disabled={isLoading}
+              title={`${sample.title}: ${sample.scenario}`}
+              className={`px-2.5 py-1 rounded text-xs font-medium transition-all whitespace-nowrap flex items-center space-x-1.5 ${
+                isSelected
+                  ? isAuthentic
+                    ? "bg-emerald-950 text-emerald-300 border border-emerald-600 shadow-sm shadow-emerald-500/20"
+                    : "bg-rose-950 text-rose-300 border border-rose-600 shadow-sm shadow-rose-500/20"
+                  : "text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#1e293b]"
+              }`}
+            >
+              <span>{`S${idx + 1}`}</span>
+              <span className="hidden sm:inline font-mono">
+                {sample.id === "sample_1" && "Clean Synthetic"}
+                {sample.id === "sample_2" && "Spliced ₹95k"}
+                {sample.id === "sample_3" && "Clock Paradox"}
+                {sample.id === "sample_4" && "WhatsApp Recomp"}
+                {sample.id === "sample_5" && "ORB Clones"}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Action Commands */}
+      <div className="flex w-full items-center gap-1.5 overflow-x-auto md:w-auto md:justify-end md:gap-2">
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/png,image/jpeg,image/webp,image/bmp,.png,.jpg,.jpeg,.webp,.bmp"
+          className="hidden"
+        />
+
+        {/* Upload Button */}
         <button
-          onClick={() => onStageSelect?.("INTAKE")}
-          className={`flex items-center space-x-1.5 rounded-lg px-2.5 py-1 transition-all cursor-pointer ${
-            activeStage === "INTAKE"
-              ? "bg-sky-600 text-white font-semibold shadow-sm"
-              : "text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#152033]"
-          }`}
-        >
-          <Upload className="w-3.5 h-3.5" />
-          <span>1. Intake</span>
-        </button>
-
-        <span className="text-[#334155] text-xs font-sans">/</span>
-
-        <button
-          onClick={() => onStageSelect?.("ANALYSIS")}
-          className={`flex items-center space-x-1.5 rounded-lg px-2.5 py-1 transition-all cursor-pointer ${
-            activeStage === "ANALYSIS"
-              ? "bg-sky-600 text-white font-semibold shadow-sm"
-              : "text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#152033]"
-          }`}
-        >
-          <Layers className="w-3.5 h-3.5" />
-          <span>2. Pipeline</span>
-        </button>
-
-        <span className="text-[#334155] text-xs font-sans">/</span>
-
-        <button
-          onClick={() => onStageSelect?.("CANVAS")}
-          className={`flex items-center space-x-1.5 rounded-lg px-2.5 py-1 transition-all cursor-pointer ${
-            activeStage === "CANVAS"
-              ? "bg-sky-600 text-white font-semibold shadow-sm"
-              : "text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#152033]"
-          }`}
-        >
-          <Eye className="w-3.5 h-3.5" />
-          <span>3. Evidence</span>
-        </button>
-
-        <span className="text-[#334155] text-xs font-sans">/</span>
-
-        <button
-          onClick={() => onStageSelect?.("RISK")}
-          className={`flex items-center space-x-1.5 rounded-lg px-2.5 py-1 transition-all cursor-pointer ${
-            activeStage === "RISK"
-              ? "bg-sky-600 text-white font-semibold shadow-sm"
-              : "text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#152033]"
-          }`}
-        >
-          <Scale className="w-3.5 h-3.5" />
-          <span>4. Risk Triage</span>
-        </button>
-
-        <span className="text-[#334155] text-xs font-sans">/</span>
-
-        <button
-          onClick={() => onStageSelect?.("DOSSIER")}
-          className={`flex items-center space-x-1.5 rounded-lg px-2.5 py-1 transition-all cursor-pointer ${
-            activeStage === "DOSSIER"
-              ? "bg-sky-600 text-white font-semibold shadow-sm"
-              : "text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#152033]"
-          }`}
-        >
-          <FileText className="w-3.5 h-3.5" />
-          <span>5. Dossier</span>
-        </button>
-      </nav>
-
-      {/* =========================================================================
-          RIGHT: CASE BADGE, SCENARIO SWITCHER, NEW CASE & ACTIONS MENU
-          ========================================================================= */}
-      <div className="flex items-center space-x-2.5">
-        {/* Case ID Badge */}
-        <span className="hidden lg:inline-block text-[11px] font-mono text-[#94a3b8] bg-[#0f172a] px-2.5 py-1 rounded-lg border border-[#1e293b]">
-          CASE #{caseId}
-        </span>
-
-        {/* Compact Scenario Switcher Popover (Replaces the 5 huge buttons!) */}
-        <div className="relative" ref={scenarioDropdownRef}>
-          <button
-            onClick={() => setScenarioDropdownOpen(!scenarioDropdownOpen)}
-            className="flex items-center space-x-1.5 rounded-lg border border-[#1e293b] bg-[#0b1220] px-2.5 py-1.5 text-xs font-mono text-[#94a3b8] hover:border-sky-500/50 hover:text-white transition-colors cursor-pointer"
-            title="Switch demonstration scenarios"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span className="max-w-[130px] truncate hidden md:inline-block">
-              {activeSample ? activeSample.title.replace(/^Sample \d+ — /, "") : "Demonstrations"}
-            </span>
-            <span className="md:hidden">Cases</span>
-            <ChevronDown className="w-3 h-3 text-[#64748b]" />
-          </button>
-
-          {/* Scenario Popover Menu */}
-          {scenarioDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-80 rounded-xl border border-[#334155] bg-[#0b1220] p-2 shadow-2xl z-50 animate-in fade-in">
-              <div className="px-2 py-1.5 text-[10px] font-mono uppercase tracking-wider text-[#64748b] border-b border-[#1e293b] mb-1">
-                Controlled Demonstration Scenarios
-              </div>
-              <div className="space-y-1">
-                {demoSamples.map((sample, idx) => {
-                  const isSelected = sample.id === selectedSampleId;
-                  return (
-                    <button
-                      key={sample.id}
-                      onClick={() => {
-                        onSelectSample(sample.id);
-                        setScenarioDropdownOpen(false);
-                      }}
-                      className={`w-full text-left p-2 rounded-lg transition-colors flex items-start justify-between cursor-pointer ${
-                        isSelected
-                          ? "bg-sky-950/80 border border-sky-600/70 text-white"
-                          : "hover:bg-[#152033] text-[#94a3b8] hover:text-white border border-transparent"
-                      }`}
-                    >
-                      <div className="space-y-0.5 pr-2">
-                        <div className="flex items-center space-x-1.5">
-                          <span className="font-mono text-[10px] font-bold text-sky-400">
-                            S{idx + 1}
-                          </span>
-                          <span className="text-xs font-medium text-slate-200">
-                            {sample.title}
-                          </span>
-                        </div>
-                        <p className="text-[10px] text-[#64748b] line-clamp-1">
-                          {sample.description}
-                        </p>
-                      </div>
-                      <span className="text-[10px] font-mono text-amber-400 font-semibold shrink-0">
-                        {sample.target_score_range}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Primary Action: New Investigation Button */}
-        <button
-          onClick={onOpenIntakeModal}
+          onClick={() => fileInputRef.current?.click()}
           disabled={isLoading}
-          className="flex items-center space-x-1.5 rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-mono font-bold text-white hover:bg-sky-500 shadow-md shadow-sky-600/30 transition-all cursor-pointer disabled:opacity-50"
+          className="shrink-0 whitespace-nowrap rounded-md border border-[#334155] bg-[#1e293b] px-3 py-2 text-xs font-medium text-[#f1f5f9] transition-all hover:bg-[#334155] flex items-center space-x-1.5"
         >
           {isLoading ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-400" />
           ) : (
-            <Upload className="w-3.5 h-3.5" />
+            <Upload className="w-3.5 h-3.5 text-sky-400" />
           )}
-          <span className="hidden sm:inline-block">New Case</span>
+          <span>Upload Screenshot</span>
         </button>
 
-        {/* More Actions / Command Menu Dropdown */}
-        <div className="relative" ref={moreActionsRef}>
-          <button
-            onClick={() => setMoreActionsOpen(!moreActionsOpen)}
-            className="flex items-center justify-center rounded-lg border border-[#1e293b] bg-[#0b1220] p-2 text-[#94a3b8] hover:border-sky-500/50 hover:text-white transition-colors cursor-pointer"
-            title="More forensic actions & settings"
-          >
-            <MoreHorizontal className="w-4 h-4" />
-          </button>
-
-          {/* More Actions Menu */}
-          {moreActionsOpen && (
-            <div className="absolute right-0 mt-2 w-64 rounded-xl border border-[#334155] bg-[#0b1220] p-1.5 shadow-2xl z-50 animate-in fade-in text-xs font-mono">
-              <button
-                onClick={() => {
-                  setMoreActionsOpen(false);
-                  onOpenThresholdModal?.();
-                }}
-                className="w-full flex items-center space-x-2.5 p-2 rounded-lg text-[#94a3b8] hover:text-white hover:bg-[#152033] transition-colors cursor-pointer"
-              >
-                <Sliders className="w-4 h-4 text-sky-400" />
-                <div className="text-left">
-                  <div className="font-semibold text-slate-200">Risk Threshold</div>
-                  <div className="text-[10px] text-[#64748b]">Configure trigger sensitivity ({riskState.criticalThreshold}%)</div>
-                </div>
-              </button>
-
-              <button
-                onClick={() => {
-                  setMoreActionsOpen(false);
-                  onOpenSection91Modal?.();
-                }}
-                className="w-full flex items-center space-x-2.5 p-2 rounded-lg text-[#94a3b8] hover:text-white hover:bg-[#152033] transition-colors cursor-pointer"
-              >
-                <Scale className="w-4 h-4 text-amber-400" />
-                <div className="text-left">
-                  <div className="font-semibold text-slate-200">Section 91 Notice</div>
-                  <div className="text-[10px] text-[#64748b]">Statutory Bank Subpoena</div>
-                </div>
-              </button>
-
-              <button
-                onClick={() => {
-                  setMoreActionsOpen(false);
-                  onOpenWhatsAppModal();
-                }}
-                className="w-full flex items-center space-x-2.5 p-2 rounded-lg text-[#94a3b8] hover:text-white hover:bg-[#152033] transition-colors cursor-pointer"
-              >
-                <Share2 className="w-4 h-4 text-emerald-400" />
-                <div className="text-left">
-                  <div className="font-semibold text-slate-200">WhatsApp Test</div>
-                  <div className="text-[10px] text-[#64748b]">Re-compression Simulator</div>
-                </div>
-              </button>
-
-              <button
-                onClick={() => {
-                  setMoreActionsOpen(false);
-                  onOpenMobileModal();
-                }}
-                className="w-full flex items-center space-x-2.5 p-2 rounded-lg text-[#94a3b8] hover:text-white hover:bg-[#152033] transition-colors cursor-pointer"
-              >
-                <QrCode className="w-4 h-4 text-cyan-400" />
-                <div className="text-left">
-                  <div className="font-semibold text-slate-200">Judge QR Upload</div>
-                  <div className="text-[10px] text-[#64748b]">Real-Time Mobile Pairing</div>
-                </div>
-              </button>
-
-              <button
-                onClick={() => {
-                  setMoreActionsOpen(false);
-                  onOpenReportModal();
-                }}
-                className="w-full flex items-center space-x-2.5 p-2 rounded-lg text-[#94a3b8] hover:text-white hover:bg-[#152033] transition-colors cursor-pointer border-t border-[#1e293b] mt-1 pt-2"
-              >
-                <FileText className="w-4 h-4 text-purple-400" />
-                <div className="text-left">
-                  <div className="font-semibold text-slate-200">Printable Dossier</div>
-                  <div className="text-[10px] text-[#64748b]">12-Section Evidentiary PDF</div>
-                </div>
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Mobile Hamburger Toggle */}
+        {/* Simulate WhatsApp Button */}
         <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle Navigation Menu"
-          className="p-2 rounded-lg text-[#94a3b8] hover:text-white hover:bg-[#1e293b] xl:hidden transition-colors"
+          onClick={onOpenWhatsAppModal}
+          disabled={isLoading}
+          className="shrink-0 whitespace-nowrap rounded-md border border-emerald-900/60 bg-[#0f172a] px-3 py-2 text-xs font-medium text-emerald-400 transition-all hover:bg-[#1e293b] hover:text-emerald-300 flex items-center space-x-1.5"
+          title="Simulate WhatsApp compression laundering"
         >
-          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          <Share2 className="w-3.5 h-3.5" />
+          <span className="hidden lg:inline">Simulate WhatsApp</span>
+        </button>
+
+        {/* Stage Judge Mobile QR Sync Button */}
+        <button
+          onClick={onOpenMobileModal}
+          disabled={isLoading}
+          className="shrink-0 whitespace-nowrap rounded-md border border-amber-900/60 bg-[#0f172a] px-3 py-2 text-xs font-medium text-amber-400 transition-all hover:bg-[#1e293b] hover:text-amber-300 flex items-center space-x-1.5"
+          title="Scan QR to live-upload from phone camera"
+        >
+          <QrCode className="w-3.5 h-3.5" />
+          <span className="hidden xl:inline">Judge Mobile QR</span>
+        </button>
+
+        {/* Section 91 Cyber Subpoena Button */}
+        {onOpenSection91Modal && (
+          <button
+            onClick={onOpenSection91Modal}
+            disabled={isLoading}
+            className="shrink-0 whitespace-nowrap rounded-md border border-amber-800/80 bg-amber-950/40 px-3 py-2 text-xs font-medium text-amber-300 transition-all hover:bg-amber-900/50 hover:text-amber-200 flex items-center space-x-1.5"
+            title="Generate Section 91 Statutory Cyber Subpoena (1930 Cyber-Cell Ready)"
+          >
+            <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+            <span>Section 91 Notice</span>
+          </button>
+        )}
+
+        {/* Export Printable Dossier Button */}
+        <button
+          onClick={onOpenReportModal}
+          disabled={isLoading}
+          className="shrink-0 whitespace-nowrap rounded-md bg-gradient-to-r from-sky-600 to-indigo-600 px-3 py-2 text-xs font-medium text-white shadow-md shadow-sky-600/20 transition-all hover:from-sky-500 hover:to-indigo-500 flex items-center space-x-1.5"
+        >
+          <FileText className="w-3.5 h-3.5" />
+          <span className="hidden md:inline">Print Dossier</span>
         </button>
       </div>
-
-      {/* Mobile Navigation Drawer */}
-      {mobileMenuOpen && (
-        <div className="absolute top-16 left-0 w-full bg-[#070b14]/98 border-b border-[#1e293b] p-4 shadow-2xl xl:hidden z-40 space-y-4 animate-in slide-in-from-top-2">
-          {/* Mobile Stepper */}
-          <div className="grid grid-cols-5 gap-1 text-[10px] font-mono text-center">
-            {(["INTAKE", "ANALYSIS", "CANVAS", "RISK", "DOSSIER"] as const).map(
-              (stage, idx) => (
-                <button
-                  key={stage}
-                  onClick={() => {
-                    onStageSelect?.(stage);
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`py-1.5 rounded ${
-                    activeStage === stage
-                      ? "bg-sky-600 text-white font-bold"
-                      : "bg-[#0b1220] text-[#94a3b8]"
-                  }`}
-                >
-                  {idx + 1}. {stage.slice(0, 4)}
-                </button>
-              ),
-            )}
-          </div>
-
-          {/* Mobile Actions */}
-          <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-            <button
-              onClick={() => {
-                onOpenIntakeModal();
-                setMobileMenuOpen(false);
-              }}
-              className="p-2.5 rounded-lg bg-sky-600 text-white font-bold flex items-center justify-center space-x-1.5"
-            >
-              <Upload className="w-4 h-4" />
-              <span>New Case</span>
-            </button>
-            <button
-              onClick={() => {
-                onOpenThresholdModal?.();
-                setMobileMenuOpen(false);
-              }}
-              className="p-2.5 rounded-lg bg-[#0b1220] border border-[#1e293b] text-slate-200 flex items-center justify-center space-x-1.5"
-            >
-              <Sliders className="w-4 h-4 text-sky-400" />
-              <span>Threshold</span>
-            </button>
-            <button
-              onClick={() => {
-                onOpenSection91Modal?.();
-                setMobileMenuOpen(false);
-              }}
-              className="p-2.5 rounded-lg bg-[#0b1220] border border-[#1e293b] text-slate-200 flex items-center justify-center space-x-1.5"
-            >
-              <Scale className="w-4 h-4 text-amber-400" />
-              <span>Section 91</span>
-            </button>
-            <button
-              onClick={() => {
-                onOpenReportModal();
-                setMobileMenuOpen(false);
-              }}
-              className="p-2.5 rounded-lg bg-[#0b1220] border border-[#1e293b] text-slate-200 flex items-center justify-center space-x-1.5"
-            >
-              <FileText className="w-4 h-4 text-purple-400" />
-              <span>Dossier</span>
-            </button>
-          </div>
-        </div>
-      )}
     </header>
   );
 };
