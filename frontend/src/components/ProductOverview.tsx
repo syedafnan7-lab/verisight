@@ -21,6 +21,7 @@ import {
   BarChart3,
   Terminal,
   Compass,
+  Award,
 } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion, type Variants } from "framer-motion";
 import { AppRoute } from "./NavigationHeader";
@@ -203,6 +204,14 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
                 <span>Explore Demonstration Cases</span>
                 <ChevronRight className="h-4 w-4 text-slate-400" />
               </motion.a>
+
+              <button
+                onClick={() => onNavigate("/why-verisight")}
+                className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3.5 py-3 text-xs font-mono text-amber-300 hover:bg-amber-500/20 transition-all shadow-sm"
+              >
+                <Award className="h-3.5 w-3.5 text-amber-400" />
+                <span>Why We Are Better</span>
+              </button>
 
               <button
                 onClick={() => onNavigate("/evaluation")}
@@ -1020,6 +1029,12 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
               className="hover:text-slate-300 transition-colors"
             >
               Evaluation
+            </button>
+            <button
+              onClick={() => onNavigate("/why-verisight")}
+              className="text-amber-400 hover:text-amber-300 font-semibold transition-colors"
+            >
+              Why VeriSight
             </button>
           </div>
 

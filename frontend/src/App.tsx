@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import { NavigationHeader, AppRoute } from "./components/NavigationHeader";
 import { ProductOverview } from "./components/ProductOverview";
 import { EvaluationDashboard } from "./components/EvaluationDashboard";
+import { WhyVerisight } from "./components/WhyVerisight";
 import { TopCommandBar } from "./components/TopCommandBar";
 import { ForensicViewer, ViewMode } from "./components/ForensicViewer";
 import { RiskDossierSidebar } from "./components/RiskDossierSidebar";
@@ -33,6 +34,7 @@ const getRouteFromLocation = (): AppRoute => {
   const path = window.location.pathname;
   if (path === "/workbench") return "/workbench";
   if (path === "/evaluation") return "/evaluation";
+  if (path === "/why-verisight") return "/why-verisight";
   return "/";
 };
 
@@ -495,6 +497,13 @@ const MainProductApplication: React.FC = () => {
         {/* Experience C: Research & Evaluation Dashboard */}
         {currentRoute === "/evaluation" && (
           <EvaluationDashboard
+            onNavigateWorkbench={() => handleNavigate("/workbench")}
+          />
+        )}
+
+        {/* Experience D: Why VeriSight & Competitive Benchmarks */}
+        {currentRoute === "/why-verisight" && (
+          <WhyVerisight
             onNavigateWorkbench={() => handleNavigate("/workbench")}
           />
         )}
