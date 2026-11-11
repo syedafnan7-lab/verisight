@@ -1,8 +1,8 @@
 {
   "dataset_summary": {
-    "total_samples": 27,
-    "authentic_reference": 13,
-    "manipulated_reference": 14,
+    "total_samples": 44,
+    "authentic_reference": 20,
+    "manipulated_reference": 24,
     "features_extracted": 11,
     "feature_names": [
       "ela_score",
@@ -21,21 +21,21 @@
   "models": {
     "baseline_heuristic": {
       "model_name": "Deterministic 4-Layer Heuristic Baseline",
-      "roc_auc": 0.6126,
-      "brier_score": 0.2654,
-      "accuracy": 0.5926,
-      "precision": 0.5882,
-      "recall": 0.7143,
-      "f1_score": 0.6452,
+      "roc_auc": 0.4708,
+      "brier_score": 0.3277,
+      "accuracy": 0.5,
+      "precision": 0.5333,
+      "recall": 0.6667,
+      "f1_score": 0.5926,
       "fpr_at_95_recall": 1.0,
       "confusion_matrix": [
         [
           6,
-          7
+          14
         ],
         [
-          4,
-          10
+          8,
+          16
         ]
       ],
       "is_calibrated": false,
@@ -43,34 +43,34 @@
     },
     "learned_fusion_logistic": {
       "model_type": "logistic",
-      "roc_auc": 0.8352,
-      "brier_score": 0.1192,
+      "roc_auc": 0.8656,
+      "brier_score": 0.1257,
       "precision": 1.0,
-      "recall": 0.7857,
-      "f1_score": 0.88,
-      "fpr_at_95_recall": 0.9231,
-      "n_samples": 27,
-      "positive_samples": 14,
-      "negative_samples": 13,
+      "recall": 0.75,
+      "f1_score": 0.8571,
+      "fpr_at_95_recall": 0.7,
+      "n_samples": 44,
+      "positive_samples": 24,
+      "negative_samples": 20,
       "is_calibrated": true
     },
     "learned_fusion_gbdt": {
       "model_type": "gradient_boosting",
-      "roc_auc": 0.9286,
-      "brier_score": 0.1176,
-      "precision": 0.8667,
-      "recall": 0.9286,
-      "f1_score": 0.8966,
-      "fpr_at_95_recall": 0.9231,
-      "n_samples": 27,
-      "positive_samples": 14,
-      "negative_samples": 13,
+      "roc_auc": 0.9021,
+      "brier_score": 0.161,
+      "precision": 0.8077,
+      "recall": 0.875,
+      "f1_score": 0.84,
+      "fpr_at_95_recall": 0.35,
+      "n_samples": 44,
+      "positive_samples": 24,
+      "negative_samples": 20,
       "is_calibrated": true
     }
   },
   "comparison_analysis": {
     "best_roc_auc_model": "learned_fusion_gbdt",
-    "calibration_improvement": 0.1462,
+    "calibration_improvement": 0.202,
     "recommendation": "Both the Deterministic Heuristic Baseline and the Learned Logistic Fusion Model achieve high ROC-AUC. The Learned Logistic Fusion with Platt sigmoid calibration provides an empirically calibrated probability P(Tampered | x) with a lower Brier score, making it suitable as the calibrated probability model alongside the operational triage score (87 threshold)."
   }
 }

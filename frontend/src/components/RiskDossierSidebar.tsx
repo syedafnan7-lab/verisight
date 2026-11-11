@@ -25,6 +25,8 @@ interface RiskDossierSidebarProps {
   selectedLocus: BoundingBox | null;
   onSelectLocus: (box: BoundingBox | null) => void;
   onOpenSection91Modal?: () => void;
+  onOpenSection91?: () => void;
+  onOpenReport?: () => void;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
   isAdvancedMode?: boolean;
@@ -35,10 +37,13 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
   selectedLocus,
   onSelectLocus,
   onOpenSection91Modal,
+  onOpenSection91,
+  onOpenReport,
   isCollapsed = false,
   onToggleCollapse,
   isAdvancedMode = false,
 }) => {
+  const handleOpenSection91 = onOpenSection91Modal || onOpenSection91;
   // Accordion state for progressive disclosure of layers
   const [openLayers, setOpenLayers] = useState<Record<number, boolean>>({
     1: true,
@@ -329,10 +334,10 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
             </div>
 
             {/* Refined Section 91 Subpoena Button */}
-            {onOpenSection91Modal && (
+            {handleOpenSection91 && (
               <button
                 type="button"
-                onClick={onOpenSection91Modal}
+                onClick={handleOpenSection91}
                 className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 py-1.5 px-3 font-mono text-[11px] font-semibold text-black shadow-md shadow-amber-500/20 transition-all hover:from-amber-400 hover:to-amber-500 active:scale-[0.98]"
               >
                 <ShieldAlert className="h-3.5 w-3.5 text-black" />

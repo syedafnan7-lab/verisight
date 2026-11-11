@@ -58,14 +58,17 @@ export async function analyzeDemoSample(
 export async function analyzeUpload(
   file: File,
 ): Promise<ForensicAnalysisReport> {
-  const session = await uploadFileToPrivateStorage(file);
-  const analyzeRes = await fetch(`${API_BASE}/analyze-upload-session/${session.session_id}`, {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_BASE}/analyze`, {
     method: "POST",
+    body: formData,
   });
-  if (!analyzeRes.ok) {
-    throw await responseError(analyzeRes, "Screenshot analysis failed. Choose a PNG, JPG, WebP, or BMP image.");
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "Analysis failed" }));
+    throw new Error(err.detail || "Screenshot analysis failed. Choose a PNG, JPG, WebP, or BMP image.");
   }
-  return analyzeRes.json();
+  return res.json();
 }
 
 async function uploadFileToPrivateStorage(file: File, sessionId?: string) {

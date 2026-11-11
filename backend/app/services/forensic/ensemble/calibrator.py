@@ -142,10 +142,20 @@ def calibrate_ensemble(
         calibrated_score = min(100.0, raw_composite)
 
     # Calibrate low genuine scores
-    if raw_composite < 12.0 and not synergy_applied and not layer3.clock_paradox_detected and not layer1.clone_detected:
+    if raw_composite < 12.0 and not synergy_applied and not layer3.clock_paradox_detected and not layer1.clone_detected and not layer2.cielab_patch_anomaly:
         calibrated_score = round(min(8.5, raw_composite * 0.7), 1)
     else:
         calibrated_score = round(calibrated_score, 1)
+
+    # For WhatsApp images, signal forensics (ELA/Wavelets) is smoothed out by lossy JPEG Q=77.
+    # Therefore, typographic geometry and CIELAB color-space patch anomalies must not be diluted.
+    if is_whatsapp and (layer2.cielab_patch_anomaly or layer2.layer_score >= 50.0):
+        if layer2.layer_score >= 75.0 or layer2.max_baseline_drift_px >= 4.0:
+            calibrated_score = max(calibrated_score, 78.0)
+        else:
+            calibrated_score = max(calibrated_score, 52.0)
+    elif not is_whatsapp and (layer2.cielab_patch_anomaly or layer1.clone_detected):
+        calibrated_score = max(calibrated_score, 52.0)
 
     # 4. Determine Verdict
     if calibrated_score < 25.0:

@@ -15,6 +15,7 @@ from app.core.schemas import AssessmentDimensions, ModelInferenceMetadata
 
 BASE_DIR = Path(__file__).resolve().parents[5]
 WEIGHTS_PATH = BASE_DIR / "ml" / "checkpoints" / "calibrated_weights.json"
+GBDT_PATH = BASE_DIR / "ml" / "checkpoints" / "verisight_fusion_gbdt_v1.joblib"
 REGISTRY_PATH = BASE_DIR / "ml" / "registry" / "models.json"
 
 
@@ -22,6 +23,7 @@ class MLCalibratedService:
     def __init__(self):
         self._weights_data: dict[str, Any] | None = None
         self._registry_data: dict[str, Any] | None = None
+        self._gbdt_data: dict[str, Any] | None = None
         self._load_config()
 
     def _load_config(self):
@@ -31,6 +33,13 @@ class MLCalibratedService:
                     self._weights_data = json.load(f)
             except Exception as e:
                 print(f"[MLCalibratedService] Error loading weights: {e}")
+        if GBDT_PATH.exists():
+            try:
+                import joblib
+                self._gbdt_data = joblib.load(GBDT_PATH)
+            except Exception as e:
+                print(f"[MLCalibratedService] Error loading GBDT model: {e}")
+                self._gbdt_data = None
         if REGISTRY_PATH.exists():
             try:
                 with open(REGISTRY_PATH, "r") as f:
@@ -104,9 +113,18 @@ class MLCalibratedService:
             uncertainty_explanation=uncertainty_expl,
         )
 
-        # Calibrated Probability Calculation via Learned Weights
+        # Calibrated Probability Calculation via Learned GBDT or Logistic Weights
         calibrated_prob: float | None = None
-        if self._weights_data and "coef" in self._weights_data and feature_vector and len(feature_vector) == len(self._weights_data["coef"]):
+        if self._gbdt_data and feature_vector and len(feature_vector) == 11:
+            try:
+                scaler = self._gbdt_data["scaler"]
+                cal_model = self._gbdt_data["calibrated_model"]
+                vec_sc = scaler.transform(np.array(feature_vector, dtype=np.float32).reshape(1, -1))
+                calibrated_prob = round(float(cal_model.predict_proba(vec_sc)[0, 1]), 4)
+            except Exception as e:
+                print(f"[MLCalibratedService] Error computing GBDT prob: {e}")
+
+        if calibrated_prob is None and self._weights_data and "coef" in self._weights_data and feature_vector and len(feature_vector) == len(self._weights_data["coef"]):
             try:
                 mean = np.array(self._weights_data["mean"], dtype=np.float32)
                 scale = np.array(self._weights_data["scale"], dtype=np.float32)
@@ -125,8 +143,8 @@ class MLCalibratedService:
             # Fallback calibrated sigmoid mapping of overall score
             calibrated_prob = round(float(1.0 / (1.0 + np.exp(-0.075 * (overall_score - 52.0)))), 4)
 
-        # Operational Triage Threshold Flag (87.0)
-        is_triage_alert = overall_score >= 87.0
+        # Operational Triage Threshold Flag (87.0 or high calibrated probability >= 0.85)
+        is_triage_alert = overall_score >= 87.0 or (calibrated_prob is not None and calibrated_prob >= 0.85)
         is_synthetic = filename.startswith("sample_") or "benchmark" in filename.lower() or "synthetic" in filename.lower()
 
         active_meta = self.get_active_model_info()

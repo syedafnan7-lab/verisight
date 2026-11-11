@@ -123,6 +123,22 @@ def run_full_evaluation():
     chk_path.parent.mkdir(parents=True, exist_ok=True)
     log_fusion.save(chk_path)
 
+    # Export calibrated_weights.json for fast non-joblib backend serving
+    weights_path = BASE_DIR / "checkpoints" / "calibrated_weights.json"
+    weights_data = {
+        "mean": log_fusion.scaler.mean_.tolist(),
+        "scale": log_fusion.scaler.scale_.tolist(),
+        "coef": log_fusion.base_model.coef_[0].tolist(),
+        "intercept": float(log_fusion.base_model.intercept_[0]),
+        "feature_names": [
+            "ela_score", "ela_z_macroblocks", "wavelet_void_score", "wavelet_min_var",
+            "copy_move_vectors", "baseline_drift_px", "cielab_delta_e", "cross_layer_iou",
+            "temporal_clock_paradox", "upi_utr_invalid", "whatsapp_transcoded"
+        ]
+    }
+    with open(weights_path, "w") as f:
+        json.dump(weights_data, f, indent=2)
+
     # 3. Evaluate Learned Feature Fusion (Gradient Boosted Trees)
     gbdt_fusion = LearnedFusionModel(model_type="gradient_boosting")
     gbdt_cv_results = gbdt_fusion.fit_with_cv(X, y, n_splits=4)

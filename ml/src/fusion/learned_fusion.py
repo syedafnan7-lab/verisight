@@ -87,8 +87,9 @@ class LearnedFusionModel:
         neg_mask = (y == 0)
         fpr_at_95 = float(np.sum(preds_at_95[neg_mask]) / np.sum(neg_mask)) if np.sum(neg_mask) > 0 else 0.0
 
-        # Now fit calibrated model on complete dataset
+        # Now fit base model and calibrated model on complete dataset
         X_scaled = self.scaler.fit_transform(X)
+        self.base_model.fit(X_scaled, y)
         self.calibrated_model = CalibratedClassifierCV(estimator=self.base_model, cv=3, method="sigmoid")
         self.calibrated_model.fit(X_scaled, y)
         self.is_fitted = True
