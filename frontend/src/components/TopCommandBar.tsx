@@ -1,11 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
 import {
-  ShieldCheck,
   Upload,
   ChevronDown,
   Check,
   Share2,
-  QrCode,
   FileText,
   Loader2,
   ShieldAlert,
@@ -14,6 +12,7 @@ import {
 import { motion } from "framer-motion";
 import { DemoSampleMeta } from "../types/forensic";
 import { toast } from "sonner";
+import { useVerdictTheme } from "./AmbientThreatBackground";
 
 interface TopCommandBarProps {
   databaseStatus: "CHECKING" | "HEALTHY" | "UNAVAILABLE" | "NOT_CONFIGURED";
@@ -33,7 +32,7 @@ interface TopCommandBarProps {
 
 const SAMPLE_DETAILS: Record<
   string,
-  { label: string; badge: string; color: string; desc: string }
+  { label: string; badge: string; color: "emerald" | "amber" | "rose" | "sky"; desc: string }
 > = {
   sample_1: {
     label: "Clean Synthetic UPI",
@@ -43,13 +42,13 @@ const SAMPLE_DETAILS: Record<
   },
   sample_2: {
     label: "Spliced ₹95,000 Payout",
-    badge: "Amount Edit",
+    badge: "Fraud / Tampered",
     color: "rose",
     desc: "Digital text insertion & font drift",
   },
   sample_3: {
     label: "Clock Paradox UPI",
-    badge: "Time Drift",
+    badge: "Likely Misleading",
     color: "amber",
     desc: "Status bar vs transaction mismatch",
   },
@@ -61,20 +60,18 @@ const SAMPLE_DETAILS: Record<
   },
   sample_5: {
     label: "ORB Cloned Icons",
-    badge: "Copy-Move",
+    badge: "Synthetic / Fraud",
     color: "rose",
     desc: "Duplicated bank badge keypoints",
   },
 };
 
 export const TopCommandBar: React.FC<TopCommandBarProps> = ({
-  databaseStatus,
   demoSamples,
   selectedSampleId,
   onSelectSample,
   onFileUpload,
   onOpenWhatsAppModal,
-  onOpenMobileModal,
   onOpenReportModal,
   onOpenSection91Modal,
   onOpenShortcutsModal,
@@ -85,6 +82,7 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { theme, badgeBg, badgeText, badgeBorder } = useVerdictTheme();
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -110,18 +108,42 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
     ? SAMPLE_DETAILS[selectedSampleId] || {
         label: selectedSampleId,
         badge: "Case",
-        color: "sky",
+        color: "sky" as const,
         desc: "Custom uploaded screenshot",
       }
     : {
         label: "Custom Screenshot",
         badge: "Custom Upload",
-        color: "sky",
+        color: "sky" as const,
         desc: "Active forensic artifact",
       };
 
+  // Derive trigger pill label and color from real-time verdict outcome
+  let triggerBadgeText = currentMeta.badge;
+  let triggerBadgeStyle = `${badgeBg} ${badgeText} ${badgeBorder}`;
+
+  if (isLoading) {
+    triggerBadgeText = "Analyzing...";
+    triggerBadgeStyle = "bg-cyan-950/80 text-cyan-300 border border-cyan-800/50 animate-pulse";
+  } else if (theme === "fraud") {
+    triggerBadgeText = "Fraud / Tampered";
+    triggerBadgeStyle = "bg-rose-950/90 text-rose-300 border border-rose-800/60 shadow-[0_0_8px_rgba(244,63,94,0.3)]";
+  } else if (theme === "suspicious") {
+    triggerBadgeText = "Likely Misleading";
+    triggerBadgeStyle = "bg-amber-950/90 text-amber-300 border border-amber-800/60 shadow-[0_0_8px_rgba(245,158,11,0.25)]";
+  } else if (theme === "authentic") {
+    triggerBadgeText = "Authentic";
+    triggerBadgeStyle = "bg-emerald-950/90 text-emerald-300 border border-emerald-800/60 shadow-[0_0_8px_rgba(16,185,129,0.25)]";
+  }
+
   return (
-    <header className="relative z-30 flex h-14 w-full shrink-0 items-center justify-between border-b border-white/[0.07] bg-[#090D16]/95 px-2 sm:px-4 backdrop-blur-md select-none overflow-x-auto no-scrollbar gap-2">
+    <header
+      className={`relative z-50 flex h-14 w-full shrink-0 items-center justify-between border-b border-white/[0.07] bg-[#090D16]/95 px-2 sm:px-4 backdrop-blur-md select-none overflow-visible gap-2 transition-all duration-700 ease-out ${
+        theme === "fraud"
+          ? "border-t-2 border-t-rose-500/80 shadow-[0_4px_20px_rgba(244,63,94,0.15)]"
+          : ""
+      }`}
+    >
       {/* 1. Left Zone: Workbench Session Indicator */}
       <div className="hidden sm:flex items-center gap-2.5 shrink-0">
         <div className="flex items-center gap-2 rounded-lg border border-sky-500/20 bg-sky-950/40 px-2.5 py-1 text-xs">
@@ -135,13 +157,13 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
         </div>
       </div>
 
-      {/* 2. Center Zone: Sleek Case Selector Combobox Dropdown */}
+      {/* 2. Center Zone: Stacking-Safe Case Selector Combobox Dropdown */}
       <div className="relative shrink-0" ref={dropdownRef}>
         <button
           type="button"
           onClick={() => setIsDropdownOpen((prev) => !prev)}
           disabled={isLoading}
-          className="group flex w-[200px] sm:w-[310px] items-center justify-between rounded-lg border border-white/[0.08] bg-[#0D1424] px-2.5 sm:px-3 py-1.5 text-xs text-slate-200 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] transition-all hover:border-white/20 active:scale-[0.98]"
+          className="group flex w-[210px] sm:w-[330px] items-center justify-between rounded-lg border border-white/[0.12] bg-[#0D1424] px-2.5 sm:px-3 py-1.5 text-xs text-slate-200 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] transition-all hover:border-white/25 active:scale-[0.98]"
           title="Select investigation case (Shortcuts: 1-5)"
         >
           <div className="flex items-center gap-2 truncate">
@@ -155,15 +177,9 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
 
           <div className="flex items-center gap-1.5 shrink-0">
             <span
-              className={`rounded px-1.5 py-0.5 font-mono text-[9px] font-semibold ${
-                currentMeta.color === "emerald"
-                  ? "bg-emerald-950/80 text-emerald-300 border border-emerald-800/50"
-                  : currentMeta.color === "amber"
-                  ? "bg-amber-950/80 text-amber-300 border border-amber-800/50"
-                  : "bg-rose-950/80 text-rose-300 border border-rose-800/50"
-              }`}
+              className={`rounded px-1.5 py-0.5 font-mono text-[9px] font-semibold transition-colors duration-300 ${triggerBadgeStyle}`}
             >
-              {currentMeta.badge}
+              {triggerBadgeText}
             </span>
             <ChevronDown
               className={`h-3.5 w-3.5 text-slate-400 transition-transform duration-150 ${
@@ -173,21 +189,31 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
           </div>
         </button>
 
-        {/* Dropdown Menu */}
+        {/* Dropdown Menu Panel with Glassmorphic Depth & z-[100] */}
         {isDropdownOpen && (
-          <div className="absolute left-0 top-full mt-1.5 w-[310px] z-50 rounded-xl border border-white/10 bg-[#0C1222]/98 p-1.5 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100">
-            <div className="px-2 py-1 text-[10px] font-mono uppercase tracking-wider text-slate-500">
-              Preset Evidence Samples (1–5)
+          <div className="absolute left-0 top-full mt-2 w-[340px] sm:w-[380px] z-[100] rounded-xl border border-white/15 bg-slate-950/95 p-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between px-2.5 py-1 border-b border-white/[0.08] text-[10px] font-mono uppercase tracking-wider text-slate-400">
+              <span>Preset Evidence Cases (1–5)</span>
+              <span className="text-slate-500">Press 1-5 to switch</span>
             </div>
-            <div className="space-y-1 mt-1">
+            <div className="space-y-1 mt-1.5">
               {demoSamples.map((sample, idx) => {
                 const meta = SAMPLE_DETAILS[sample.id] || {
                   label: sample.title,
                   badge: `S${idx + 1}`,
-                  color: "sky",
+                  color: "sky" as const,
                   desc: sample.scenario,
                 };
                 const isSelected = selectedSampleId === sample.id;
+
+                let pillColorClass = "bg-sky-950 text-sky-300 border-sky-800/40";
+                if (meta.color === "emerald") {
+                  pillColorClass = "bg-emerald-950 text-emerald-300 border-emerald-800/40";
+                } else if (meta.color === "amber") {
+                  pillColorClass = "bg-amber-950 text-amber-300 border-amber-800/40";
+                } else if (meta.color === "rose") {
+                  pillColorClass = "bg-rose-950 text-rose-300 border-rose-800/40";
+                }
 
                 return (
                   <button
@@ -197,37 +223,31 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
                       setIsDropdownOpen(false);
                       toast.success(`Loaded case: ${meta.label}`);
                     }}
-                    className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-xs transition-colors ${
+                    className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left text-xs transition-all ${
                       isSelected
-                        ? "bg-sky-500/15 text-sky-200 border border-sky-500/30"
-                        : "hover:bg-white/[0.06] text-slate-300"
+                        ? "bg-sky-500/15 text-sky-100 border border-sky-500/40 shadow-sm"
+                        : "hover:bg-white/[0.07] text-slate-300 border border-transparent"
                     }`}
                   >
-                    <div className="truncate pr-2">
+                    <div className="truncate pr-2.5">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-mono text-[10px] font-bold text-slate-400">
+                        <span className="rounded bg-white/[0.08] px-1.5 py-0.5 font-mono text-[9px] font-bold text-slate-300">
                           S{idx + 1}
                         </span>
-                        <span className="font-medium truncate">{meta.label}</span>
+                        <span className="font-medium truncate text-white">{meta.label}</span>
                       </div>
-                      <span className="block text-[10px] text-slate-500 truncate">
+                      <span className="block text-[10px] text-slate-400 truncate mt-0.5">
                         {meta.desc}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center gap-2 shrink-0">
                       <span
-                        className={`rounded px-1.5 py-0.5 font-mono text-[9px] ${
-                          meta.color === "emerald"
-                            ? "bg-emerald-950 text-emerald-300 border border-emerald-800/40"
-                            : meta.color === "amber"
-                            ? "bg-amber-950 text-amber-300 border border-amber-800/40"
-                            : "bg-rose-950 text-rose-300 border border-rose-800/40"
-                        }`}
+                        className={`rounded border px-1.5 py-0.5 font-mono text-[9px] font-semibold ${pillColorClass}`}
                       >
                         {meta.badge}
                       </span>
-                      {isSelected && <Check className="h-3.5 w-3.5 text-sky-400" />}
+                      {isSelected && <Check className="h-4 w-4 text-sky-400 shrink-0" />}
                     </div>
                   </button>
                 );
@@ -237,8 +257,8 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
         )}
       </div>
 
-      {/* 3. Right Zone: Sliding Segmented Mode Toggle + Fixed Action Cluster (ZERO SCROLLBARS) */}
-      <div className="flex items-center gap-2.5 shrink-0">
+      {/* 3. Right Zone: Action Cluster */}
+      <div className="flex items-center gap-2 shrink-0 overflow-x-auto no-scrollbar py-0.5">
         <input
           type="file"
           ref={fileInputRef}

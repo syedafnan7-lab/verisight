@@ -1,0 +1,1282 @@
+[
+  {
+    "sample_id": "user_real_01",
+    "sha256": "b205f2d3183489ed2399aae614594eb0e0aa812596f7ae41601e69702fa8f5bc",
+    "original_filename": "WhatsApp Image 2026-11-11 at 18.21.18 (1).jpeg",
+    "ground_truth_category": "USER_ASSERTED_AUTHENTIC",
+    "blind_overall_score": 44.4,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "WhatsApp Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.3492,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 0.6,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": true,
+      "clone_count": 12,
+      "layer_score": 74.4
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 12.0,
+      "max_baseline_drift_px": 3.5,
+      "max_delta_e": 1.0,
+      "cielab_patch_anomaly": false,
+      "sharpness_z_anomaly": true,
+      "layer_score": 31.0
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": true,
+      "layer_score": 25.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.256,
+      "image_integrity_status": "TAMPER_DETECTED",
+      "text_consistency_score": 0.69,
+      "text_consistency_status": "GEOMETRIC_ANOMALY",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "MODERATE_UNCERTAINTY",
+      "forensic_uncertainty_score": 0.45,
+      "uncertainty_explanation": "Lossy messaging transcoding (JPEG Q=77) partially obscures high-frequency residuals."
+    },
+    "findings_count": 4,
+    "findings_titles": [
+      "Copy-Move Cloned Pixel Clusters",
+      "Sub-Pixel Typographic Baseline Drift",
+      "Font Edge Anti-Aliasing Sharpness Inconsistency",
+      "Non-Native Viewport Aspect Ratio Crop"
+    ]
+  },
+  {
+    "sample_id": "user_real_02",
+    "sha256": "b4baddf050fe158bc9c382592948e4c5355054f7d04aa2f1ea624cb4d87cd287",
+    "original_filename": "WhatsApp Image 2026-11-11 at 18.21.18 (2).jpeg",
+    "ground_truth_category": "USER_ASSERTED_AUTHENTIC",
+    "blind_overall_score": 44.4,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "WhatsApp Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.3692,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 0.6,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": true,
+      "clone_count": 21,
+      "layer_score": 74.4
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 12.0,
+      "max_baseline_drift_px": 3.5,
+      "max_delta_e": 1.0,
+      "cielab_patch_anomaly": false,
+      "sharpness_z_anomaly": true,
+      "layer_score": 31.0
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": true,
+      "layer_score": 25.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.256,
+      "image_integrity_status": "TAMPER_DETECTED",
+      "text_consistency_score": 0.69,
+      "text_consistency_status": "GEOMETRIC_ANOMALY",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "MODERATE_UNCERTAINTY",
+      "forensic_uncertainty_score": 0.45,
+      "uncertainty_explanation": "Lossy messaging transcoding (JPEG Q=77) partially obscures high-frequency residuals."
+    },
+    "findings_count": 4,
+    "findings_titles": [
+      "Copy-Move Cloned Pixel Clusters",
+      "Sub-Pixel Typographic Baseline Drift",
+      "Font Edge Anti-Aliasing Sharpness Inconsistency",
+      "Non-Native Viewport Aspect Ratio Crop"
+    ]
+  },
+  {
+    "sample_id": "user_real_03",
+    "sha256": "83ec34837c9dfbb969183e2a86f4cd47d66cdd6d58f41754604bd42915c1f1a6",
+    "original_filename": "WhatsApp Image 2026-11-11 at 18.21.18 (3).jpeg",
+    "ground_truth_category": "USER_ASSERTED_AUTHENTIC",
+    "blind_overall_score": 62.4,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "WhatsApp Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.3692,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 0.6,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": true,
+      "clone_count": 22,
+      "layer_score": 74.4
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 92.0,
+      "max_baseline_drift_px": 5.0,
+      "max_delta_e": 1.02,
+      "cielab_patch_anomaly": false,
+      "sharpness_z_anomaly": true,
+      "layer_score": 71.0
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": true,
+      "layer_score": 25.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.256,
+      "image_integrity_status": "TAMPER_DETECTED",
+      "text_consistency_score": 0.29,
+      "text_consistency_status": "SUBPIXEL_DRIFT",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "MODERATE_UNCERTAINTY",
+      "forensic_uncertainty_score": 0.45,
+      "uncertainty_explanation": "Lossy messaging transcoding (JPEG Q=77) partially obscures high-frequency residuals."
+    },
+    "findings_count": 4,
+    "findings_titles": [
+      "Copy-Move Cloned Pixel Clusters",
+      "Sub-Pixel Typographic Baseline Drift",
+      "Font Edge Anti-Aliasing Sharpness Inconsistency",
+      "Non-Native Viewport Aspect Ratio Crop"
+    ]
+  },
+  {
+    "sample_id": "user_real_04",
+    "sha256": "c1de6e67b5c3cceba852a5424af1a21e11adfeeacc70f9316664f3497d9fd783",
+    "original_filename": "WhatsApp Image 2026-11-11 at 18.21.18.jpeg",
+    "ground_truth_category": "USER_ASSERTED_AUTHENTIC",
+    "blind_overall_score": 44.4,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "WhatsApp Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.3692,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 0.7,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": true,
+      "clone_count": 21,
+      "layer_score": 74.5
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 12.0,
+      "max_baseline_drift_px": 8.0,
+      "max_delta_e": 1.0,
+      "cielab_patch_anomaly": false,
+      "sharpness_z_anomaly": true,
+      "layer_score": 31.0
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": true,
+      "layer_score": 25.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.255,
+      "image_integrity_status": "TAMPER_DETECTED",
+      "text_consistency_score": 0.69,
+      "text_consistency_status": "GEOMETRIC_ANOMALY",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "MODERATE_UNCERTAINTY",
+      "forensic_uncertainty_score": 0.45,
+      "uncertainty_explanation": "Lossy messaging transcoding (JPEG Q=77) partially obscures high-frequency residuals."
+    },
+    "findings_count": 4,
+    "findings_titles": [
+      "Copy-Move Cloned Pixel Clusters",
+      "Sub-Pixel Typographic Baseline Drift",
+      "Font Edge Anti-Aliasing Sharpness Inconsistency",
+      "Non-Native Viewport Aspect Ratio Crop"
+    ]
+  },
+  {
+    "sample_id": "user_real_05",
+    "sha256": "135ee569c224ffa0455c638f8422cb23ced93b2fa12687e876d92be8ddf2d83b",
+    "original_filename": "WhatsApp Image 2026-11-11 at 18.21.19 (1).jpeg",
+    "ground_truth_category": "USER_ASSERTED_AUTHENTIC",
+    "blind_overall_score": 19.9,
+    "blind_verdict": "AUTHENTIC_VERIFIED",
+    "channel_detected": "WhatsApp Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.3816,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 0.5,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": false,
+      "clone_count": 0,
+      "layer_score": 4.4
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 12.0,
+      "max_baseline_drift_px": 4.0,
+      "max_delta_e": 0.0,
+      "cielab_patch_anomaly": false,
+      "sharpness_z_anomaly": true,
+      "layer_score": 31.0
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": true,
+      "layer_score": 25.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.956,
+      "image_integrity_status": "INTACT",
+      "text_consistency_score": 0.69,
+      "text_consistency_status": "GEOMETRIC_ANOMALY",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "HIGH_CONFIDENCE",
+      "forensic_uncertainty_score": 0.08,
+      "uncertainty_explanation": "Signal-to-noise ratio and typographic resolution are sufficient for mathematical audit."
+    },
+    "findings_count": 3,
+    "findings_titles": [
+      "Sub-Pixel Typographic Baseline Drift",
+      "Font Edge Anti-Aliasing Sharpness Inconsistency",
+      "Non-Native Viewport Aspect Ratio Crop"
+    ]
+  },
+  {
+    "sample_id": "user_real_06",
+    "sha256": "c0691ad48614a6d2d097fd1b0b290499d90181566e36e1b63fc361a0c405e8d1",
+    "original_filename": "WhatsApp Image 2026-11-11 at 18.21.19 (2).jpeg",
+    "ground_truth_category": "USER_ASSERTED_AUTHENTIC",
+    "blind_overall_score": 19.5,
+    "blind_verdict": "AUTHENTIC_VERIFIED",
+    "channel_detected": "WhatsApp Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.3412,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 0.7,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": false,
+      "clone_count": 0,
+      "layer_score": 4.5
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 10.5,
+      "max_baseline_drift_px": 3.0,
+      "max_delta_e": 0.0,
+      "cielab_patch_anomaly": false,
+      "sharpness_z_anomaly": true,
+      "layer_score": 30.2
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": true,
+      "layer_score": 25.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.955,
+      "image_integrity_status": "INTACT",
+      "text_consistency_score": 0.698,
+      "text_consistency_status": "GEOMETRIC_ANOMALY",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "HIGH_CONFIDENCE",
+      "forensic_uncertainty_score": 0.08,
+      "uncertainty_explanation": "Signal-to-noise ratio and typographic resolution are sufficient for mathematical audit."
+    },
+    "findings_count": 2,
+    "findings_titles": [
+      "Font Edge Anti-Aliasing Sharpness Inconsistency",
+      "Non-Native Viewport Aspect Ratio Crop"
+    ]
+  },
+  {
+    "sample_id": "user_real_07",
+    "sha256": "ad73ba819cac62faf5fc17ec1a52b613607209bbcb600e1c794dfeabf3e38858",
+    "original_filename": "WhatsApp Image 2026-11-11 at 18.21.19 (3).jpeg",
+    "ground_truth_category": "USER_ASSERTED_AUTHENTIC",
+    "blind_overall_score": 88.0,
+    "blind_verdict": "MANIPULATED_FORGERY",
+    "channel_detected": "Social Media Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.3654,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 0.3,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": true,
+      "clone_count": 25,
+      "layer_score": 74.3
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 100.0,
+      "max_baseline_drift_px": 11.0,
+      "max_delta_e": 0.0,
+      "cielab_patch_anomaly": false,
+      "sharpness_z_anomaly": true,
+      "layer_score": 75.0
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": false,
+      "layer_score": 0.0
+    },
+    "synergy": {
+      "multiplier_applied": true,
+      "multiplier_factor": 1.35
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.257,
+      "image_integrity_status": "TAMPER_DETECTED",
+      "text_consistency_score": 0.25,
+      "text_consistency_status": "SUBPIXEL_DRIFT",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "HIGH_CONFIDENCE",
+      "forensic_uncertainty_score": 0.08,
+      "uncertainty_explanation": "Signal-to-noise ratio and typographic resolution are sufficient for mathematical audit."
+    },
+    "findings_count": 3,
+    "findings_titles": [
+      "Copy-Move Cloned Pixel Clusters",
+      "Sub-Pixel Typographic Baseline Drift",
+      "Font Edge Anti-Aliasing Sharpness Inconsistency"
+    ]
+  },
+  {
+    "sample_id": "user_real_08",
+    "sha256": "75cbadc668440fb8b730432706d418fc4b9ba5274f5748ae5930437c5a248bee",
+    "original_filename": "WhatsApp Image 2026-11-11 at 18.21.19.jpeg",
+    "ground_truth_category": "USER_ASSERTED_AUTHENTIC",
+    "blind_overall_score": 2.9,
+    "blind_verdict": "AUTHENTIC_VERIFIED",
+    "channel_detected": "WhatsApp Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.3816,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 0.2,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": false,
+      "clone_count": 0,
+      "layer_score": 4.3
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 12.0,
+      "max_baseline_drift_px": 6.0,
+      "max_delta_e": 0.0,
+      "cielab_patch_anomaly": false,
+      "sharpness_z_anomaly": false,
+      "layer_score": 6.0
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": false,
+      "layer_score": 0.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.957,
+      "image_integrity_status": "INTACT",
+      "text_consistency_score": 0.94,
+      "text_consistency_status": "CONSISTENT",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "HIGH_CONFIDENCE",
+      "forensic_uncertainty_score": 0.08,
+      "uncertainty_explanation": "Signal-to-noise ratio and typographic resolution are sufficient for mathematical audit."
+    },
+    "findings_count": 1,
+    "findings_titles": [
+      "Sub-Pixel Typographic Baseline Drift"
+    ]
+  },
+  {
+    "sample_id": "user_real_09",
+    "sha256": "893e5ef2e5cdd7d8a4067fb23ddbb5010b100bd944589eeb4aae24de5e2a5c97",
+    "original_filename": "WhatsApp Image 2026-11-11 at 18.21.20 (1).jpeg",
+    "ground_truth_category": "USER_ASSERTED_AUTHENTIC",
+    "blind_overall_score": 59.8,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "Social Media Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.3919,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 0.2,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": true,
+      "clone_count": 28,
+      "layer_score": 74.3
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 100.0,
+      "max_baseline_drift_px": 18.0,
+      "max_delta_e": 0.0,
+      "cielab_patch_anomaly": false,
+      "sharpness_z_anomaly": true,
+      "layer_score": 75.0
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": false,
+      "layer_score": 0.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.257,
+      "image_integrity_status": "TAMPER_DETECTED",
+      "text_consistency_score": 0.25,
+      "text_consistency_status": "SUBPIXEL_DRIFT",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "MODERATE_UNCERTAINTY",
+      "forensic_uncertainty_score": 0.45,
+      "uncertainty_explanation": "Lossy messaging transcoding (JPEG Q=77) partially obscures high-frequency residuals."
+    },
+    "findings_count": 3,
+    "findings_titles": [
+      "Copy-Move Cloned Pixel Clusters",
+      "Sub-Pixel Typographic Baseline Drift",
+      "Font Edge Anti-Aliasing Sharpness Inconsistency"
+    ]
+  },
+  {
+    "sample_id": "user_real_10",
+    "sha256": "ab9bee7f00e4541a59462dd19426f85c459b482f2571a79ec58030540001ea05",
+    "original_filename": "WhatsApp Image 2026-11-11 at 18.21.20 (2).jpeg",
+    "ground_truth_category": "USER_ASSERTED_AUTHENTIC",
+    "blind_overall_score": 44.4,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "Social Media Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.4017,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 0.6,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": true,
+      "clone_count": 23,
+      "layer_score": 74.4
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 12.0,
+      "max_baseline_drift_px": 5.0,
+      "max_delta_e": 0.0,
+      "cielab_patch_anomaly": false,
+      "sharpness_z_anomaly": true,
+      "layer_score": 31.0
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": true,
+      "layer_score": 25.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.256,
+      "image_integrity_status": "TAMPER_DETECTED",
+      "text_consistency_score": 0.69,
+      "text_consistency_status": "GEOMETRIC_ANOMALY",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "MODERATE_UNCERTAINTY",
+      "forensic_uncertainty_score": 0.45,
+      "uncertainty_explanation": "Lossy messaging transcoding (JPEG Q=77) partially obscures high-frequency residuals."
+    },
+    "findings_count": 4,
+    "findings_titles": [
+      "Copy-Move Cloned Pixel Clusters",
+      "Sub-Pixel Typographic Baseline Drift",
+      "Font Edge Anti-Aliasing Sharpness Inconsistency",
+      "Non-Native Viewport Aspect Ratio Crop"
+    ]
+  },
+  {
+    "sample_id": "user_real_11",
+    "sha256": "7e9d4e54ce436f1dd166bcf8a4f6a228c149d5fdf4d18156b915c4e4947f3b7a",
+    "original_filename": "WhatsApp Image 2026-11-11 at 18.21.20 (3).jpeg",
+    "ground_truth_category": "USER_ASSERTED_AUTHENTIC",
+    "blind_overall_score": 43.6,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "WhatsApp Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.4168,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 0.6,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": true,
+      "clone_count": 36,
+      "layer_score": 74.4
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 8.8,
+      "max_baseline_drift_px": 2.5,
+      "max_delta_e": 1.27,
+      "cielab_patch_anomaly": false,
+      "sharpness_z_anomaly": true,
+      "layer_score": 29.4
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": true,
+      "layer_score": 25.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.256,
+      "image_integrity_status": "TAMPER_DETECTED",
+      "text_consistency_score": 0.706,
+      "text_consistency_status": "CONSISTENT",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "MODERATE_UNCERTAINTY",
+      "forensic_uncertainty_score": 0.45,
+      "uncertainty_explanation": "Lossy messaging transcoding (JPEG Q=77) partially obscures high-frequency residuals."
+    },
+    "findings_count": 3,
+    "findings_titles": [
+      "Copy-Move Cloned Pixel Clusters",
+      "Font Edge Anti-Aliasing Sharpness Inconsistency",
+      "Non-Native Viewport Aspect Ratio Crop"
+    ]
+  },
+  {
+    "sample_id": "user_real_12",
+    "sha256": "e59438b85e49836ca8d16847fae385fcac735723f7a2f33c9053280dac873ffb",
+    "original_filename": "WhatsApp Image 2026-11-11 at 18.21.20.jpeg",
+    "ground_truth_category": "USER_ASSERTED_AUTHENTIC",
+    "blind_overall_score": 35.3,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "Social Media Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.3719,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 0.2,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": false,
+      "clone_count": 0,
+      "layer_score": 4.3
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 100.0,
+      "max_baseline_drift_px": 16.0,
+      "max_delta_e": 0.0,
+      "cielab_patch_anomaly": false,
+      "sharpness_z_anomaly": true,
+      "layer_score": 75.0
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": false,
+      "layer_score": 0.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.957,
+      "image_integrity_status": "INTACT",
+      "text_consistency_score": 0.25,
+      "text_consistency_status": "SUBPIXEL_DRIFT",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "MODERATE_UNCERTAINTY",
+      "forensic_uncertainty_score": 0.45,
+      "uncertainty_explanation": "Lossy messaging transcoding (JPEG Q=77) partially obscures high-frequency residuals."
+    },
+    "findings_count": 2,
+    "findings_titles": [
+      "Sub-Pixel Typographic Baseline Drift",
+      "Font Edge Anti-Aliasing Sharpness Inconsistency"
+    ]
+  },
+  {
+    "sample_id": "user_real_13",
+    "sha256": "547ac369133d233a3e3efc731bc740744374faf35190d834186b74eb3cae6c90",
+    "original_filename": "WhatsApp Image 2026-11-11 at 18.21.21.jpeg",
+    "ground_truth_category": "USER_ASSERTED_AUTHENTIC",
+    "blind_overall_score": 35.3,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "Social Media Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.3719,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 0.2,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": false,
+      "clone_count": 0,
+      "layer_score": 4.3
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 100.0,
+      "max_baseline_drift_px": 16.0,
+      "max_delta_e": 0.0,
+      "cielab_patch_anomaly": false,
+      "sharpness_z_anomaly": true,
+      "layer_score": 75.0
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": false,
+      "layer_score": 0.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.957,
+      "image_integrity_status": "INTACT",
+      "text_consistency_score": 0.25,
+      "text_consistency_status": "SUBPIXEL_DRIFT",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "MODERATE_UNCERTAINTY",
+      "forensic_uncertainty_score": 0.45,
+      "uncertainty_explanation": "Lossy messaging transcoding (JPEG Q=77) partially obscures high-frequency residuals."
+    },
+    "findings_count": 2,
+    "findings_titles": [
+      "Sub-Pixel Typographic Baseline Drift",
+      "Font Edge Anti-Aliasing Sharpness Inconsistency"
+    ]
+  },
+  {
+    "sample_id": "user_fake_01",
+    "sha256": "8694797109074942ee574aad7cd12e0eff6d0d2b16af76caa0a3ecb5dc77c0af",
+    "original_filename": "WhatsApp Image 2026-11-11 at 17.57.28 (1).jpeg",
+    "ground_truth_category": "USER_ASSERTED_MANIPULATED",
+    "blind_overall_score": 50.9,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "Social Media Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.6009,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 1.2,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 47.0,
+      "clone_detected": false,
+      "clone_count": 0,
+      "layer_score": 16.9
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 100.0,
+      "max_baseline_drift_px": 8.5,
+      "max_delta_e": 60.61,
+      "cielab_patch_anomaly": true,
+      "sharpness_z_anomaly": false,
+      "layer_score": 100.0
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": false,
+      "layer_score": 0.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.831,
+      "image_integrity_status": "INTACT",
+      "text_consistency_score": 0.0,
+      "text_consistency_status": "SUBPIXEL_DRIFT",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "MODERATE_UNCERTAINTY",
+      "forensic_uncertainty_score": 0.45,
+      "uncertainty_explanation": "Lossy messaging transcoding (JPEG Q=77) partially obscures high-frequency residuals."
+    },
+    "findings_count": 3,
+    "findings_titles": [
+      "Wavelet High-Pass Noise Residual Discontinuity",
+      "Sub-Pixel Typographic Baseline Drift",
+      "CIELAB Perceptual Card Background Mismatch"
+    ]
+  },
+  {
+    "sample_id": "user_fake_02",
+    "sha256": "c7b2de68f53033d0982d21a920adc5523bbe096ba992e5c2f33f3a442d5b9180",
+    "original_filename": "WhatsApp Image 2026-11-11 at 17.57.28 (2).jpeg",
+    "ground_truth_category": "USER_ASSERTED_MANIPULATED",
+    "blind_overall_score": 88.0,
+    "blind_verdict": "MANIPULATED_FORGERY",
+    "channel_detected": "Social Media Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.5994,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 1.3,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 82.0,
+      "clone_detected": false,
+      "clone_count": 0,
+      "layer_score": 29.2
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 84.5,
+      "max_baseline_drift_px": 4.5,
+      "max_delta_e": 21.11,
+      "cielab_patch_anomaly": true,
+      "sharpness_z_anomaly": true,
+      "layer_score": 100.0
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": false,
+      "layer_score": 0.0
+    },
+    "synergy": {
+      "multiplier_applied": true,
+      "multiplier_factor": 1.35
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.708,
+      "image_integrity_status": "COMPRESSION_NOISE",
+      "text_consistency_score": 0.0,
+      "text_consistency_status": "SUBPIXEL_DRIFT",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "HIGH_CONFIDENCE",
+      "forensic_uncertainty_score": 0.08,
+      "uncertainty_explanation": "Signal-to-noise ratio and typographic resolution are sufficient for mathematical audit."
+    },
+    "findings_count": 4,
+    "findings_titles": [
+      "Wavelet High-Pass Noise Residual Discontinuity",
+      "Sub-Pixel Typographic Baseline Drift",
+      "CIELAB Perceptual Card Background Mismatch",
+      "Font Edge Anti-Aliasing Sharpness Inconsistency"
+    ]
+  },
+  {
+    "sample_id": "user_fake_03",
+    "sha256": "26d6fe9034c9d8bc8b973eb3eb3a0c947e7ae59a4ee173821129d8565711d662",
+    "original_filename": "WhatsApp Image 2026-11-11 at 17.57.28.jpeg",
+    "ground_truth_category": "USER_ASSERTED_MANIPULATED",
+    "blind_overall_score": 28.4,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "Social Media Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.4168,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 1.4,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 47.0,
+      "clone_detected": false,
+      "clone_count": 0,
+      "layer_score": 17.0
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 0.0,
+      "max_baseline_drift_px": 0.0,
+      "max_delta_e": 16.53,
+      "cielab_patch_anomaly": true,
+      "sharpness_z_anomaly": false,
+      "layer_score": 50.0
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": false,
+      "layer_score": 0.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.83,
+      "image_integrity_status": "INTACT",
+      "text_consistency_score": 0.5,
+      "text_consistency_status": "GEOMETRIC_ANOMALY",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "HIGH_CONFIDENCE",
+      "forensic_uncertainty_score": 0.08,
+      "uncertainty_explanation": "Signal-to-noise ratio and typographic resolution are sufficient for mathematical audit."
+    },
+    "findings_count": 2,
+    "findings_titles": [
+      "Wavelet High-Pass Noise Residual Discontinuity",
+      "CIELAB Perceptual Card Background Mismatch"
+    ]
+  },
+  {
+    "sample_id": "user_fake_04",
+    "sha256": "d420943bce8664a9e6d450b983de6cdd27d4baa4dd54ed88907a8e0f2cf98fc4",
+    "original_filename": "WhatsApp Image 2026-11-11 at 17.57.29 (1).jpeg",
+    "ground_truth_category": "USER_ASSERTED_MANIPULATED",
+    "blind_overall_score": 35.3,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "Social Media Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.4168,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 1.4,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 87.0,
+      "clone_detected": false,
+      "clone_count": 0,
+      "layer_score": 31.0
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 8.8,
+      "max_baseline_drift_px": 2.5,
+      "max_delta_e": 50.3,
+      "cielab_patch_anomaly": true,
+      "sharpness_z_anomaly": false,
+      "layer_score": 54.4
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": false,
+      "layer_score": 0.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.69,
+      "image_integrity_status": "COMPRESSION_NOISE",
+      "text_consistency_score": 0.456,
+      "text_consistency_status": "GEOMETRIC_ANOMALY",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "MODERATE_UNCERTAINTY",
+      "forensic_uncertainty_score": 0.45,
+      "uncertainty_explanation": "Lossy messaging transcoding (JPEG Q=77) partially obscures high-frequency residuals."
+    },
+    "findings_count": 2,
+    "findings_titles": [
+      "Wavelet High-Pass Noise Residual Discontinuity",
+      "CIELAB Perceptual Card Background Mismatch"
+    ]
+  },
+  {
+    "sample_id": "user_fake_05",
+    "sha256": "16c13b2134b6b3b33eabc6e8ac1d6b0a2fc72d9f3c5e168d3adf5be546432c05",
+    "original_filename": "WhatsApp Image 2026-11-11 at 17.57.29 (2).jpeg",
+    "ground_truth_category": "USER_ASSERTED_MANIPULATED",
+    "blind_overall_score": 50.9,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "Social Media Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.6099,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 1.2,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 47.0,
+      "clone_detected": false,
+      "clone_count": 0,
+      "layer_score": 16.9
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 84.5,
+      "max_baseline_drift_px": 4.5,
+      "max_delta_e": 67.19,
+      "cielab_patch_anomaly": true,
+      "sharpness_z_anomaly": true,
+      "layer_score": 100.0
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": false,
+      "layer_score": 0.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.831,
+      "image_integrity_status": "INTACT",
+      "text_consistency_score": 0.0,
+      "text_consistency_status": "SUBPIXEL_DRIFT",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "MODERATE_UNCERTAINTY",
+      "forensic_uncertainty_score": 0.45,
+      "uncertainty_explanation": "Lossy messaging transcoding (JPEG Q=77) partially obscures high-frequency residuals."
+    },
+    "findings_count": 4,
+    "findings_titles": [
+      "Wavelet High-Pass Noise Residual Discontinuity",
+      "Sub-Pixel Typographic Baseline Drift",
+      "CIELAB Perceptual Card Background Mismatch",
+      "Font Edge Anti-Aliasing Sharpness Inconsistency"
+    ]
+  },
+  {
+    "sample_id": "user_fake_06",
+    "sha256": "ea198c14330e4abcfc8a385e5e297efa89928e754dff85de07cd17bf845603d5",
+    "original_filename": "WhatsApp Image 2026-11-11 at 17.57.29.jpeg",
+    "ground_truth_category": "USER_ASSERTED_MANIPULATED",
+    "blind_overall_score": 37.0,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "Social Media Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.4168,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 1.2,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": false,
+      "clone_count": 0,
+      "layer_score": 4.7
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 7.0,
+      "max_baseline_drift_px": 2.0,
+      "max_delta_e": 3.72,
+      "cielab_patch_anomaly": true,
+      "sharpness_z_anomaly": true,
+      "layer_score": 78.5
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": false,
+      "layer_score": 0.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.953,
+      "image_integrity_status": "INTACT",
+      "text_consistency_score": 0.215,
+      "text_consistency_status": "SUBPIXEL_DRIFT",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "MODERATE_UNCERTAINTY",
+      "forensic_uncertainty_score": 0.45,
+      "uncertainty_explanation": "Lossy messaging transcoding (JPEG Q=77) partially obscures high-frequency residuals."
+    },
+    "findings_count": 2,
+    "findings_titles": [
+      "CIELAB Perceptual Card Background Mismatch",
+      "Font Edge Anti-Aliasing Sharpness Inconsistency"
+    ]
+  },
+  {
+    "sample_id": "user_fake_07",
+    "sha256": "17b52326178e626eaee3f3431489196b48119fcc27606e234f2f95a9e0081b4f",
+    "original_filename": "WhatsApp Image 2026-11-11 at 17.57.30 (1).jpeg",
+    "ground_truth_category": "USER_ASSERTED_MANIPULATED",
+    "blind_overall_score": 35.0,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "Social Media Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.4168,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 1.6,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 87.0,
+      "clone_detected": false,
+      "clone_count": 0,
+      "layer_score": 31.1
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 7.0,
+      "max_baseline_drift_px": 2.0,
+      "max_delta_e": 24.07,
+      "cielab_patch_anomaly": true,
+      "sharpness_z_anomaly": false,
+      "layer_score": 53.5
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": false,
+      "layer_score": 0.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.689,
+      "image_integrity_status": "COMPRESSION_NOISE",
+      "text_consistency_score": 0.465,
+      "text_consistency_status": "GEOMETRIC_ANOMALY",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "MODERATE_UNCERTAINTY",
+      "forensic_uncertainty_score": 0.45,
+      "uncertainty_explanation": "Lossy messaging transcoding (JPEG Q=77) partially obscures high-frequency residuals."
+    },
+    "findings_count": 2,
+    "findings_titles": [
+      "Wavelet High-Pass Noise Residual Discontinuity",
+      "CIELAB Perceptual Card Background Mismatch"
+    ]
+  },
+  {
+    "sample_id": "user_fake_08",
+    "sha256": "28297ddcb7f3ea6f28816b81a86cec78b86184f1b06024fccac0354bbce8e168",
+    "original_filename": "WhatsApp Image 2026-11-11 at 17.57.30 (2).jpeg",
+    "ground_truth_category": "USER_ASSERTED_MANIPULATED",
+    "blind_overall_score": 24.9,
+    "blind_verdict": "AUTHENTIC_VERIFIED",
+    "channel_detected": "Social Media Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.4168,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 1.0,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": false,
+      "clone_count": 0,
+      "layer_score": 4.6
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 3.5,
+      "max_baseline_drift_px": 1.0,
+      "max_delta_e": 8.16,
+      "cielab_patch_anomaly": true,
+      "sharpness_z_anomaly": false,
+      "layer_score": 51.8
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": false,
+      "layer_score": 0.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.954,
+      "image_integrity_status": "INTACT",
+      "text_consistency_score": 0.482,
+      "text_consistency_status": "GEOMETRIC_ANOMALY",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "HIGH_CONFIDENCE",
+      "forensic_uncertainty_score": 0.08,
+      "uncertainty_explanation": "Signal-to-noise ratio and typographic resolution are sufficient for mathematical audit."
+    },
+    "findings_count": 1,
+    "findings_titles": [
+      "CIELAB Perceptual Card Background Mismatch"
+    ]
+  },
+  {
+    "sample_id": "user_fake_09",
+    "sha256": "0883273a697a72da64a1e12c12e8c6eab13358cb8935df514513e4726d8adeeb",
+    "original_filename": "WhatsApp Image 2026-11-11 at 17.57.30.jpeg",
+    "ground_truth_category": "USER_ASSERTED_MANIPULATED",
+    "blind_overall_score": 26.2,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "Social Media Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.4168,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 1.4,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": false,
+      "clone_count": 0,
+      "layer_score": 4.8
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 8.8,
+      "max_baseline_drift_px": 2.5,
+      "max_delta_e": 15.33,
+      "cielab_patch_anomaly": true,
+      "sharpness_z_anomaly": false,
+      "layer_score": 54.4
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": false,
+      "layer_score": 0.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.952,
+      "image_integrity_status": "INTACT",
+      "text_consistency_score": 0.456,
+      "text_consistency_status": "GEOMETRIC_ANOMALY",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "HIGH_CONFIDENCE",
+      "forensic_uncertainty_score": 0.08,
+      "uncertainty_explanation": "Signal-to-noise ratio and typographic resolution are sufficient for mathematical audit."
+    },
+    "findings_count": 1,
+    "findings_titles": [
+      "CIELAB Perceptual Card Background Mismatch"
+    ]
+  },
+  {
+    "sample_id": "user_fake_10",
+    "sha256": "4939e87cbeb26795c9c1a92191ce521cb486eb05a3f51e8278386365d9c40585",
+    "original_filename": "WhatsApp Image 2026-11-11 at 17.57.31.jpeg",
+    "ground_truth_category": "USER_ASSERTED_MANIPULATED",
+    "blind_overall_score": 25.0,
+    "blind_verdict": "SUSPICIOUS_ANOMALIES",
+    "channel_detected": "Social Media Re-Compressed (EXIF Stripped)",
+    "calibrated_probability": 0.4168,
+    "model_id": "verisight-fusion-gbdt-v1",
+    "model_version": "1.2.1",
+    "inference_status": "EXECUTED",
+    "layer1_signal": {
+      "ela_score": 1.5,
+      "anomalous_blocks": 0,
+      "wavelet_noise_score": 12.0,
+      "clone_detected": false,
+      "clone_count": 0,
+      "layer_score": 4.8
+    },
+    "layer2_geometry": {
+      "baseline_drift_score": 3.5,
+      "max_baseline_drift_px": 1.0,
+      "max_delta_e": 14.48,
+      "cielab_patch_anomaly": true,
+      "sharpness_z_anomaly": false,
+      "layer_score": 51.8
+    },
+    "layer3_metadata": {
+      "clock_paradox": false,
+      "upi_valid": null,
+      "non_native_viewport": false,
+      "layer_score": 0.0
+    },
+    "synergy": {
+      "multiplier_applied": false,
+      "multiplier_factor": 1.0
+    },
+    "assessment_dimensions": {
+      "image_integrity_score": 0.952,
+      "image_integrity_status": "INTACT",
+      "text_consistency_score": 0.482,
+      "text_consistency_status": "GEOMETRIC_ANOMALY",
+      "payment_verification_status": "INDEPENDENT_SOURCE_QUERY_REQUIRED",
+      "payment_verification_details": "A digital screenshot cannot independently prove financial transfer. Independent bank, NPCI UTR settlement log, or payment gateway confirmation is mandatory.",
+      "forensic_uncertainty_status": "HIGH_CONFIDENCE",
+      "forensic_uncertainty_score": 0.08,
+      "uncertainty_explanation": "Signal-to-noise ratio and typographic resolution are sufficient for mathematical audit."
+    },
+    "findings_count": 1,
+    "findings_titles": [
+      "CIELAB Perceptual Card Background Mismatch"
+    ]
+  }
+]

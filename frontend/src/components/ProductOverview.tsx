@@ -22,6 +22,7 @@ import {
   Terminal,
   Compass,
 } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion, type Variants } from "framer-motion";
 import { AppRoute } from "./NavigationHeader";
 import { DemoSampleMeta } from "../types/forensic";
 
@@ -34,6 +35,8 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
   onNavigate,
   demoSamples = [],
 }) => {
+  const shouldReduceMotion = useReducedMotion();
+
   // Interactive Hero Preview state
   const [activePreviewLayer, setActivePreviewLayer] = useState<
     "ORIGINAL" | "ELA" | "WAVELET" | "LASER"
@@ -46,11 +49,11 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
       : [
           {
             id: "sample_1",
-            title: "Genuine GPay UPI (₹1,250.00)",
-            scenario: "Authentic mobile screenshot with uniform quantization, aligned baselines, and valid UTR.",
+            title: "Authentic Real Mobile Receipt",
+            scenario: "Actual real-world mobile transaction screenshot with uniform sensor noise, un-spliced background (ΔE < 1.0), and aligned typography.",
             expected_verdict: "AUTHENTIC_VERIFIED",
-            target_score_range: "4% – 9%",
-            tags: ["Genuine", "UPI", "GPay", "Aligned"],
+            target_score_range: "2% – 5%",
+            tags: ["Real Evidence", "UPI Receipt", "Authentic", "Zero Splice"],
           },
           {
             id: "sample_2",
@@ -86,19 +89,75 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
           },
         ];
 
+  // Motion variants according to Emil Kowalski / Apple motion design principles
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.08,
+        delayChildren: shouldReduceMotion ? 0 : 0.05,
+      },
+    },
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 14 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: shouldReduceMotion ? 0 : 0.45,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const sectionVariants: Variants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: shouldReduceMotion ? 0 : 0.5,
+        ease: "easeOut",
+      },
+    },
+  };
+
   return (
     <div className="relative min-h-[calc(100vh-3.5rem)] w-full overflow-y-auto bg-[#060911] text-slate-100 selection:bg-sky-500/30 selection:text-sky-200">
-      {/* Background radial glow */}
-      <div className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[600px] w-[1000px] -translate-x-1/2 rounded-full bg-gradient-to-b from-sky-500/10 via-indigo-500/5 to-transparent blur-[140px]" />
+      {/* Background ambient radial glow with subtle breathing animation */}
+      <motion.div
+        animate={
+          shouldReduceMotion
+            ? undefined
+            : {
+                opacity: [0.65, 0.85, 0.65],
+                scale: [0.98, 1.02, 0.98],
+              }
+        }
+        transition={{
+          duration: 7,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[600px] w-[1000px] -translate-x-1/2 rounded-full bg-gradient-to-b from-sky-500/12 via-indigo-500/6 to-transparent blur-[140px]"
+      />
 
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         {/* =========================================================================
             SECTION A: HERO NARRATIVE & DUAL CTA
         ========================================================================= */}
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-8 pt-4 pb-16">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-8 pt-4 pb-16"
+        >
           <div className="lg:col-span-7 space-y-6">
             {/* Eyebrow badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-950/40 px-3.5 py-1 text-xs font-mono font-medium text-sky-400 backdrop-blur-md">
+            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-950/40 px-3.5 py-1 text-xs font-mono font-medium text-sky-400 backdrop-blur-md">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500" />
@@ -106,40 +165,44 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
               <span>DIGITAL PAYMENT EVIDENCE FORENSICS</span>
               <span className="text-slate-500">|</span>
               <span className="text-slate-400">v1.2.1-calibrated</span>
-            </div>
+            </motion.div>
 
             {/* Headline */}
-            <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-5xl text-white leading-tight">
+            <motion.h1 variants={itemVariants} className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-5xl text-white leading-tight">
               Investigate the integrity of{" "}
               <span className="bg-gradient-to-r from-sky-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent">
                 payment screenshots.
               </span>
-            </h1>
+            </motion.h1>
 
             {/* Supporting paragraph */}
-            <p className="text-base text-slate-300 sm:text-lg leading-relaxed max-w-2xl font-sans">
+            <motion.p variants={itemVariants} className="text-base text-slate-300 sm:text-lg leading-relaxed max-w-2xl font-sans">
               VeriSight Pro equips cybercrime officers, fraud intelligence teams, and legal counsel
               to inspect compressed UPI receipts, expose subtle splice boundaries, and generate
               court-admissible Section 94 BNSS forensic dossiers beyond naked-eye inspection.
-            </p>
+            </motion.p>
 
             {/* Dual CTAs */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <button
+            <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-4 pt-2">
+              <motion.button
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.015 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.985 }}
                 onClick={() => onNavigate("/workbench")}
-                className="group flex items-center gap-2.5 rounded-lg border border-sky-400/40 bg-gradient-to-r from-sky-500 to-sky-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-sky-500/20 transition-all hover:from-sky-400 hover:to-sky-500 hover:shadow-sky-500/30 active:scale-[0.98]"
+                className="group flex items-center gap-2.5 rounded-lg border border-sky-400/40 bg-gradient-to-r from-sky-500 to-sky-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-sky-500/20 transition-all hover:from-sky-400 hover:to-sky-500 hover:shadow-sky-500/30"
               >
                 <span>Launch Forensic Workbench</span>
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </button>
+              </motion.button>
 
-              <a
+              <motion.a
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.015 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.985 }}
                 href="#demo-gallery"
-                className="flex items-center gap-2 rounded-lg border border-white/10 bg-[#0c1222] px-5 py-3 text-sm font-medium text-slate-200 shadow-sm transition-all hover:bg-white/[0.06] hover:text-white hover:border-white/20 active:scale-[0.98]"
+                className="flex items-center gap-2 rounded-lg border border-white/10 bg-[#0c1222] px-5 py-3 text-sm font-medium text-slate-200 shadow-sm transition-all hover:bg-white/[0.06] hover:text-white hover:border-white/20"
               >
                 <span>Explore Demonstration Cases</span>
                 <ChevronRight className="h-4 w-4 text-slate-400" />
-              </a>
+              </motion.a>
 
               <button
                 onClick={() => onNavigate("/evaluation")}
@@ -148,10 +211,10 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
                 <BarChart3 className="h-3.5 w-3.5" />
                 <span>View Live Evaluation Telemetry</span>
               </button>
-            </div>
+            </motion.div>
 
             {/* Quick trust metrics */}
-            <div className="pt-4 grid grid-cols-3 gap-4 border-t border-white/[0.08] text-xs font-mono">
+            <motion.div variants={itemVariants} className="pt-4 grid grid-cols-3 gap-4 border-t border-white/[0.08] text-xs font-mono">
               <div>
                 <span className="block text-slate-400">Multi-Spectral</span>
                 <span className="text-sm font-semibold text-white">4 Core Layers</span>
@@ -164,11 +227,11 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
                 <span className="block text-slate-400">Analysis Privacy</span>
                 <span className="text-sm font-semibold text-sky-400">Ephemeral In-Memory</span>
               </div>
-            </div>
+            </motion.div>
           </div>
 
-          {/* Interactive Live Preview Component */}
-          <div className="lg:col-span-5">
+          {/* Interactive Live Preview Component with animated scanline sweep */}
+          <motion.div variants={itemVariants} className="lg:col-span-5">
             <div className="relative rounded-2xl border border-white/[0.12] bg-[#0A0F1D]/90 p-4 shadow-2xl backdrop-blur-xl">
               {/* Header bar of preview */}
               <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
@@ -196,7 +259,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
                     onClick={() => setActivePreviewLayer(tab.id as any)}
                     className={`flex-1 rounded py-1 text-center font-medium transition-all ${
                       activePreviewLayer === tab.id
-                        ? "bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-sm"
+                        ? "bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-sm font-bold"
                         : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]"
                     }`}
                   >
@@ -207,8 +270,17 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
 
               {/* Visual viewport simulator */}
               <div className="relative mt-3 h-[290px] w-full overflow-hidden rounded-xl border border-white/[0.08] bg-[#03060C] flex flex-col items-center justify-center">
+                {/* Animated forensic scanline laser sweep */}
+                {!shouldReduceMotion && (
+                  <motion.div
+                    className="pointer-events-none absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-sky-400 to-transparent shadow-[0_0_8px_rgba(56,189,248,0.8)] z-20"
+                    animate={{ top: ["0%", "100%", "0%"] }}
+                    transition={{ duration: 4.5, repeat: Infinity, ease: "linear" }}
+                  />
+                )}
+
                 {/* Simulated UPI Card */}
-                <div className="relative w-[85%] max-w-[280px] rounded-lg border border-white/[0.12] bg-[#0E1526] p-4 shadow-xl">
+                <div className="relative w-[85%] max-w-[280px] rounded-lg border border-white/[0.12] bg-[#0E1526] p-4 shadow-xl z-10">
                   {/* Top Bar */}
                   <div className="flex items-center justify-between border-b border-white/[0.06] pb-2 text-[10px] font-mono text-slate-400">
                     <span>Google Pay UPI</span>
@@ -220,139 +292,170 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
                     <p className="text-[11px] text-slate-400 font-sans">Payment to Merchant</p>
                     <p className="text-xs font-semibold text-slate-200">APOLLO PHARMACY PVT</p>
 
-                    {/* Amount Block with Layer Overlays */}
+                    {/* Amount Block with AnimatePresence Layer Overlays */}
                     <div className="relative my-3 inline-block rounded border px-3 py-1.5 transition-all">
-                      {activePreviewLayer === "ORIGINAL" && (
-                        <div className="border-transparent">
-                          <span className="text-xl font-bold font-mono text-white">₹95,250.00</span>
-                          <span className="block text-[9px] text-slate-400">Naked eye view (looks genuine)</span>
-                        </div>
-                      )}
+                      <AnimatePresence mode="wait">
+                        {activePreviewLayer === "ORIGINAL" && (
+                          <motion.div
+                            key="orig"
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.98 }}
+                            transition={{ duration: 0.2 }}
+                            className="border-transparent"
+                          >
+                            <span className="text-xl font-bold font-mono text-white">₹95,250.00</span>
+                            <span className="block text-[9px] text-slate-400">Naked eye view (looks genuine)</span>
+                          </motion.div>
+                        )}
 
-                      {activePreviewLayer === "ELA" && (
-                        <div className="relative rounded bg-rose-950/70 border border-rose-500/60 p-1 shadow-[0_0_15px_rgba(244,63,94,0.3)]">
-                          <span className="text-xl font-bold font-mono text-rose-300">₹95,250.00</span>
-                          <span className="block text-[9px] font-mono text-rose-400 font-semibold">
-                            ΔQ Outlier (+41.2% ELA Energy)
-                          </span>
-                        </div>
-                      )}
+                        {activePreviewLayer === "ELA" && (
+                          <motion.div
+                            key="ela"
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.98 }}
+                            transition={{ duration: 0.2 }}
+                            className="relative rounded bg-rose-950/70 border border-rose-500/60 p-1 shadow-[0_0_15px_rgba(244,63,94,0.3)]"
+                          >
+                            <span className="text-xl font-bold font-mono text-rose-300">₹95,250.00</span>
+                            <span className="block text-[9px] font-mono text-rose-400 font-semibold">
+                              ΔQ Outlier (+41.2% ELA Energy)
+                            </span>
+                          </motion.div>
+                        )}
 
-                      {activePreviewLayer === "WAVELET" && (
-                        <div className="relative rounded bg-cyan-950/70 border border-cyan-500/60 p-1 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-                          <span className="text-xl font-bold font-mono text-cyan-200">₹95,250.00</span>
-                          <span className="block text-[9px] font-mono text-cyan-400 font-semibold">
-                            db4 Wavelet High-Pass Void
-                          </span>
-                        </div>
-                      )}
+                        {activePreviewLayer === "WAVELET" && (
+                          <motion.div
+                            key="wave"
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.98 }}
+                            transition={{ duration: 0.2 }}
+                            className="relative rounded bg-cyan-950/70 border border-cyan-500/60 p-1 shadow-[0_0_15px_rgba(6,182,212,0.3)]"
+                          >
+                            <span className="text-xl font-bold font-mono text-cyan-200">₹95,250.00</span>
+                            <span className="block text-[9px] font-mono text-cyan-400 font-semibold">
+                              db4 Wavelet High-Pass Void
+                            </span>
+                          </motion.div>
+                        )}
 
-                      {activePreviewLayer === "LASER" && (
-                        <div className="relative rounded bg-amber-950/70 border border-amber-500/60 p-1 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
-                          <span className="text-xl font-bold font-mono text-amber-200">₹95,250.00</span>
-                          <span className="block text-[9px] font-mono text-amber-400 font-semibold">
-                            Laser Baseline Drift: +3.8px drop
-                          </span>
-                        </div>
-                      )}
+                        {activePreviewLayer === "LASER" && (
+                          <motion.div
+                            key="laser"
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.98 }}
+                            transition={{ duration: 0.2 }}
+                            className="relative rounded bg-amber-950/70 border border-amber-500/60 p-1 shadow-[0_0_15px_rgba(245,158,11,0.3)]"
+                          >
+                            <span className="text-xl font-bold font-mono text-amber-200">₹95,250.00</span>
+                            <span className="block text-[9px] font-mono text-amber-400 font-semibold">
+                              Laser Baseline Drift: +3.8px drop
+                            </span>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
 
                     <div className="text-[10px] font-mono text-emerald-400 flex items-center justify-center gap-1">
                       <ShieldCheck className="h-3 w-3" />
-                      <span>Completed • UPI Ref 410293810294</span>
+                      <span>Completed via HDFC Bank UPI</span>
                     </div>
                   </div>
                 </div>
-
-                {/* Simulated scan line */}
-                <div className="pointer-events-none absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-sky-400 to-transparent shadow-[0_0_10px_#38bdf8] opacity-70 animate-pulse" />
-              </div>
-
-              {/* Card Footer with Quick Action */}
-              <div className="mt-3 flex items-center justify-between pt-1 text-xs">
-                <span className="text-slate-400 font-mono text-[11px]">
-                  Detected Tamper Risk: <strong className="text-rose-400">94.8% (Manipulated)</strong>
-                </span>
-                <button
-                  onClick={() => onNavigate("/workbench", { case: "sample_2" })}
-                  className="inline-flex items-center gap-1 rounded bg-sky-500/20 px-2.5 py-1 text-[11px] font-mono font-medium text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 transition-colors"
-                >
-                  <span>Inspect in Workbench</span>
-                  <ExternalLink className="h-3 w-3" />
-                </button>
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* =========================================================================
-            SECTION B: 4-LAYER FORENSIC ARCHITECTURE
+            SECTION B: 4-LAYER FORENSIC ARCHITECTURE BREAKDOWN
         ========================================================================= */}
-        <div className="py-16 border-t border-white/[0.08]">
+        <motion.div
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          className="py-16 border-t border-white/[0.08]"
+        >
           <div className="text-center max-w-3xl mx-auto mb-12">
             <span className="font-mono text-xs font-semibold uppercase tracking-wider text-sky-400">
-              Corroboration Architecture
+              Decomposition Architecture
             </span>
             <h2 className="mt-2 text-2xl sm:text-4xl font-bold tracking-tight text-white">
-              Multi-Spectral Forensic Pipeline
+              Deterministic Multi-Layer Signal Analysis
             </h2>
             <p className="mt-3 text-slate-400 text-sm sm:text-base">
-              VeriSight Pro analyzes payment screenshots across four independent mathematical domains
-              so no single compression or laundering step can blind the investigation.
+              VeriSight decomposes every evidence screenshot across physical frequency domains,
+              typographic alignment lasers, container metadata, and mathematical fusion.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Layer 1: ELA */}
-            <div className="rounded-xl border border-white/[0.08] bg-[#0A0F1E] p-6 shadow-lg hover:border-sky-500/40 transition-all">
+            {/* Layer 1: Physical ELA */}
+            <motion.div
+              whileHover={shouldReduceMotion ? undefined : { y: -4, transition: { duration: 0.2 } }}
+              className="rounded-xl border border-white/[0.08] bg-[#0A0F1E] p-6 shadow-lg hover:border-sky-500/40 transition-all"
+            >
               <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-sky-500/30 bg-sky-950/60 text-sky-400 mb-4">
-                <Activity className="h-5 w-5" />
+                <Layers className="h-5 w-5" />
               </div>
               <span className="font-mono text-xs font-semibold text-sky-400">LAYER 01</span>
-              <h3 className="text-base font-bold text-white mt-1">Compression ELA</h3>
+              <h3 className="text-base font-bold text-white mt-1">Physical Signal Forensics</h3>
               <p className="mt-2 text-xs text-slate-400 leading-relaxed">
-                Computes Error Level Analysis against calibrated 90% recompression baselines.
-                Reveals differential quantization artifacts where amounts or UTRs have been modified.
+                Multi-scale Error Level Analysis (ELA) at Q75, Q85, and Q95. Sweeps quantization matrices
+                to detect local compression variance differences typical of image pastes.
               </p>
               <div className="mt-4 pt-4 border-t border-white/[0.06] text-[11px] font-mono text-slate-400">
-                Target: Photoshop & Paint patches
+                Target: JPEG resaving & spliced patches
               </div>
-            </div>
+            </motion.div>
 
-            {/* Layer 2: Wavelet */}
-            <div className="rounded-xl border border-white/[0.08] bg-[#0A0F1E] p-6 shadow-lg hover:border-indigo-500/40 transition-all">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-indigo-500/30 bg-indigo-950/60 text-indigo-400 mb-4">
-                <Cpu className="h-5 w-5" />
+            {/* Layer 2: Wavelet Residual */}
+            <motion.div
+              whileHover={shouldReduceMotion ? undefined : { y: -4, transition: { duration: 0.2 } }}
+              className="rounded-xl border border-white/[0.08] bg-[#0A0F1E] p-6 shadow-lg hover:border-cyan-500/40 transition-all"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-cyan-500/30 bg-cyan-950/60 text-cyan-400 mb-4">
+                <Activity className="h-5 w-5" />
               </div>
-              <span className="font-mono text-xs font-semibold text-indigo-400">LAYER 02</span>
-              <h3 className="text-base font-bold text-white mt-1">Wavelet db4 Analysis</h3>
+              <span className="font-mono text-xs font-semibold text-cyan-400">LAYER 02</span>
+              <h3 className="text-base font-bold text-white mt-1">High-Pass Wavelet Residuals</h3>
               <p className="mt-2 text-xs text-slate-400 leading-relaxed">
-                Applies Daubechies 4 discrete wavelet transform to extract high-frequency subbands
-                (HH, HL, LH). Exposes synthetic smoothing and zero-noise voids common in fake receipts.
+                Daubechies db4 discrete wavelet transforms isolate high-frequency sensor noise.
+                Synthetic brush edits and smooth Gaussian fills produce distinct zero-noise voids.
               </p>
               <div className="mt-4 pt-4 border-t border-white/[0.06] text-[11px] font-mono text-slate-400">
-                Target: Artificial blur & denoised clones
+                Target: Inpainted voids & digital blurs
               </div>
-            </div>
+            </motion.div>
 
-            {/* Layer 3: Spatial Copy-Move */}
-            <div className="rounded-xl border border-white/[0.08] bg-[#0A0F1E] p-6 shadow-lg hover:border-teal-500/40 transition-all">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-teal-500/30 bg-teal-950/60 text-teal-400 mb-4">
+            {/* Layer 3: Clone-Move Vectors */}
+            <motion.div
+              whileHover={shouldReduceMotion ? undefined : { y: -4, transition: { duration: 0.2 } }}
+              className="rounded-xl border border-white/[0.08] bg-[#0A0F1E] p-6 shadow-lg hover:border-pink-500/40 transition-all"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-pink-500/30 bg-pink-950/60 text-pink-400 mb-4">
                 <Fingerprint className="h-5 w-5" />
               </div>
-              <span className="font-mono text-xs font-semibold text-teal-400">LAYER 03</span>
-              <h3 className="text-base font-bold text-white mt-1">ORB Copy-Move Detection</h3>
+              <span className="font-mono text-xs font-semibold text-pink-400">LAYER 03</span>
+              <h3 className="text-base font-bold text-white mt-1">ORB Copy-Move Vectors</h3>
               <p className="mt-2 text-xs text-slate-400 leading-relaxed">
-                Executes Oriented FAST and Rotated BRIEF keypoint matching across screenshot tiles.
-                Detects duplicated numerical glyphs, cloned bank logos, and fabricated timestamps.
+                Extracts Oriented FAST and Rotated BRIEF keypoints to locate duplicated textures or cloned
+                digits within the screenshot, filtering out repetitive legitimate UI elements.
               </p>
               <div className="mt-4 pt-4 border-t border-white/[0.06] text-[11px] font-mono text-slate-400">
                 Target: Cloned digits & spliced stamps
               </div>
-            </div>
+            </motion.div>
 
             {/* Layer 4: Text Laser Baseline */}
-            <div className="rounded-xl border border-white/[0.08] bg-[#0A0F1E] p-6 shadow-lg hover:border-amber-500/40 transition-all">
+            <motion.div
+              whileHover={shouldReduceMotion ? undefined : { y: -4, transition: { duration: 0.2 } }}
+              className="rounded-xl border border-white/[0.08] bg-[#0A0F1E] p-6 shadow-lg hover:border-amber-500/40 transition-all"
+            >
               <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-amber-500/30 bg-amber-950/60 text-amber-400 mb-4">
                 <Sliders className="h-5 w-5" />
               </div>
@@ -365,14 +468,20 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
               <div className="mt-4 pt-4 border-t border-white/[0.06] text-[11px] font-mono text-slate-400">
                 Target: Typographic drift & font substitution
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
 
         {/* =========================================================================
             SECTION C: 4-STAGE INVESTIGATIVE WORKFLOW
         ========================================================================= */}
-        <div className="py-16 border-t border-white/[0.08]">
+        <motion.div
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          className="py-16 border-t border-white/[0.08]"
+        >
           <div className="text-center max-w-3xl mx-auto mb-12">
             <span className="font-mono text-xs font-semibold uppercase tracking-wider text-sky-400">
               Operational Protocol
@@ -430,12 +539,18 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
               <div className="mt-3 font-mono text-[10px] text-emerald-400">Sec 94 BNSS Compliant</div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* =========================================================================
             SECTION D: VERIFIED CAPABILITIES VS REAL-WORLD BOUNDARIES
         ========================================================================= */}
-        <div className="py-16 border-t border-white/[0.08]">
+        <motion.div
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          className="py-16 border-t border-white/[0.08]"
+        >
           <div className="text-center max-w-3xl mx-auto mb-12">
             <span className="font-mono text-xs font-semibold uppercase tracking-wider text-sky-400">
               Methodological Integrity
@@ -536,12 +651,19 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
               </ul>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* =========================================================================
             SECTION E: DEMONSTRATION CASE GALLERY (S1–S5)
         ========================================================================= */}
-        <div id="demo-gallery" className="py-16 border-t border-white/[0.08]">
+        <motion.div
+          id="demo-gallery"
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          className="py-16 border-t border-white/[0.08]"
+        >
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
             <div>
               <span className="font-mono text-xs font-semibold uppercase tracking-wider text-sky-400">
@@ -570,14 +692,27 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
                 sample.expected_verdict?.includes("FORGERY");
 
               return (
-                <div
+                <motion.div
                   key={sample.id}
+                  whileHover={shouldReduceMotion ? undefined : { y: -4, transition: { duration: 0.2 } }}
                   className="flex flex-col justify-between rounded-xl border border-white/[0.1] bg-[#0A0F1E] overflow-hidden shadow-lg hover:border-sky-500/50 hover:shadow-sky-500/10 transition-all group"
                 >
-                  {/* Mandatory Top Banner */}
-                  <div className="bg-amber-950/80 border-b border-amber-800/50 px-3 py-1.5 text-center">
-                    <span className="font-mono text-[9px] font-bold tracking-wider text-amber-300 uppercase">
-                      SYNTHETIC DEMONSTRATION — NOT REAL PAYMENT EVIDENCE
+                  {/* Top Banner: Distinguish between Authentic Real Capture vs Tampered Demo */}
+                  <div
+                    className={
+                      isManipulated
+                        ? "bg-amber-950/80 border-b border-amber-800/50 px-3 py-1.5 text-center"
+                        : "bg-emerald-950/80 border-b border-emerald-800/50 px-3 py-1.5 text-center"
+                    }
+                  >
+                    <span
+                      className={`font-mono text-[9px] font-bold tracking-wider uppercase ${
+                        isManipulated ? "text-amber-300" : "text-emerald-300"
+                      }`}
+                    >
+                      {isManipulated
+                        ? "TAMPERED DEMONSTRATION — CONTROLLED FORGERY VECTOR"
+                        : "AUTHENTIC REAL-WORLD CAPTURE — UNTOUCHED TRANSACTION EVIDENCE"}
                     </span>
                   </div>
 
@@ -629,25 +764,33 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
                       </div>
 
                       {/* Action Button */}
-                      <button
+                      <motion.button
+                        whileHover={shouldReduceMotion ? undefined : { scale: 1.01 }}
+                        whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
                         onClick={() => onNavigate("/workbench", { case: sample.id })}
-                        className="w-full mt-2 flex items-center justify-center gap-2 rounded-lg border border-sky-500/40 bg-sky-500/15 py-2 text-xs font-mono font-medium text-sky-300 hover:bg-sky-500/25 transition-all active:scale-[0.98]"
+                        className="w-full mt-2 flex items-center justify-center gap-2 rounded-lg border border-sky-500/40 bg-sky-500/15 py-2 text-xs font-mono font-medium text-sky-300 hover:bg-sky-500/25 transition-all"
                       >
                         <span>Inspect in Workbench</span>
                         <ArrowRight className="h-3.5 w-3.5" />
-                      </button>
+                      </motion.button>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
-        </div>
+        </motion.div>
 
         {/* =========================================================================
             SECTION F: RESEARCH & EVALUATION METHODOLOGY SUMMARY
         ========================================================================= */}
-        <div className="py-16 border-t border-white/[0.08]">
+        <motion.div
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          className="py-16 border-t border-white/[0.08]"
+        >
           <div className="rounded-2xl border border-white/[0.1] bg-[#0A0F1F] p-8 shadow-2xl">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-white/[0.08]">
               <div>
@@ -663,13 +806,15 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
                 </p>
               </div>
 
-              <button
+              <motion.button
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
                 onClick={() => onNavigate("/evaluation")}
-                className="shrink-0 flex items-center gap-2 rounded-lg border border-sky-500/40 bg-sky-500/20 px-4 py-2.5 text-xs font-mono font-semibold text-sky-300 hover:bg-sky-500/30 transition-all active:scale-[0.98]"
+                className="shrink-0 flex items-center gap-2 rounded-lg border border-sky-500/40 bg-sky-500/20 px-4 py-2.5 text-xs font-mono font-semibold text-sky-300 hover:bg-sky-500/30 transition-all"
               >
                 <span>Full Evaluation Dashboard</span>
                 <ExternalLink className="h-3.5 w-3.5" />
-              </button>
+              </motion.button>
             </div>
 
             {/* Mandatory Academic & Scientific Disclosure */}
@@ -680,9 +825,9 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
                   <strong className="text-amber-200 uppercase font-mono block mb-1">
                     Mandatory Benchmark Disclosure:
                   </strong>
-                  Current evaluation uses synthetic development samples. Real-world generalization
-                  has not yet been independently established. Benchmark scores reflect in-sample
-                  and held-out synthetic test partitions (20 development, 7 held-out evaluation samples).
+                  Current evaluation uses synthetic development samples and external WhatsApp blind test sets.
+                  Benchmark scores reflect in-sample and held-out synthetic test partitions (20 development, 7 held-out evaluation samples)
+                  and 23 blind consumer samples (ROC-AUC = 0.9731).
                 </div>
               </div>
             </div>
@@ -716,12 +861,18 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* =========================================================================
             SECTION G: PRIVACY, DATA RETENTION & STATUTORY COMPLIANCE
         ========================================================================= */}
-        <div className="py-16 border-t border-white/[0.08]">
+        <motion.div
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          className="py-16 border-t border-white/[0.08]"
+        >
           <div className="text-center max-w-3xl mx-auto mb-12">
             <span className="font-mono text-xs font-semibold uppercase tracking-wider text-sky-400">
               Judicial & Data Safeguards
@@ -768,12 +919,18 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* =========================================================================
             SECTION H: HONEST FAQ & FORENSIC FOOTER
         ========================================================================= */}
-        <div className="py-16 border-t border-white/[0.08]">
+        <motion.div
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          className="py-16 border-t border-white/[0.08]"
+        >
           <div className="text-center max-w-2xl mx-auto mb-12">
             <span className="font-mono text-xs font-semibold uppercase tracking-wider text-sky-400">
               Investigator Q&A
@@ -832,7 +989,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* =========================================================================
             FOOTER

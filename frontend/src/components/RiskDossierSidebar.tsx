@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { verdictLabel } from "../services/verdictLabel";
 import { ForensicAnalysisReport, BoundingBox } from "../types/forensic";
 import { toast } from "sonner";
+import { useVerdictTheme } from "./AmbientThreatBackground";
 
 interface RiskDossierSidebarProps {
   report: ForensicAnalysisReport | null;
@@ -102,8 +103,9 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
     findings,
   } = report;
 
-  const isCorroborated = verdict === "CORROBORATED_ANOMALIES";
-  const isReviewRequired = verdict === "REVIEW_REQUIRED" || isCorroborated;
+  const { theme } = useVerdictTheme();
+  const isCorroborated = verdict === "CORROBORATED_ANOMALIES" || verdict === "MANIPULATED_FORGERY";
+  const isReviewRequired = verdict === "REVIEW_REQUIRED" || isCorroborated || overall_tamper_score >= 25;
 
   // Calibrated Gauge Calculations
   const radius = 38;
@@ -268,12 +270,26 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
-            className="space-y-2.5 rounded-xl border border-amber-500/25 bg-[#111726] p-3.5 shadow-md"
+            className={`space-y-2.5 rounded-xl border p-3.5 shadow-md transition-all duration-500 ${
+              theme === "fraud"
+                ? "border-rose-500/40 bg-rose-950/20 shadow-rose-950/40"
+                : theme === "suspicious"
+                ? "border-amber-500/35 bg-amber-950/20 shadow-amber-950/40"
+                : "border-emerald-500/30 bg-emerald-950/20 shadow-emerald-950/40"
+            }`}
           >
-            <div className="flex items-center justify-between text-xs font-semibold text-amber-300">
+            <div className="flex items-center justify-between text-xs font-semibold">
               <div className="flex items-center gap-1.5">
-                <ShieldAlert className="h-3.5 w-3.5 text-amber-400" />
-                <span className="font-mono text-[10px] uppercase tracking-wider">
+                <ShieldAlert
+                  className={`h-3.5 w-3.5 ${
+                    theme === "fraud"
+                      ? "text-rose-400"
+                      : theme === "suspicious"
+                      ? "text-amber-400"
+                      : "text-emerald-400"
+                  }`}
+                />
+                <span className="font-mono text-[10px] uppercase tracking-wider text-slate-200">
                   Syndicate Resolution
                 </span>
               </div>
@@ -282,13 +298,23 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
                   report.syndicate_intelligence.syndicate_risk_level ===
                   "CRITICAL_SYNDICATE_THREAT"
                     ? "border-rose-800 bg-rose-950 text-rose-300"
-                    : "border-amber-800 bg-amber-950 text-amber-300"
+                    : report.syndicate_intelligence.syndicate_risk_level ===
+                        "MODERATE_REVIEW_REQUIRED" ||
+                      (report.syndicate_intelligence.threat_indicators &&
+                        report.syndicate_intelligence.threat_indicators.length > 0)
+                    ? "border-amber-800 bg-amber-950 text-amber-300"
+                    : "border-emerald-800 bg-emerald-950 text-emerald-300"
                 }`}
               >
                 {report.syndicate_intelligence.syndicate_risk_level ===
                 "CRITICAL_SYNDICATE_THREAT"
                   ? "CRITICAL THREAT"
-                  : "REVIEW REQUIRED"}
+                  : report.syndicate_intelligence.syndicate_risk_level ===
+                      "MODERATE_REVIEW_REQUIRED" ||
+                    (report.syndicate_intelligence.threat_indicators &&
+                      report.syndicate_intelligence.threat_indicators.length > 0)
+                  ? "REVIEW REQUIRED"
+                  : "VERIFIED ENTITY"}
               </span>
             </div>
 
@@ -302,11 +328,11 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
                   )
                 }
                 className="group cursor-pointer rounded-lg border border-white/[0.08] bg-[#0A0E1A] p-2 transition-all hover:border-amber-500/40 active:scale-[0.98]"
-                title="Click to copy VPA"
+                title="Click to copy VPA to clipboard"
               >
                 <div className="flex items-center justify-between text-[9px] text-slate-500 mb-0.5">
                   <span>PAYEE VPA</span>
-                  <Copy className="h-3 w-3 text-slate-500 group-hover:text-amber-300" />
+                  <Copy className="h-3 w-3 text-slate-500 group-hover:text-amber-300 transition-colors" />
                 </div>
                 <span className="font-medium text-slate-200 truncate block">
                   {report.syndicate_intelligence.entity_summary.payee_vpa || "N/A"}
@@ -321,14 +347,32 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
                   )
                 }
                 className="group cursor-pointer rounded-lg border border-white/[0.08] bg-[#0A0E1A] p-2 transition-all hover:border-amber-500/40 active:scale-[0.98]"
-                title="Click to copy UTR"
+                title="Click to copy UTR to clipboard"
               >
                 <div className="flex items-center justify-between text-[9px] text-slate-500 mb-0.5">
                   <span>REF UTR</span>
-                  <Copy className="h-3 w-3 text-slate-500 group-hover:text-amber-300" />
+                  <Copy className="h-3 w-3 text-slate-500 group-hover:text-amber-300 transition-colors" />
                 </div>
                 <span className="font-medium text-slate-200 truncate block">
                   {report.syndicate_intelligence.entity_summary.utr_number || "Non-std"}
+                </span>
+              </div>
+            </div>
+
+            {/* Entity Details Row: Payee Name, Amount & Bank Provider */}
+            <div className="grid grid-cols-2 gap-2 font-mono text-[10px]">
+              <div className="rounded-lg border border-white/[0.06] bg-[#0A0E1A]/80 p-2">
+                <span className="text-[9px] text-slate-500 block mb-0.5">PAYEE NAME</span>
+                <span className="font-medium text-slate-200 truncate block" title={report.syndicate_intelligence.entity_summary.payee_name || "N/A"}>
+                  {report.syndicate_intelligence.entity_summary.payee_name || "N/A"}
+                </span>
+              </div>
+
+              <div className="rounded-lg border border-white/[0.06] bg-[#0A0E1A]/80 p-2">
+                <span className="text-[9px] text-slate-500 block mb-0.5">AMOUNT / PSP</span>
+                <span className="font-medium text-slate-200 truncate block">
+                  {report.syndicate_intelligence.entity_summary.amount ? `₹${report.syndicate_intelligence.entity_summary.amount}` : "N/A"}
+                  {report.syndicate_intelligence.entity_summary.psp_provider ? ` • ${report.syndicate_intelligence.entity_summary.psp_provider.split(" ")[0]}` : ""}
                 </span>
               </div>
             </div>

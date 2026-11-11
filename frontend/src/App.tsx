@@ -12,6 +12,7 @@ import { MobileUploadView } from "./components/MobileUploadView";
 import { ForensicReportModal } from "./components/ForensicReportModal";
 import { Section91NoticeModal } from "./components/Section91NoticeModal";
 import { KeyboardShortcutsModal } from "./components/KeyboardShortcutsModal";
+import { SkillPipelineHUD } from "./components/SkillPipelineHUD";
 import { Toaster, toast } from "sonner";
 import { UploadCloud } from "lucide-react";
 import {
@@ -82,16 +83,28 @@ const MainProductApplication: React.FC = () => {
   const [isMobileModalOpen, setIsMobileModalOpen] = useState<boolean>(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
   const [isSection91ModalOpen, setIsSection91ModalOpen] = useState<boolean>(false);
+  const [pipelineStage, setPipelineStage] = useState<number>(4);
+  const [isPipelineRunning, setIsPipelineRunning] = useState<boolean>(false);
 
-  // Handle selecting a golden demo sample
+  // Handle selecting a golden demo sample with active skill orchestrator telemetry
   const handleSelectSample = useCallback(async (sampleId: string) => {
     setSelectedSampleId(sampleId);
     setSelectedLocus(null);
     setIsLoading(true);
+    setIsPipelineRunning(true);
+    setPipelineStage(0);
     setAppError(null);
+
+    // Staged telemetry triggers across the 4 forensic skills
+    const t1 = setTimeout(() => setPipelineStage(1), 90);
+    const t2 = setTimeout(() => setPipelineStage(2), 180);
+    const t3 = setTimeout(() => setPipelineStage(3), 270);
 
     try {
       const res = await analyzeDemoSample(sampleId);
+      // Wait slight buffer so user sees the 4 skills execute
+      await new Promise((r) => setTimeout(r, 320));
+      setPipelineStage(4);
       setReport(res);
     } catch (err) {
       setAppError(
@@ -99,7 +112,11 @@ const MainProductApplication: React.FC = () => {
       );
       toast.error(`Analysis failed for ${sampleId}`);
     } finally {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
       setIsLoading(false);
+      setTimeout(() => setIsPipelineRunning(false), 200);
     }
   }, []);
 
@@ -243,11 +260,13 @@ const MainProductApplication: React.FC = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleSelectSample, isAdvancedMode, currentRoute, handleNavigate]);
 
-  // Handle custom screenshot upload
+  // Handle custom screenshot upload with active skill orchestrator telemetry
   const handleFileUpload = async (file: File) => {
     setSelectedSampleId(null);
     setSelectedLocus(null);
     setIsLoading(true);
+    setIsPipelineRunning(true);
+    setPipelineStage(0);
     setAppError(null);
 
     // Switch to workbench if not already there
@@ -255,8 +274,14 @@ const MainProductApplication: React.FC = () => {
       handleNavigate("/workbench");
     }
 
+    const t1 = setTimeout(() => setPipelineStage(1), 120);
+    const t2 = setTimeout(() => setPipelineStage(2), 240);
+    const t3 = setTimeout(() => setPipelineStage(3), 360);
+
     try {
       const res = await analyzeUpload(file);
+      await new Promise((r) => setTimeout(r, 400));
+      setPipelineStage(4);
       setReport(res);
       toast.success(`Analyzed screenshot: ${file.name}`);
     } catch (err) {
@@ -265,7 +290,11 @@ const MainProductApplication: React.FC = () => {
       );
       toast.error("Upload analysis failed");
     } finally {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
       setIsLoading(false);
+      setTimeout(() => setIsPipelineRunning(false), 200);
     }
   };
 
@@ -383,7 +412,11 @@ const MainProductApplication: React.FC = () => {
 
         {/* Experience B: Forensic Workbench */}
         {currentRoute === "/workbench" && (
-          <AmbientThreatBackground threatScore={report?.overall_tamper_score || 0}>
+          <AmbientThreatBackground
+            threatScore={report?.overall_tamper_score || 0}
+            verdict={report?.verdict}
+            isLoading={isLoading}
+          >
             {/* Top Workbench Command Bar */}
             <TopCommandBar
               databaseStatus={databaseStatus}
@@ -399,6 +432,12 @@ const MainProductApplication: React.FC = () => {
               isAdvancedMode={isAdvancedMode}
               onToggleAdvancedMode={() => setIsAdvancedMode((prev) => !prev)}
               isLoading={isLoading}
+            />
+
+            {/* Active 4-Skill Telemetry HUD */}
+            <SkillPipelineHUD
+              activeStageIndex={pipelineStage}
+              isRunning={isPipelineRunning}
             />
 
             {/* Error Banner */}

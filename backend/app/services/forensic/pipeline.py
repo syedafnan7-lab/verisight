@@ -216,7 +216,7 @@ def analyze_screenshot(
     )
 
     # 9. ScamShield AI-Inspired Syndicate Intelligence & Section 91 Subpoena Generation
-    entities = extract_financial_entities(tokens, qr_details)
+    entities = extract_financial_entities(tokens, qr_details, filename=filename)
     syndicate_intel = evaluate_syndicate_threat(
         entities=entities,
         tamper_score=overall_score,

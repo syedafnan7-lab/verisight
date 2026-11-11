@@ -21,6 +21,7 @@ import { SynchronizedLoupe } from "./SynchronizedLoupe";
 import { ComparisonSlider } from "./ComparisonSlider";
 import { ForensicReticle } from "./ForensicReticle";
 import { toast } from "sonner";
+import { useVerdictTheme } from "./AmbientThreatBackground";
 
 export type ViewMode =
   | "ORIGINAL"
@@ -53,6 +54,7 @@ export const ForensicViewer: React.FC<ForensicViewerProps> = ({
   onViewModeChange,
 }) => {
   const [internalViewMode, setInternalViewMode] = useState<ViewMode>("ORIGINAL");
+  const { borderClass, glowClass } = useVerdictTheme();
   const viewMode = controlledViewMode ?? internalViewMode;
   const setViewMode = (mode: ViewMode) => {
     setInternalViewMode(mode);
@@ -499,7 +501,7 @@ export const ForensicViewer: React.FC<ForensicViewerProps> = ({
                     onMouseEnter={() => setIsHovering(true)}
                     onMouseLeave={() => setIsHovering(false)}
                     onMouseMove={handleMouseMove}
-                    className="relative max-h-full flex items-center justify-center rounded-xl overflow-hidden shadow-2xl border border-white/10 bg-black/90"
+                    className={`relative max-h-full flex items-center justify-center rounded-xl overflow-hidden shadow-2xl bg-black/90 transition-all duration-700 ease-out border ${borderClass} ${glowClass}`}
                     style={{
                       width: canvasWidth,
                       height: canvasHeight,

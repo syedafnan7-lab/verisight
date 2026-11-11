@@ -105,6 +105,7 @@ export interface SyndicateIntelligence {
     payee_name?: string | null;
     utr_number?: string | null;
     amount?: string | null;
+    psp_provider?: string | null;
     qr_linked?: boolean;
     qr_intent?: {
       vpa?: string | null;

@@ -173,6 +173,34 @@ export interface ModelStatus {
   ml_environment_ready: boolean;
 }
 
+export interface RocOperatingPoint {
+  threshold: number;
+  fpr: number;
+  tpr: number;
+  sensitivity: number;
+  specificity: number;
+  precision: number;
+  tp: number;
+  fp: number;
+  tn: number;
+  fn: number;
+}
+
+export interface RocCurveDataset {
+  name: string;
+  sample_count: number;
+  positive_count: number;
+  negative_count: number;
+  roc_auc: number;
+  brier_score?: number;
+  dataset_type: string;
+  leakage_status: string;
+  fpr?: number[];
+  tpr?: number[];
+  thresholds?: number[];
+  operating_points?: RocOperatingPoint[];
+}
+
 export interface ModelEvaluationReport {
   dataset_summary: {
     total_samples: number;
@@ -188,6 +216,11 @@ export interface ModelEvaluationReport {
   models: Record<string, any>;
   data_leakage_audit?: Record<string, any>;
   scientific_assessment?: Record<string, any>;
+  roc_evaluation?: {
+    benchmark_held_out?: RocCurveDataset;
+    user_supplied_external?: RocCurveDataset;
+    dev_oof_cv?: RocCurveDataset;
+  };
   status?: string;
   message?: string;
 }
