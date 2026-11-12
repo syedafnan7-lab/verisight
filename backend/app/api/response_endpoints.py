@@ -1,6 +1,6 @@
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query, Response
+from fastapi import APIRouter, File, Form, HTTPException, Query, Response, UploadFile
 from pydantic import BaseModel
 
 from app.services.response.case_store import (
@@ -15,6 +15,7 @@ from app.services.response.dossier_generator import (
     generate_evidence_dossier_pdf,
 )
 from app.services.response.models import (
+    AudioTranscriptionResponse,
     CaseRecord,
     DynamicQuestion,
     ExtractedIncidentDetails,
@@ -33,8 +34,40 @@ from app.services.response.reporting_directory import (
     get_authority_by_id,
     get_reporting_directory,
 )
+from app.services.response.speech_service import process_audio_transcription
 
 router = APIRouter(prefix="/response", tags=["Response & Guidance"])
+
+
+@router.post("/transcribe-audio", response_model=AudioTranscriptionResponse)
+async def transcribe_audio_endpoint(
+    file: UploadFile = File(...),
+    language: str = Form("en-IN"),
+    client_hint: str = Form(""),
+):
+    """
+    Accepts client-recorded voice audio (WebM, WAV, OGG) and returns an accurate
+    transcription. Serves as a reliable, privacy-preserving server-side fallback
+    when browser Web Speech API is blocked by privacy shields or unsupported.
+    """
+    try:
+        content = await file.read()
+        if not content:
+            raise HTTPException(status_code=400, detail="Empty audio file uploaded.")
+        
+        return process_audio_transcription(
+            audio_bytes=content,
+            content_type=file.content_type or "audio/webm",
+            language_code=language,
+            client_hint=client_hint,
+        )
+    except HTTPException:
+        raise
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Audio transcription error: {str(e)}")
+
 
 
 @router.post("/understand", response_model=UnderstandIncidentResponse)

@@ -189,3 +189,13 @@ class CaseRecord(BaseModel):
     complaint_draft: Optional[FormalComplaint] = None
     forensic_attachment: Optional[dict[str, Any]] = None
     timeline: list[TimelineEvent] = Field(default_factory=list)
+
+
+class AudioTranscriptionResponse(BaseModel):
+    transcript: str
+    confidence: float = 0.95
+    detected_language: str = "en-IN"
+    duration_seconds: float = 0.0
+    engine: str = "VeriSight Audio Processor"
+    client_action_needed: bool = False
+

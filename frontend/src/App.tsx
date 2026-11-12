@@ -36,7 +36,7 @@ const getRouteFromLocation = (): AppRoute => {
   const path = window.location.pathname;
   if (path === "/workbench") return "/workbench";
   if (path === "/evaluation") return "/evaluation";
-  if (path === "/why-verisight") return "/why-verisight";
+  if (path === "/why-verisight") return "/";
   if (path === "/response") return "/response";
   return "/";
 };
@@ -131,13 +131,21 @@ const MainProductApplication: React.FC = () => {
   // Synchronized Client-Side Navigation
   const handleNavigate = useCallback(
     (route: AppRoute, query?: Record<string, string>) => {
-      let targetUrl = route;
+      let resolvedRoute = route;
+      if (route === "/why-verisight") {
+        resolvedRoute = "/";
+        setTimeout(() => {
+          const el = document.getElementById("why-verisight");
+          if (el) el.scrollIntoView({ behavior: "smooth" });
+        }, 120);
+      }
+      let targetUrl = resolvedRoute;
       if (query && Object.keys(query).length > 0) {
         const params = new URLSearchParams(query);
         targetUrl += `?${params.toString()}`;
       }
       window.history.pushState({}, "", targetUrl);
-      setCurrentRoute(route);
+      setCurrentRoute(resolvedRoute);
 
       if (query?.case) {
         void handleSelectSample(query.case);

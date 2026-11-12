@@ -112,3 +112,23 @@ def test_cases_store_endpoints():
     single_res = client.get(f"/api/response/cases/{case_id}")
     assert single_res.status_code == 200
     assert single_res.json()["case_id"] == case_id
+
+
+def test_transcribe_audio_endpoint():
+    # Test valid audio upload
+    dummy_wav = b"RIFF" + b"\x00" * 40 + b"DATA" + b"\x01\x02\x03\x04" * 100
+    files = {"file": ("recording.wav", dummy_wav, "audio/wav")}
+    data = {"language": "en-IN"}
+    res = client.post("/api/response/transcribe-audio", files=files, data=data)
+    assert res.status_code == 200
+    res_data = res.json()
+    assert "transcript" in res_data
+    assert len(res_data["transcript"]) > 10
+    assert res_data["confidence"] >= 0.90
+    assert res_data["detected_language"] == "en-IN"
+
+    # Test empty audio upload
+    empty_files = {"file": ("empty.wav", b"", "audio/wav")}
+    res_empty = client.post("/api/response/transcribe-audio", files=empty_files, data=data)
+    assert res_empty.status_code == 400
+
