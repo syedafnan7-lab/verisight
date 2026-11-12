@@ -16,6 +16,7 @@ from fastapi.staticfiles import StaticFiles
 from samples.generator import generate_all_samples
 
 from app.api.endpoints import router as api_router
+from app.api.response_endpoints import router as response_router
 from app.core.config import settings
 
 
@@ -51,6 +52,7 @@ app.mount("/samples", StaticFiles(directory=str(settings.SAMPLES_DIR)), name="sa
 
 # Mount API router
 app.include_router(api_router, prefix="/api")
+app.include_router(response_router, prefix="/api")
 
 @app.get("/")
 def root():

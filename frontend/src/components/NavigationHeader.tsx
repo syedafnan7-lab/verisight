@@ -8,9 +8,10 @@ import {
   Upload,
   ExternalLink,
   Award,
+  LifeBuoy,
 } from "lucide-react";
 
-export type AppRoute = "/" | "/workbench" | "/evaluation" | "/why-verisight";
+export type AppRoute = "/" | "/workbench" | "/evaluation" | "/why-verisight" | "/response";
 
 interface NavigationHeaderProps {
   currentRoute: AppRoute;
@@ -93,6 +94,21 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
         >
           <LineChart className="h-3.5 w-3.5" />
           <span>Evaluation & Research</span>
+        </button>
+
+        <button
+          onClick={() => onNavigate("/response")}
+          className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-all ${
+            currentRoute === "/response"
+              ? "bg-gradient-to-r from-sky-500/25 to-indigo-500/25 text-sky-200 border border-sky-500/40 shadow-sm"
+              : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]"
+          }`}
+        >
+          <LifeBuoy className="h-3.5 w-3.5 text-sky-400" />
+          <span>Response & Guidance</span>
+          <span className="rounded bg-sky-950 px-1 py-0.2 font-mono text-[8px] font-bold text-sky-300 border border-sky-800">
+            NEW
+          </span>
         </button>
 
         <button

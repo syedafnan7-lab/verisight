@@ -14,6 +14,8 @@ import {
   ShieldAlert,
   Hash,
   ExternalLink,
+  LifeBuoy,
+  ArrowRight,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { verdictLabel } from "../services/verdictLabel";
@@ -28,6 +30,7 @@ interface RiskDossierSidebarProps {
   onOpenSection91Modal?: () => void;
   onOpenSection91?: () => void;
   onOpenReport?: () => void;
+  onOpenResponseGuidance?: (report: ForensicAnalysisReport) => void;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
   isAdvancedMode?: boolean;
@@ -40,6 +43,7 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
   onOpenSection91Modal,
   onOpenSection91,
   onOpenReport,
+  onOpenResponseGuidance,
   isCollapsed = false,
   onToggleCollapse,
   isAdvancedMode = false,
@@ -261,6 +265,20 @@ export const RiskDossierSidebar: React.FC<RiskDossierSidebarProps> = ({
                 ? "Multiple high-confidence forgery signals detected across font geometry and pixel compression."
                 : "Signals consistent with native screenshot capture; no digital splicing identified."}
             </p>
+
+            {onOpenResponseGuidance && (
+              <button
+                type="button"
+                onClick={() => onOpenResponseGuidance(report)}
+                className="mt-2.5 flex w-full items-center justify-between rounded-lg border border-sky-400/40 bg-gradient-to-r from-sky-600/30 to-indigo-600/30 px-3 py-1.5 font-mono text-[11px] font-semibold text-sky-200 transition-all hover:from-sky-500/40 hover:to-indigo-500/40 hover:text-white active:scale-[0.98] shadow-sm"
+              >
+                <div className="flex items-center gap-1.5">
+                  <LifeBuoy className="h-3.5 w-3.5 text-sky-400 animate-pulse" />
+                  <span>What should I do next?</span>
+                </div>
+                <ArrowRight className="h-3 w-3 text-sky-300" />
+              </button>
+            )}
           </div>
         </motion.div>
 

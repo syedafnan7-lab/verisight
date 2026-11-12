@@ -8,6 +8,7 @@ import {
   Loader2,
   ShieldAlert,
   Keyboard,
+  LifeBuoy,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { DemoSampleMeta } from "../types/forensic";
@@ -25,6 +26,7 @@ interface TopCommandBarProps {
   onOpenReportModal: () => void;
   onOpenSection91Modal?: () => void;
   onOpenShortcutsModal?: () => void;
+  onOpenResponse?: () => void;
   isAdvancedMode: boolean;
   onToggleAdvancedMode: () => void;
   isLoading: boolean;
@@ -75,6 +77,7 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
   onOpenReportModal,
   onOpenSection91Modal,
   onOpenShortcutsModal,
+  onOpenResponse,
   isAdvancedMode,
   onToggleAdvancedMode,
   isLoading,
@@ -353,6 +356,21 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
           >
             <ShieldAlert className="h-3.5 w-3.5 text-amber-400" />
             <span className="hidden sm:inline">Section 91</span>
+          </button>
+        )}
+
+        {/* What should I do next? / Response & Guidance */}
+        {onOpenResponse && (
+          <button
+            type="button"
+            onClick={onOpenResponse}
+            disabled={isLoading}
+            className="flex items-center gap-1.5 rounded-lg border border-sky-400/40 bg-gradient-to-r from-sky-500/20 to-indigo-500/20 px-3 py-1.5 text-xs font-semibold text-sky-200 shadow-sm transition-all hover:bg-sky-500/30 hover:text-white active:scale-[0.97]"
+            title="What should I do next? Open Response & Guidance"
+          >
+            <LifeBuoy className="h-3.5 w-3.5 text-sky-400 animate-pulse" />
+            <span className="hidden lg:inline">What should I do next?</span>
+            <span className="lg:hidden">What Next?</span>
           </button>
         )}
 

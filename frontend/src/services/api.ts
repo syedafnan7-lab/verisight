@@ -236,3 +236,165 @@ export async function fetchModelEvaluation(): Promise<ModelEvaluationReport> {
   if (!res.ok) throw new Error("Failed to fetch model evaluation");
   return res.json();
 }
+
+// ---------------------------------------------------------------------------
+// RESPONSE & GUIDANCE API CLIENT
+// ---------------------------------------------------------------------------
+import type {
+  ExtractedIncidentDetails,
+  UnderstandIncidentResponse,
+  FormalComplaint,
+  ReportingAuthority,
+  CaseRecord,
+} from "../types/response";
+
+export async function understandIncident(payload: {
+  user_text: string;
+  language?: string;
+  existing_details?: any;
+  attached_forensic_summary?: any;
+}): Promise<UnderstandIncidentResponse> {
+  const res = await fetch(`${API_BASE}/response/understand`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      user_text: payload.user_text,
+      language: payload.language || "en",
+      existing_details: payload.existing_details,
+      attached_forensic_summary: payload.attached_forensic_summary,
+      user_consent_granted: true,
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "NLU analysis failed" }));
+    throw new Error(err.detail || "Failed to process incident statement");
+  }
+  return res.json();
+}
+
+export async function fetchNextQuestion(
+  details: ExtractedIncidentDetails
+): Promise<{ has_next_question: boolean; question: any }> {
+  const res = await fetch(`${API_BASE}/response/next-question`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(details),
+  });
+  if (!res.ok) throw new Error("Failed to get follow-up question");
+  return res.json();
+}
+
+export async function generateComplaint(payload: {
+  details: ExtractedIncidentDetails;
+  authority_destination?: string;
+  language?: string;
+  attached_forensic_report?: any;
+  custom_narrative_edits?: string;
+  complainant_address?: string;
+}): Promise<FormalComplaint> {
+  const res = await fetch(`${API_BASE}/response/generate-complaint`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      details: payload.details,
+      authority_destination: payload.authority_destination || "NATIONAL_CYBER_CRIME_PORTAL",
+      language: payload.language || "en",
+      attached_forensic_report: payload.attached_forensic_report,
+      custom_narrative_edits: payload.custom_narrative_edits,
+      complainant_address: payload.complainant_address,
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "Complaint generation failed" }));
+    throw new Error(err.detail || "Failed to generate complaint");
+  }
+  return res.json();
+}
+
+export async function regenerateComplaintSection(payload: {
+  section_name: string;
+  current_content: string;
+  instruction: string;
+  target_language?: string;
+}): Promise<{ section_name: string; original_content: string; refined_content: string }> {
+  const res = await fetch(`${API_BASE}/response/regenerate-section`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Failed to regenerate section");
+  return res.json();
+}
+
+export async function fetchReportingDirectory(
+  category?: string,
+  query?: string
+): Promise<ReportingAuthority[]> {
+  const params = new URLSearchParams();
+  if (category && category !== "ALL") params.append("category", category);
+  if (query) params.append("q", query);
+
+  const res = await fetch(`${API_BASE}/response/reporting-directory?${params.toString()}`);
+  if (!res.ok) throw new Error("Failed to load reporting directory");
+  return res.json();
+}
+
+export async function fetchCases(): Promise<CaseRecord[]> {
+  const res = await fetch(`${API_BASE}/response/cases`);
+  if (!res.ok) throw new Error("Failed to fetch cases");
+  return res.json();
+}
+
+export async function fetchCase(caseId: string): Promise<CaseRecord> {
+  const res = await fetch(`${API_BASE}/response/cases/${caseId}`);
+  if (!res.ok) throw new Error("Failed to fetch case");
+  return res.json();
+}
+
+export async function saveCaseRecord(caseRecord: CaseRecord): Promise<CaseRecord> {
+  const res = await fetch(`${API_BASE}/response/cases`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(caseRecord),
+  });
+  if (!res.ok) throw new Error("Failed to save case");
+  return res.json();
+}
+
+export async function createCaseRecord(payload: {
+  details: ExtractedIncidentDetails;
+  title?: string;
+  forensic_attachment?: any;
+}): Promise<CaseRecord> {
+  const res = await fetch(`${API_BASE}/response/cases/create`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Failed to create case");
+  return res.json();
+}
+
+export async function downloadComplaintPdfBlob(complaint: FormalComplaint): Promise<Blob> {
+  const res = await fetch(`${API_BASE}/response/export-complaint-pdf`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(complaint),
+  });
+  if (!res.ok) throw new Error("Failed to generate complaint PDF");
+  return res.blob();
+}
+
+export async function downloadDossierPdfBlob(
+  report: any,
+  complaintRef?: string
+): Promise<Blob> {
+  const params = complaintRef ? `?complaint_ref=${encodeURIComponent(complaintRef)}` : "";
+  const res = await fetch(`${API_BASE}/response/export-dossier-pdf${params}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(report),
+  });
+  if (!res.ok) throw new Error("Failed to generate dossier PDF");
+  return res.blob();
+}

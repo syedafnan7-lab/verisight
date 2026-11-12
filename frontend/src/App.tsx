@@ -3,6 +3,8 @@ import { NavigationHeader, AppRoute } from "./components/NavigationHeader";
 import { ProductOverview } from "./components/ProductOverview";
 import { EvaluationDashboard } from "./components/EvaluationDashboard";
 import { WhyVerisight } from "./components/WhyVerisight";
+import { ResponseModule } from "./components/response/ResponseModule";
+import { AttachedForensicContext } from "./types/response";
 import { TopCommandBar } from "./components/TopCommandBar";
 import { ForensicViewer, ViewMode } from "./components/ForensicViewer";
 import { RiskDossierSidebar } from "./components/RiskDossierSidebar";
@@ -35,6 +37,7 @@ const getRouteFromLocation = (): AppRoute => {
   if (path === "/workbench") return "/workbench";
   if (path === "/evaluation") return "/evaluation";
   if (path === "/why-verisight") return "/why-verisight";
+  if (path === "/response") return "/response";
   return "/";
 };
 
@@ -88,6 +91,9 @@ const MainProductApplication: React.FC = () => {
   const [pipelineStage, setPipelineStage] = useState<number>(4);
   const [isPipelineRunning, setIsPipelineRunning] = useState<boolean>(false);
 
+  // Response & Guidance Linked Forensic Context
+  const [attachedForensicContext, setAttachedForensicContext] = useState<AttachedForensicContext | null>(null);
+
   // Handle selecting a golden demo sample with active skill orchestrator telemetry
   const handleSelectSample = useCallback(async (sampleId: string) => {
     setSelectedSampleId(sampleId);
@@ -138,6 +144,27 @@ const MainProductApplication: React.FC = () => {
       }
     },
     [handleSelectSample]
+  );
+
+  // Contextual handoff to Response & Guidance with active investigation facts preserved
+  const handleOpenResponseGuidance = useCallback(
+    (targetReport: ForensicAnalysisReport) => {
+      setAttachedForensicContext({
+        case_id: `VS-CASE-${targetReport.file_sha256.slice(0, 8).toUpperCase()}`,
+        filename: targetReport.filename || "screenshot.png",
+        file_sha256: targetReport.file_sha256,
+        image_width: targetReport.image_width,
+        image_height: targetReport.image_height,
+        overall_tamper_score: targetReport.overall_tamper_score,
+        verdict: targetReport.verdict,
+        findings: targetReport.findings,
+        synergy: targetReport.synergy,
+        limitations: "Observations reflect statistical signal anomalies in image containers.",
+      });
+      handleNavigate("/response");
+      toast("Context preserved: Entered Response & Guidance");
+    },
+    [handleNavigate]
   );
 
   // Listen to browser Back/Forward buttons
@@ -431,6 +458,7 @@ const MainProductApplication: React.FC = () => {
               onOpenReportModal={() => setIsReportModalOpen(true)}
               onOpenSection91Modal={() => setIsSection91ModalOpen(true)}
               onOpenShortcutsModal={() => setIsShortcutsModalOpen(true)}
+              onOpenResponse={() => report && handleOpenResponseGuidance(report)}
               isAdvancedMode={isAdvancedMode}
               onToggleAdvancedMode={() => setIsAdvancedMode((prev) => !prev)}
               isLoading={isLoading}
@@ -489,6 +517,7 @@ const MainProductApplication: React.FC = () => {
                 isAdvancedMode={isAdvancedMode}
                 onOpenReport={() => setIsReportModalOpen(true)}
                 onOpenSection91={() => setIsSection91ModalOpen(true)}
+                onOpenResponseGuidance={handleOpenResponseGuidance}
               />
             </main>
           </AmbientThreatBackground>
@@ -505,6 +534,15 @@ const MainProductApplication: React.FC = () => {
         {currentRoute === "/why-verisight" && (
           <WhyVerisight
             onNavigateWorkbench={() => handleNavigate("/workbench")}
+          />
+        )}
+
+        {/* Experience E: Response & Guidance (Native Module) */}
+        {currentRoute === "/response" && (
+          <ResponseModule
+            onNavigateWorkbench={() => handleNavigate("/workbench")}
+            attachedForensicContext={attachedForensicContext}
+            onClearForensicContext={() => setAttachedForensicContext(null)}
           />
         )}
       </div>
