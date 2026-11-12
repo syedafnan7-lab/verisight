@@ -39,6 +39,7 @@ import { motion, AnimatePresence, useReducedMotion, type Variants } from "framer
 import { AppRoute } from "./NavigationHeader";
 import { DemoSampleMeta } from "../types/forensic";
 import { WhyVerisight } from "./WhyVerisight";
+import { RealWorldCaseShowcase } from "./RealWorldCaseShowcase";
 
 interface ProductOverviewProps {
   onNavigate: (route: AppRoute, query?: Record<string, string>) => void;
@@ -450,6 +451,24 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({
               </p>
             </div>
           </div>
+        </motion.div>
+
+        {/* =========================================================================
+            SECTION 2.5: REAL-WORLD FRAUD CASES (SCAMSHIELD-INSPIRED SHOWCASE)
+        ========================================================================= */}
+        <motion.div
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-60px" }}
+          className="pt-4 pb-8"
+        >
+          <RealWorldCaseShowcase
+            onNavigateWorkbench={() => onNavigate("/workbench")}
+            onNavigateResponse={(cat) =>
+              onNavigate("/response", cat ? { category: cat } : undefined)
+            }
+          />
         </motion.div>
 
         {/* =========================================================================
