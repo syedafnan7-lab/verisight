@@ -2,25 +2,16 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   ChevronLeft,
   ChevronRight,
-  ShieldAlert,
-  ShieldCheck,
   MapPin,
   Calendar,
-  AlertTriangle,
   ArrowRight,
   ExternalLink,
-  Layers,
-  Sparkles,
-  Info,
-  Maximize2,
-  FileText,
-  CreditCard,
-  QrCode,
-  UserX,
-  ShoppingBag,
-  Building2,
+  Lightbulb,
+  Search,
+  ShieldCheck,
+  FileCheck2,
+  Zap,
 } from "lucide-react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { REAL_WORLD_CASES, RealWorldFraudCase } from "../data/realWorldCases";
 import { DottedIndiaMap } from "./common/DottedIndiaMap";
 import { CaseInvestigationModal } from "./CaseInvestigationModal";
@@ -28,66 +19,45 @@ import { CaseInvestigationModal } from "./CaseInvestigationModal";
 interface RealWorldCaseShowcaseProps {
   onNavigateWorkbench?: () => void;
   onNavigateResponse?: (category?: string) => void;
-  initialCategoryFilter?: string;
   className?: string;
 }
 
 export const RealWorldCaseShowcase: React.FC<RealWorldCaseShowcaseProps> = ({
   onNavigateWorkbench,
   onNavigateResponse,
-  initialCategoryFilter = "ALL",
   className = "",
 }) => {
-  const shouldReduceMotion = useReducedMotion();
-
-  // Category filter state
-  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategoryFilter);
   const [activeCaseIndex, setActiveCaseIndex] = useState<number>(0);
   const [investigatingCase, setInvestigatingCase] = useState<RealWorldFraudCase | null>(null);
+
+  // Swipe & drag state
+  const [dragStartX, setDragStartX] = useState<number | null>(null);
+  const [dragCurrentX, setDragCurrentX] = useState<number | null>(null);
+  const isDraggingRef = useRef<boolean>(false);
   const carouselContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Filter cases based on selected category
-  const filteredCases = React.useMemo(() => {
-    if (selectedCategory === "ALL") return REAL_WORLD_CASES;
-    return REAL_WORLD_CASES.filter((c) => c.categoryCode === selectedCategory);
-  }, [selectedCategory]);
+  const cases = REAL_WORLD_CASES;
+  const totalCases = cases.length;
 
-  // Ensure index remains in bounds when filter changes
-  useEffect(() => {
-    if (activeCaseIndex >= filteredCases.length) {
-      setActiveCaseIndex(0);
-    }
-  }, [filteredCases.length, activeCaseIndex]);
-
-  const activeCase = filteredCases[activeCaseIndex] || filteredCases[0];
-
-  // Navigation handlers
   const handlePrev = useCallback(() => {
-    setActiveCaseIndex((prev) => (prev > 0 ? prev - 1 : filteredCases.length - 1));
-  }, [filteredCases.length]);
+    setActiveCaseIndex((prev) => (prev > 0 ? prev - 1 : totalCases - 1));
+  }, [totalCases]);
 
   const handleNext = useCallback(() => {
-    setActiveCaseIndex((prev) => (prev < filteredCases.length - 1 ? prev + 1 : 0));
-  }, [filteredCases.length]);
+    setActiveCaseIndex((prev) => (prev < totalCases - 1 ? prev + 1 : 0));
+  }, [totalCases]);
 
   const handleSelectCaseById = useCallback(
     (caseId: string) => {
-      const idx = filteredCases.findIndex((c) => c.id === caseId);
+      const idx = cases.findIndex((c) => c.id === caseId);
       if (idx !== -1) {
         setActiveCaseIndex(idx);
-      } else {
-        // If not in current category filter, reset to ALL
-        setSelectedCategory("ALL");
-        const allIdx = REAL_WORLD_CASES.findIndex((c) => c.id === caseId);
-        if (allIdx !== -1) {
-          setActiveCaseIndex(allIdx);
-        }
       }
     },
-    [filteredCases]
+    [cases]
   );
 
-  // Keyboard navigation (Left / Right arrow keys when container is focused or visible)
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") {
@@ -100,267 +70,340 @@ export const RealWorldCaseShowcase: React.FC<RealWorldCaseShowcaseProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handlePrev, handleNext]);
 
-  // Category filter list
-  const CATEGORY_FILTERS = [
-    { id: "ALL", label: "All Documented Cases" },
-    { id: "FAKE_PAYMENT_SCREENSHOT", label: "Fake Screenshots" },
-    { id: "IMPERSONATION", label: "Digital Impersonation" },
-    { id: "QR_CODE_FRAUD", label: "QR Code Scams" },
-    { id: "ONLINE_MARKETPLACE_FRAUD", label: "Marketplace Fraud" },
-    { id: "PAYMENT_FRAUD", label: "Institutional Fraud" },
-  ];
+  // Touch handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setDragStartX(e.touches[0].clientX);
+    setDragCurrentX(e.touches[0].clientX);
+    isDraggingRef.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (dragStartX === null) return;
+    const currentX = e.touches[0].clientX;
+    setDragCurrentX(currentX);
+    if (Math.abs(currentX - dragStartX) > 8) {
+      isDraggingRef.current = true;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (dragStartX !== null && dragCurrentX !== null) {
+      const deltaX = dragCurrentX - dragStartX;
+      if (deltaX > 45) {
+        handlePrev();
+      } else if (deltaX < -45) {
+        handleNext();
+      }
+    }
+    setDragStartX(null);
+    setDragCurrentX(null);
+    setTimeout(() => {
+      isDraggingRef.current = false;
+    }, 50);
+  };
+
+  // Mouse drag handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    // Only drag with primary left mouse button
+    if (e.button !== 0) return;
+    setDragStartX(e.clientX);
+    setDragCurrentX(e.clientX);
+    isDraggingRef.current = false;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (dragStartX === null) return;
+    const currentX = e.clientX;
+    setDragCurrentX(currentX);
+    if (Math.abs(currentX - dragStartX) > 8) {
+      isDraggingRef.current = true;
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (dragStartX !== null && dragCurrentX !== null) {
+      const deltaX = dragCurrentX - dragStartX;
+      if (deltaX > 45) {
+        handlePrev();
+      } else if (deltaX < -45) {
+        handleNext();
+      }
+    }
+    setDragStartX(null);
+    setDragCurrentX(null);
+    setTimeout(() => {
+      isDraggingRef.current = false;
+    }, 50);
+  };
+
+  const handleMouseLeave = () => {
+    if (dragStartX !== null) {
+      handleMouseUp();
+    }
+  };
+
+  // Get index with wrapping
+  const getIndex = (offset: number) => {
+    return (activeCaseIndex + offset + totalCases) % totalCases;
+  };
+
+  const activeCase = cases[activeCaseIndex];
+  const prevCase = cases[getIndex(-1)];
+  const nextCase = cases[getIndex(1)];
 
   return (
     <section
       id="real-world-cases"
-      className={`relative w-full overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-b from-[#080E1C] via-[#060A14] to-[#04070D] p-6 sm:p-10 lg:p-12 shadow-2xl ${className}`}
+      className={`relative w-full overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-b from-[#080E1C] via-[#050B14] to-[#03060C] p-6 sm:p-10 lg:p-12 shadow-2xl ${className}`}
     >
       {/* Background ambient lighting */}
-      <div className="pointer-events-none absolute -top-40 left-10 h-96 w-96 rounded-full bg-cyan-500/10 blur-[130px]" />
-      <div className="pointer-events-none absolute -bottom-40 right-10 h-96 w-96 rounded-full bg-amber-500/10 blur-[130px]" />
+      <div className="pointer-events-none absolute -top-40 left-10 h-96 w-96 rounded-full bg-emerald-500/10 blur-[140px]" />
+      <div className="pointer-events-none absolute -bottom-40 right-10 h-96 w-96 rounded-full bg-cyan-500/10 blur-[140px]" />
 
-      {/* Main Grid: Left Column (38%) & Right Column (62%) */}
-      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+      {/* Main Grid: Left Column (40%) & Right Column (60%) */}
+      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
         {/* =========================================================================
             LEFT COLUMN: EDITORIAL STORYTELLING & DOTTED INDIA MAP
         ========================================================================= */}
-        <div className="lg:col-span-5 space-y-6 flex flex-col justify-between h-full">
+        <div className="lg:col-span-5 space-y-6 flex flex-col justify-between">
           <div className="space-y-4">
-            {/* Section Eyebrow */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-950/60 px-3.5 py-1 text-xs font-mono text-sky-400">
-              <ShieldAlert className="h-3.5 w-3.5 text-sky-400" />
-              <span>VERISIGHT INTELLIGENCE // DOCUMENTED EVIDENCE</span>
+            {/* Section Eyebrow Badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/40 px-3.5 py-1 text-xs font-mono font-bold text-emerald-400">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>VERISIGHT INTELLIGENCE</span>
             </div>
 
-            {/* Expressive Editorial Headline */}
-            <h2 className="text-2xl sm:text-4xl lg:text-4xl font-extrabold text-white leading-tight font-sans tracking-tight">
-              These scams happened to real people.{" "}
-              <span className="bg-gradient-to-r from-sky-400 via-teal-300 to-amber-300 bg-clip-text text-transparent">
-                Their evidence tells a story.
+            {/* Headline matching user's visual reference */}
+            <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold text-white leading-[1.15] tracking-tight font-sans">
+              It happened to them.
+              <br />
+              Learn to recognize it
+              <br />
+              <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+                before it happens to you.
               </span>
             </h2>
 
             {/* Introductory Narrative Prose */}
-            <p className="text-sm text-slate-300 leading-relaxed font-sans">
-              Every fraudulent payment leaves a digital trail. Explore documented incidents of UPI manipulation,
-              forged banking vouchers, and digital impersonation across India. Understand how these scams occurred,
-              recognize critical warning signs, and discover how VeriSight investigates suspicious evidence.
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-sans max-w-lg">
+              Explore real UPI fraud cases, fake payment screenshots and digital deception across India.
+              Understand the patterns, learn the warning signs, and see how Verisight helps investigate
+              suspicious evidence.
             </p>
-
-            {/* Curated Trust Indicator */}
-            <div className="flex items-center gap-2 text-xs font-mono text-slate-400 pt-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              <span>Curated from verified police FIRs, RBI advisories & news archives</span>
-            </div>
-
-            {/* Category Filter Pills */}
-            <div className="flex flex-wrap gap-1.5 pt-2">
-              {CATEGORY_FILTERS.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => {
-                    setSelectedCategory(cat.id);
-                    setActiveCaseIndex(0);
-                  }}
-                  className={`rounded-lg px-2.5 py-1 text-[11px] font-mono transition-all ${
-                    selectedCategory === cat.id
-                      ? "bg-sky-500/20 text-sky-300 border border-sky-500/50 shadow-sm font-semibold"
-                      : "border border-white/[0.06] bg-[#0A1020] text-slate-400 hover:text-slate-200 hover:border-white/10"
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
           </div>
 
-          {/* Dotted India Map Visualization with Active Incident Coordinates */}
-          <div className="pt-4 border-t border-white/[0.08]">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 block mb-2">
-              Geographic Incident Coordinates (India)
-            </span>
+          {/* Authentic Dotted India Map */}
+          <div className="pt-2">
             <DottedIndiaMap
-              cases={filteredCases}
-              activeCaseId={activeCase?.id || ""}
+              cases={cases}
+              activeCaseId={activeCase.id}
               onSelectCase={handleSelectCaseById}
             />
           </div>
         </div>
 
         {/* =========================================================================
-            RIGHT COLUMN: LAYERED CASE STUDY CAROUSEL (SCAMSHIELD INSPIRATION)
+            RIGHT COLUMN: LAYERED 3D DECK CAROUSEL (SCAMSHIELD & DESIGN SPEC)
         ========================================================================= */}
         <div
           ref={carouselContainerRef}
-          className="lg:col-span-7 flex flex-col justify-between space-y-6"
+          className="lg:col-span-7 flex flex-col justify-center select-none"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
         >
-          {/* Carousel Top Controls: Navigation Arrows & Case Counter */}
-          <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-xs font-bold text-slate-200">
-                CASE {String(activeCaseIndex + 1).padStart(2, "0")} OF {String(filteredCases.length).padStart(2, "0")}
-              </span>
-              <span className="text-slate-600">|</span>
-              <span className="font-mono text-[11px] text-sky-400">
-                {activeCase?.city}, {activeCase?.state}
-              </span>
+          {/* Layered Cards Stage Container */}
+          <div className="relative w-full h-[540px] sm:h-[580px] flex items-center justify-center overflow-hidden">
+            {/* ================= LEFT CARD (PEEKING PREVIOUS) ================= */}
+            <div
+              onClick={() => handlePrev()}
+              className="absolute left-0 sm:left-4 w-[280px] sm:w-[320px] rounded-3xl bg-white text-slate-900 shadow-2xl overflow-hidden border border-slate-100 transition-all duration-500 ease-out z-10 opacity-40 scale-[0.84] -translate-x-[45%] sm:-translate-x-[30%] pointer-events-auto cursor-pointer hover:opacity-70"
+            >
+              <div className="relative h-44 w-full bg-slate-800 overflow-hidden">
+                <img
+                  src={prevCase.imageUrl}
+                  alt={prevCase.imageAlt}
+                  className="w-full h-full object-cover filter brightness-95"
+                />
+              </div>
+              <div className="p-4 space-y-2 text-left">
+                <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-500">
+                  <MapPin className="h-3 w-3 text-slate-400" />
+                  <span>
+                    {prevCase.city}, {prevCase.state}
+                  </span>
+                </div>
+                <div className="font-mono text-xl font-black text-[#dc2626]">
+                  {prevCase.reportedLoss}
+                </div>
+                <h4 className="text-sm font-bold text-slate-900 line-clamp-1">
+                  {prevCase.headline}
+                </h4>
+                <p className="text-[11px] text-slate-600 line-clamp-2">
+                  {prevCase.summary}
+                </p>
+                <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-2 text-[10px] text-emerald-900">
+                  💡 {prevCase.preventionInsight}
+                </div>
+                <div className="text-[10px] text-slate-400 pt-1">
+                  Source: {prevCase.publisher}
+                </div>
+              </div>
             </div>
 
-            {/* Circular Navigation Buttons */}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handlePrev}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-[#0C1428] text-slate-300 hover:border-sky-500/40 hover:bg-sky-950/60 hover:text-white transition-all active:scale-95 shadow-md"
-                aria-label="Previous case"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <button
-                type="button"
-                onClick={handleNext}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-[#0C1428] text-slate-300 hover:border-sky-500/40 hover:bg-sky-950/60 hover:text-white transition-all active:scale-95 shadow-md"
-                aria-label="Next case"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
+            {/* ================= ACTIVE CENTER CARD ================= */}
+            <div className="relative w-[320px] sm:w-[380px] rounded-3xl bg-white text-slate-900 shadow-[0_25px_60px_rgba(0,0,0,0.8),0_0_35px_rgba(16,185,129,0.16)] overflow-hidden border border-slate-200 transition-all duration-300 z-20 scale-100">
+              {/* Featured Top Editorial Image (~40% of card) */}
+              <div className="relative h-48 sm:h-56 w-full bg-slate-900 overflow-hidden">
+                <img
+                  src={activeCase.imageUrl}
+                  alt={activeCase.imageAlt}
+                  className="w-full h-full object-cover"
+                />
 
-          {/* Interactive Layered Card Stage */}
-          <div className="relative min-h-[460px] flex items-center justify-center overflow-visible">
-            <AnimatePresence mode="wait">
-              {activeCase && (
-                <motion.div
-                  key={activeCase.id}
-                  initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: 24, scale: 0.98 }}
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -24, scale: 0.98 }}
-                  transition={{ duration: 0.35, ease: "easeOut" }}
-                  className="w-full rounded-2xl border border-white/[0.12] bg-[#0A1022]/95 p-6 shadow-2xl backdrop-blur-xl space-y-5 hover:border-sky-500/40 transition-colors group relative"
-                >
-                  {/* Decorative Card Header Visual Banner */}
-                  <div className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-gradient-to-r from-[#0C152E] via-[#0E1A38] to-[#0A1224] p-4">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="rounded bg-rose-950 px-2 py-0.5 font-mono text-[9px] font-bold text-rose-300 border border-rose-800/50 uppercase tracking-wider">
-                          REPORTED CASE
-                        </span>
-                        <span className="font-mono text-xs text-sky-400 font-semibold">
-                          {activeCase.scamCategory}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1 font-mono text-[11px] text-slate-400">
-                        <Calendar className="h-3 w-3 text-slate-500" />
-                        <span>{activeCase.incidentMonthYear}</span>
-                      </div>
-                    </div>
+                {/* Tilted Red Rubber Stamp Badge */}
+                <div className="absolute top-4 right-4 z-10 transform -rotate-12 select-none pointer-events-none rounded border-2 border-red-500 bg-red-950/90 px-3 py-1 font-mono text-xs font-black tracking-widest text-red-400 shadow-xl backdrop-blur-md uppercase">
+                  REPORTED CASE
+                </div>
+              </div>
 
-                    {/* Headline */}
-                    <h3 className="mt-3 text-base sm:text-lg font-bold text-white leading-snug group-hover:text-sky-200 transition-colors">
-                      {activeCase.headline}
-                    </h3>
-
-                    {/* Large Prominent Financial Loss Figure */}
-                    <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-baseline justify-between">
-                      <div>
-                        <span className="block font-mono text-[10px] text-slate-400 uppercase tracking-wider">
-                          Reported Financial Loss
-                        </span>
-                        <span className="font-mono text-2xl sm:text-3xl font-extrabold text-amber-400 tracking-tight">
-                          {activeCase.reportedLoss}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-mono text-[10px] text-slate-400 block uppercase">
-                          Location
-                        </span>
-                        <span className="font-mono text-xs font-semibold text-slate-200 flex items-center gap-1">
-                          <MapPin className="h-3 w-3 text-sky-400" />
-                          {activeCase.city}, {activeCase.state}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Incident Summary */}
-                  <div className="space-y-1.5">
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 block">
-                      Incident Summary
+              {/* Card Body */}
+              <div className="p-5 sm:p-6 space-y-3 text-left">
+                {/* Location and Date */}
+                <div className="flex items-center gap-3 text-xs font-semibold text-slate-500 font-sans">
+                  <div className="flex items-center gap-1">
+                    <MapPin className="h-3.5 w-3.5 text-slate-700" />
+                    <span>
+                      {activeCase.city}, {activeCase.state}
                     </span>
-                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
-                      {activeCase.summary}
-                    </p>
                   </div>
-
-                  {/* Prevention Insight Box (ScamShield Feature) */}
-                  <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5 space-y-1">
-                    <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-emerald-300 uppercase">
-                      <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                      <span>What Could Have Helped Prevent It?</span>
-                    </div>
-                    <p className="text-xs text-emerald-200/90 leading-relaxed font-sans">
-                      {activeCase.preventionInsight}
-                    </p>
+                  <span className="text-slate-300">|</span>
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                    <span>{activeCase.incidentMonthYear}</span>
                   </div>
+                </div>
 
-                  {/* How VeriSight Relates to This Case */}
-                  <div className="rounded-xl border border-sky-500/25 bg-[#070D1B] p-3.5 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-sky-300 uppercase">
-                        <Sparkles className="h-3.5 w-3.5 text-sky-400" />
-                        <span>How VeriSight Relates to This Case</span>
-                      </div>
-                      <span className="font-mono text-[9px] text-slate-400">
-                        Forensic Relevance
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-300 leading-relaxed font-sans">
-                      <strong className="text-sky-300">{activeCase.verisightRelevance.forensicLayer}:</strong>{" "}
-                      {activeCase.verisightRelevance.examination}
-                    </p>
+                {/* Huge Financial Loss Figure in Bold Red */}
+                <div className="font-mono text-3xl sm:text-4xl font-black text-[#dc2626] tracking-tight">
+                  {activeCase.reportedLoss}
+                </div>
+
+                {/* Headline */}
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug font-sans">
+                  {activeCase.headline}
+                </h3>
+
+                {/* Narrative Summary */}
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans line-clamp-2">
+                  {activeCase.summary}
+                </p>
+
+                {/* What Could Have Helped Prevent It Box */}
+                <div className="rounded-xl border border-emerald-300 bg-[#ecfdf5] p-3">
+                  <div className="text-[10px] font-bold tracking-wider text-emerald-800 uppercase flex items-center gap-1.5 font-mono">
+                    <Lightbulb className="h-3.5 w-3.5 text-emerald-700" />
+                    <span>WHAT COULD HAVE HELPED PREVENT IT?</span>
                   </div>
+                  <p className="mt-1 text-xs text-emerald-950 font-medium leading-relaxed font-sans">
+                    {activeCase.preventionInsight}
+                  </p>
+                </div>
 
-                  {/* Card Bottom: Source Attribution & Action Buttons */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/[0.06]">
-                    <div className="flex items-center gap-1.5 font-mono text-xs text-slate-400">
-                      <span>Source:</span>
-                      <a
-                        href={activeCase.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sky-400 hover:text-sky-300 hover:underline flex items-center gap-1 font-semibold"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <span>{activeCase.publisher}</span>
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                    </div>
+                {/* Card Bottom: Source Attribution & Read Full Report Link */}
+                <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                  <span className="text-slate-400 font-medium">
+                    Source: {activeCase.publisher}
+                  </span>
 
-                    <button
-                      type="button"
-                      onClick={() => setInvestigatingCase(activeCase)}
-                      className="flex items-center gap-1.5 rounded-lg border border-sky-500/40 bg-sky-500/15 px-3.5 py-1.5 font-mono text-xs font-semibold text-sky-300 hover:bg-sky-500/25 transition-all active:scale-[0.98]"
-                    >
-                      <Maximize2 className="h-3.5 w-3.5" />
-                      <span>Investigate Case Dossier</span>
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      if (!isDraggingRef.current) {
+                        e.stopPropagation();
+                        setInvestigatingCase(activeCase);
+                      }
+                    }}
+                    className="font-bold text-slate-900 hover:text-emerald-600 flex items-center gap-1 transition-colors"
+                  >
+                    <span>Read Full Report</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* ================= RIGHT CARD (PEEKING NEXT) ================= */}
+            <div
+              onClick={() => handleNext()}
+              className="absolute right-0 sm:right-4 w-[280px] sm:w-[320px] rounded-3xl bg-white text-slate-900 shadow-2xl overflow-hidden border border-slate-100 transition-all duration-500 ease-out z-10 opacity-40 scale-[0.84] translate-x-[45%] sm:translate-x-[30%] pointer-events-auto cursor-pointer hover:opacity-70"
+            >
+              <div className="relative h-44 w-full bg-slate-800 overflow-hidden">
+                <img
+                  src={nextCase.imageUrl}
+                  alt={nextCase.imageAlt}
+                  className="w-full h-full object-cover filter brightness-95"
+                />
+              </div>
+              <div className="p-4 space-y-2 text-left">
+                <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-500">
+                  <MapPin className="h-3 w-3 text-slate-400" />
+                  <span>
+                    {nextCase.city}, {nextCase.state}
+                  </span>
+                </div>
+                <div className="font-mono text-xl font-black text-[#dc2626]">
+                  {nextCase.reportedLoss}
+                </div>
+                <h4 className="text-sm font-bold text-slate-900 line-clamp-1">
+                  {nextCase.headline}
+                </h4>
+                <p className="text-[11px] text-slate-600 line-clamp-2">
+                  {nextCase.summary}
+                </p>
+                <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-2 text-[10px] text-emerald-900">
+                  💡 {nextCase.preventionInsight}
+                </div>
+                <div className="text-[10px] text-slate-400 pt-1">
+                  Source: {nextCase.publisher}
+                </div>
+              </div>
+            </div>
+
+            {/* Left & Right Circular Glass Buttons */}
+            <button
+              type="button"
+              onClick={handlePrev}
+              className="absolute left-2 sm:left-12 top-1/2 -translate-y-1/2 z-30 h-11 w-11 rounded-full border border-white/20 bg-slate-900/80 text-white flex items-center justify-center hover:bg-slate-800 hover:scale-105 transition-all shadow-xl backdrop-blur-md"
+              aria-label="Previous case"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+
+            <button
+              type="button"
+              onClick={handleNext}
+              className="absolute right-2 sm:right-12 top-1/2 -translate-y-1/2 z-30 h-11 w-11 rounded-full border border-white/20 bg-slate-900/80 text-white flex items-center justify-center hover:bg-slate-800 hover:scale-105 transition-all shadow-xl backdrop-blur-md"
+              aria-label="Next case"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
           </div>
 
-          {/* Interactive Progress Indicator Strip */}
-          <div className="flex items-center justify-between pt-2">
+          {/* Dots Pagination & Counter */}
+          <div className="mt-4 flex items-center justify-between px-6">
             <div className="flex items-center gap-1.5">
-              {filteredCases.map((c, i) => (
+              {cases.map((c, i) => (
                 <button
                   key={c.id}
                   onClick={() => setActiveCaseIndex(i)}
                   className={`h-1.5 rounded-full transition-all ${
                     i === activeCaseIndex
-                      ? "w-8 bg-sky-400"
+                      ? "w-8 bg-emerald-400"
                       : "w-2 bg-slate-700 hover:bg-slate-500"
                   }`}
                   aria-label={`Go to case ${i + 1}: ${c.city}`}
@@ -368,8 +411,74 @@ export const RealWorldCaseShowcase: React.FC<RealWorldCaseShowcaseProps> = ({
               ))}
             </div>
 
-            <span className="font-mono text-[10px] text-slate-500">
-              Use Left/Right arrow keys or swipe to navigate
+            <span className="font-mono text-xs text-slate-400 font-semibold">
+              {activeCaseIndex + 1} / {totalCases}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* =========================================================================
+          BOTTOM BAR: HOW VERISIGHT HELPS IN SUCH CASES (FULL WIDTH)
+      ========================================================================= */}
+      <div className="mt-12 rounded-2xl border border-white/10 bg-[#071322]/90 p-4 sm:p-5 backdrop-blur-md shadow-xl flex flex-col lg:flex-row items-center justify-between gap-4">
+        {/* Left Indicator Label */}
+        <div className="flex items-center gap-2 text-sm sm:text-base font-bold text-white shrink-0 self-start lg:self-center">
+          <span className="h-5 w-1 bg-cyan-400 rounded-full" />
+          <span>How Verisight helps in such cases:</span>
+        </div>
+
+        {/* 4 Forensic Pillars */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 w-full lg:w-auto flex-1 lg:ml-6">
+          {/* Pillar 1 */}
+          <div
+            onClick={onNavigateWorkbench}
+            className="flex items-center gap-2.5 rounded-xl border border-white/5 bg-white/[0.03] px-3.5 py-2.5 hover:border-cyan-500/30 hover:bg-cyan-500/10 transition-colors cursor-pointer group"
+          >
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/15 text-cyan-400 group-hover:bg-cyan-500/25 transition-colors shrink-0">
+              <Search className="h-4 w-4" />
+            </div>
+            <span className="text-xs font-semibold text-slate-200 group-hover:text-white">
+              Examine suspicious evidence
+            </span>
+          </div>
+
+          {/* Pillar 2 */}
+          <div
+            onClick={onNavigateWorkbench}
+            className="flex items-center gap-2.5 rounded-xl border border-white/5 bg-white/[0.03] px-3.5 py-2.5 hover:border-emerald-500/30 hover:bg-emerald-500/10 transition-colors cursor-pointer group"
+          >
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400 group-hover:bg-emerald-500/25 transition-colors shrink-0">
+              <ShieldCheck className="h-4 w-4" />
+            </div>
+            <span className="text-xs font-semibold text-slate-200 group-hover:text-white">
+              Analyze for forgery indicators
+            </span>
+          </div>
+
+          {/* Pillar 3 */}
+          <div
+            onClick={() => onNavigateResponse?.()}
+            className="flex items-center gap-2.5 rounded-xl border border-white/5 bg-white/[0.03] px-3.5 py-2.5 hover:border-sky-500/30 hover:bg-sky-500/10 transition-colors cursor-pointer group"
+          >
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500/15 text-sky-400 group-hover:bg-sky-500/25 transition-colors shrink-0">
+              <FileCheck2 className="h-4 w-4" />
+            </div>
+            <span className="text-xs font-semibold text-slate-200 group-hover:text-white">
+              Prepare an evidence dossier
+            </span>
+          </div>
+
+          {/* Pillar 4 */}
+          <div
+            onClick={() => onNavigateResponse?.()}
+            className="flex items-center gap-2.5 rounded-xl border border-white/5 bg-white/[0.03] px-3.5 py-2.5 hover:border-emerald-500/30 hover:bg-emerald-500/10 transition-colors cursor-pointer group"
+          >
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400 group-hover:bg-emerald-500/25 transition-colors shrink-0">
+              <Zap className="h-4 w-4" />
+            </div>
+            <span className="text-xs font-semibold text-slate-200 group-hover:text-white">
+              Get guided response & reporting
             </span>
           </div>
         </div>

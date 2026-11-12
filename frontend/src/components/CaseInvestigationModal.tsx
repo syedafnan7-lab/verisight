@@ -82,6 +82,21 @@ export const CaseInvestigationModal: React.FC<CaseInvestigationModalProps> = ({
 
         {/* Scrollable Body Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {/* Featured Editorial Photo Header */}
+          {caseItem.imageUrl && (
+            <div className="relative h-48 sm:h-60 w-full overflow-hidden rounded-xl border border-white/10 bg-slate-900 shadow-md">
+              <img
+                src={caseItem.imageUrl}
+                alt={caseItem.imageAlt || caseItem.headline}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1F] via-transparent to-transparent opacity-80" />
+              <div className="absolute top-3 right-3 transform -rotate-6 rounded border-2 border-red-500 bg-red-950/90 px-2.5 py-0.5 font-mono text-[10px] font-black tracking-widest text-red-400 shadow-xl uppercase">
+                REPORTED CASE
+              </div>
+            </div>
+          )}
+
           {/* Headline & Loss Figure */}
           <div className="space-y-3">
             <span className="font-mono text-xs font-semibold text-sky-400 uppercase tracking-wider">

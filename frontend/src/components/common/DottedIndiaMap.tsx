@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { RealWorldFraudCase } from "../../data/realWorldCases";
-import { MapPin, AlertCircle } from "lucide-react";
+import {
+  INDIA_MAP_VIEWBOX,
+  INDIA_BOUNDARY_PATH,
+  INDIA_DOT_MATRIX,
+  CITY_GEOPOINTS,
+} from "../../data/indiaGeospatial";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 
 interface DottedIndiaMapProps {
   cases: RealWorldFraudCase[];
@@ -8,39 +14,6 @@ interface DottedIndiaMapProps {
   onSelectCase: (caseId: string) => void;
   className?: string;
 }
-
-// Representative dot coordinates forming India's geographic contour (normalized 0-100)
-const INDIA_DOT_GRID = [
-  // North (J&K, Ladakh, HP, Punjab, Uttarakhand)
-  { x: 37, y: 10 }, { x: 41, y: 9 }, { x: 45, y: 11 }, { x: 48, y: 13 },
-  { x: 35, y: 14 }, { x: 39, y: 14 }, { x: 43, y: 15 }, { x: 47, y: 16 },
-  { x: 33, y: 18 }, { x: 37, y: 19 }, { x: 41, y: 20 }, { x: 45, y: 21 },
-  { x: 31, y: 23 }, { x: 35, y: 24 }, { x: 39, y: 25 }, { x: 43, y: 25 }, { x: 47, y: 26 },
-
-  // Delhi NCR, Rajasthan, UP, Haryana
-  { x: 26, y: 28 }, { x: 30, y: 28 }, { x: 34, y: 29 }, { x: 38, y: 29 }, { x: 42, y: 28 }, { x: 46, y: 29 }, { x: 50, y: 30 },
-  { x: 25, y: 33 }, { x: 29, y: 34 }, { x: 33, y: 34 }, { x: 37, y: 34 }, { x: 41, y: 34 }, { x: 45, y: 35 }, { x: 49, y: 35 }, { x: 53, y: 35 },
-  { x: 23, y: 38 }, { x: 27, y: 39 }, { x: 31, y: 39 }, { x: 35, y: 39 }, { x: 39, y: 40 }, { x: 43, y: 40 }, { x: 47, y: 40 }, { x: 51, y: 41 }, { x: 55, y: 41 },
-
-  // Gujarat, MP, Bihar, Bengal, North East
-  { x: 18, y: 43 }, { x: 22, y: 43 }, { x: 26, y: 44 }, { x: 30, y: 44 }, { x: 34, y: 44 }, { x: 38, y: 45 }, { x: 42, y: 45 }, { x: 46, y: 46 }, { x: 50, y: 46 }, { x: 54, y: 46 }, { x: 58, y: 45 }, { x: 62, y: 43 }, { x: 66, y: 41 }, { x: 70, y: 39 },
-  { x: 17, y: 48 }, { x: 21, y: 48 }, { x: 25, y: 49 }, { x: 29, y: 49 }, { x: 33, y: 50 }, { x: 37, y: 50 }, { x: 41, y: 50 }, { x: 45, y: 51 }, { x: 49, y: 51 }, { x: 53, y: 51 }, { x: 57, y: 50 }, { x: 61, y: 48 }, { x: 65, y: 46 }, { x: 69, y: 44 }, { x: 73, y: 42 },
-
-  // Maharashtra, Odisha, Chhattisgarh
-  { x: 25, y: 53 }, { x: 29, y: 54 }, { x: 33, y: 54 }, { x: 37, y: 55 }, { x: 41, y: 55 }, { x: 45, y: 55 }, { x: 49, y: 56 }, { x: 53, y: 56 }, { x: 57, y: 55 },
-  { x: 27, y: 58 }, { x: 31, y: 58 }, { x: 35, y: 58 }, { x: 39, y: 59 }, { x: 43, y: 60 }, { x: 47, y: 60 }, { x: 51, y: 60 }, { x: 55, y: 59 },
-
-  // Telangana, Andhra, Goa, Karnataka
-  { x: 30, y: 63 }, { x: 34, y: 64 }, { x: 38, y: 64 }, { x: 42, y: 64 }, { x: 46, y: 65 }, { x: 50, y: 65 },
-  { x: 33, y: 68 }, { x: 37, y: 69 }, { x: 41, y: 69 }, { x: 45, y: 69 }, { x: 49, y: 70 },
-  { x: 36, y: 73 }, { x: 40, y: 73 }, { x: 44, y: 74 }, { x: 48, y: 74 },
-
-  // Tamil Nadu, Kerala (South)
-  { x: 38, y: 78 }, { x: 42, y: 79 }, { x: 46, y: 79 },
-  { x: 40, y: 83 }, { x: 43, y: 84 }, { x: 46, y: 84 },
-  { x: 42, y: 88 }, { x: 44, y: 89 },
-  { x: 43, y: 93 },
-];
 
 export const DottedIndiaMap: React.FC<DottedIndiaMapProps> = ({
   cases,
@@ -50,129 +23,200 @@ export const DottedIndiaMap: React.FC<DottedIndiaMapProps> = ({
 }) => {
   const [hoveredCaseId, setHoveredCaseId] = useState<string | null>(null);
 
-  const activeCase = cases.find((c) => c.id === activeCaseId);
-  const hoveredCase = cases.find((c) => c.id === hoveredCaseId);
+  const activeCase = cases.find((c) => c.id === activeCaseId) || cases[0];
+  const displayCase = cases.find((c) => c.id === hoveredCaseId) || activeCase;
+
+  // Find coordinates for the currently displayed case
+  const activeCityPoint = displayCase ? CITY_GEOPOINTS[displayCase.city] : null;
+
+  // Calculate smart anchor position for callout card
+  // If city is on right side of India (x > 220), place card to the left, otherwise place to the right
+  const isRightSide = activeCityPoint ? activeCityPoint.x > 220 : false;
+  const isBottom = activeCityPoint ? activeCityPoint.y > 320 : false;
+
+  const cardX = activeCityPoint
+    ? isRightSide
+      ? Math.max(10, activeCityPoint.x - 180)
+      : Math.min(260, activeCityPoint.x + 35)
+    : 190;
+
+  const cardY = activeCityPoint
+    ? isBottom
+      ? Math.max(100, activeCityPoint.y - 70)
+      : Math.min(380, activeCityPoint.y - 20)
+    : 140;
 
   return (
-    <div className={`relative flex flex-col items-center select-none ${className}`}>
+    <div className={`relative flex flex-col items-center select-none w-full ${className}`}>
       {/* SVG Canvas for Dotted Map */}
-      <div className="relative w-full max-w-[320px] aspect-[4/5] overflow-visible">
+      <div className="relative w-full max-w-[380px] aspect-[440/500] overflow-visible">
         <svg
-          viewBox="0 0 100 100"
-          className="w-full h-full drop-shadow-[0_0_15px_rgba(56,189,248,0.05)]"
-          aria-label="Map of India showing verified cyber fraud incident locations"
+          viewBox={INDIA_MAP_VIEWBOX}
+          className="w-full h-full overflow-visible"
+          aria-label="Official Survey of India Geospatial Matrix showing verified incident locations"
         >
-          {/* Subtle connecting mesh or base contour lines */}
+          <defs>
+            {/* Subtle glow filter */}
+            <filter id="cyanGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+            <filter id="pinGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+
+            {/* Gradient for subtle map backdrop */}
+            <radialGradient id="mapBackdrop" cx="45%" cy="45%" r="55%">
+              <stop offset="0%" stopColor="#0284c7" stopOpacity="0.08" />
+              <stop offset="70%" stopColor="#0f766e" stopOpacity="0.03" />
+              <stop offset="100%" stopColor="#000000" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+
+          {/* Authentic Boundary Backdrop & Subtle Glow */}
           <path
-            d="M 37 10 L 48 13 L 47 26 L 55 41 L 73 42 L 58 45 L 55 59 L 49 70 L 43 93 L 38 78 L 27 58 L 18 43 L 26 28 Z"
-            fill="rgba(14, 165, 233, 0.02)"
-            stroke="rgba(255, 255, 255, 0.05)"
-            strokeWidth="0.4"
-            strokeDasharray="1 1"
+            d={INDIA_BOUNDARY_PATH}
+            fill="url(#mapBackdrop)"
+            stroke="rgba(56, 189, 248, 0.14)"
+            strokeWidth="0.8"
+            className="transition-colors duration-500"
           />
 
-          {/* Dotted Matrix */}
-          {INDIA_DOT_GRID.map((dot, idx) => (
-            <circle
-              key={idx}
-              cx={dot.x}
-              cy={dot.y}
-              r={0.75}
-              fill="rgba(148, 163, 184, 0.22)"
-              className="transition-colors hover:fill-sky-400/40"
+          {/* Authentic Clipped Dot Matrix */}
+          <g className="dot-matrix">
+            {INDIA_DOT_MATRIX.map((dot) => {
+              // Check proximity to active city for subtle interactive reactive glow
+              const distToActive = activeCityPoint
+                ? Math.hypot(dot.x - activeCityPoint.x, dot.y - activeCityPoint.y)
+                : 999;
+              const isNearby = distToActive < 35;
+
+              return (
+                <circle
+                  key={dot.id}
+                  cx={dot.x}
+                  cy={dot.y}
+                  r={isNearby ? 1.6 : 1.3}
+                  fill={isNearby ? "rgba(52, 211, 153, 0.75)" : "rgba(16, 185, 129, 0.35)"}
+                  className="transition-colors duration-300"
+                />
+              );
+            })}
+          </g>
+
+          {/* Connecting Line to Active Floating Card */}
+          {activeCityPoint && (
+            <path
+              d={`M ${activeCityPoint.x} ${activeCityPoint.y} L ${
+                isRightSide ? cardX + 170 : cardX
+              } ${cardY + 30}`}
+              stroke="rgba(52, 211, 153, 0.4)"
+              strokeWidth="1.2"
+              strokeDasharray="3 3"
+              fill="none"
+              className="pointer-events-none transition-all duration-300"
             />
-          ))}
+          )}
 
           {/* Real Verified Case Markers */}
           {cases.map((c) => {
-            const isActive = c.id === activeCaseId;
-            const isHovered = c.id === hoveredCaseId;
+            const pt = CITY_GEOPOINTS[c.city];
+            if (!pt) return null;
+
+            const isActive = c.id === displayCase?.id;
+            const isRedPin = c.city === "New Delhi" || c.city === "Pune";
+
+            const pinColor = isRedPin ? "#ef4444" : "#10b981";
+            const pingColor = isRedPin ? "stroke-red-500" : "stroke-emerald-400";
 
             return (
               <g
                 key={c.id}
-                className="cursor-pointer transition-transform duration-200"
+                className="cursor-pointer group"
                 onClick={() => onSelectCase(c.id)}
                 onMouseEnter={() => setHoveredCaseId(c.id)}
                 onMouseLeave={() => setHoveredCaseId(null)}
               >
-                {/* Outer Radar Glow / Wave for Active Marker */}
+                {/* Radar ripple for active pin */}
                 {isActive && (
                   <>
                     <circle
-                      cx={c.mapCoordinates.x}
-                      cy={c.mapCoordinates.y}
-                      r={4.5}
+                      cx={pt.x}
+                      cy={pt.y}
+                      r={14}
                       fill="none"
-                      stroke={c.accentColor || "#38bdf8"}
-                      strokeWidth="0.8"
-                      className="animate-ping opacity-60"
+                      stroke={pinColor}
+                      strokeWidth="1.5"
+                      className="animate-ping opacity-75 origin-center"
                     />
                     <circle
-                      cx={c.mapCoordinates.x}
-                      cy={c.mapCoordinates.y}
-                      r={6.5}
-                      fill={c.accentColor || "#38bdf8"}
-                      fillOpacity="0.15"
+                      cx={pt.x}
+                      cy={pt.y}
+                      r={10}
+                      fill={pinColor}
+                      fillOpacity="0.2"
                     />
                   </>
                 )}
 
-                {/* Base Marker Circle */}
+                {/* Outer halo */}
                 <circle
-                  cx={c.mapCoordinates.x}
-                  cy={c.mapCoordinates.y}
-                  r={isActive ? 2.4 : isHovered ? 2.0 : 1.5}
-                  fill={isActive ? c.accentColor || "#38bdf8" : isHovered ? "#38bdf8" : "#94a3b8"}
-                  stroke={isActive ? "#ffffff" : "rgba(15, 23, 42, 0.8)"}
-                  strokeWidth={isActive ? 0.8 : 0.4}
+                  cx={pt.x}
+                  cy={pt.y}
+                  r={isActive ? 7 : 5}
+                  fill={pinColor}
+                  fillOpacity={isActive ? "0.9" : "0.75"}
+                  filter="url(#pinGlow)"
                   className="transition-all duration-200"
                 />
 
-                {/* City Name Label for Active/Hovered Marker */}
-                {(isActive || isHovered) && (
-                  <text
-                    x={c.mapCoordinates.x + (c.mapCoordinates.x > 50 ? -3 : 3)}
-                    y={c.mapCoordinates.y - 3}
-                    textAnchor={c.mapCoordinates.x > 50 ? "end" : "start"}
-                    fill="#f8fafc"
-                    fontSize="3"
-                    fontFamily="ui-monospace, monospace"
-                    fontWeight="bold"
-                    className="pointer-events-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]"
-                  >
-                    {c.city}
-                  </text>
-                )}
+                {/* Inner White Core Dot */}
+                <circle
+                  cx={pt.x}
+                  cy={pt.y}
+                  r={isActive ? 2.5 : 1.8}
+                  fill="#ffffff"
+                  className="transition-all duration-200"
+                />
               </g>
             );
           })}
         </svg>
 
-        {/* Floating Active Case Pin Card (Bottom of Map) */}
-        {(activeCase || hoveredCase) && (
-          <div className="absolute -bottom-4 left-0 right-0 rounded-xl border border-white/10 bg-[#0A0F1F]/95 p-2.5 backdrop-blur-md shadow-xl text-xs font-mono animate-in fade-in duration-200">
-            <div className="flex items-center justify-between text-[10px]">
-              <div className="flex items-center gap-1.5 text-sky-400 font-bold">
-                <MapPin className="h-3 w-3" />
-                <span>
-                  {(hoveredCase || activeCase)?.city}, {(hoveredCase || activeCase)?.state}
-                </span>
-              </div>
-              <span className="text-amber-400 font-semibold">
-                {(hoveredCase || activeCase)?.reportedLoss}
-              </span>
+        {/* Floating Callout Card Attached to Active Pin */}
+        {displayCase && activeCityPoint && (
+          <div
+            style={{
+              position: "absolute",
+              left: `${(cardX / 440) * 100}%`,
+              top: `${(cardY / 500) * 100}%`,
+              transform: "translate(0, 0)",
+            }}
+            className="w-44 rounded-xl border border-emerald-500/40 bg-[#06111E]/95 p-3 shadow-[0_8px_32px_rgba(0,0,0,0.8)] backdrop-blur-md text-left z-20 pointer-events-auto transition-all duration-300"
+          >
+            <div className="text-white font-bold text-xs tracking-wide">
+              {displayCase.city}
             </div>
-            <p className="mt-1 text-[11px] text-slate-300 font-sans line-clamp-1">
-              {(hoveredCase || activeCase)?.scamCategory}
-            </p>
+            <div className="text-slate-300 text-[11px] leading-tight mt-0.5 line-clamp-2">
+              {displayCase.scamCategory}
+            </div>
+            <button
+              type="button"
+              onClick={() => onSelectCase(displayCase.id)}
+              className="mt-2 text-emerald-400 hover:text-emerald-300 text-[11px] font-semibold flex items-center gap-1 transition-colors"
+            >
+              <span>View Case</span>
+              <ArrowRight className="h-3 w-3" />
+            </button>
           </div>
         )}
       </div>
 
-      <div className="mt-6 flex items-center gap-2 text-[10px] font-mono text-slate-400">
-        <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
-        <span>7 Verified Incident Coordinates Plotted</span>
+      {/* Trust Indicator Footer */}
+      <div className="mt-4 flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-950/40 px-3.5 py-1 text-xs text-emerald-300 shadow-sm">
+        <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+        <span>Curated from verified reports and official advisories</span>
       </div>
     </div>
   );
